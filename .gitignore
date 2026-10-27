@@ -1,0 +1,6 @@
+deck/out/
+model/out/
+__pycache__/
+.DS_Store
+node_modules/
+*.png.tmp
