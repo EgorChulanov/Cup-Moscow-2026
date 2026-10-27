@@ -22,9 +22,9 @@
 | `docs/` | постановка, требования, статус, шаблон-обоснование для специалиста |
 | `research/` | вторичные данные с источниками: отзывы, экономика поддержки, лучшие практики, открытые CJM, опрос, тренажёры |
 | `analysis/` | наш анализ: дерево причин, типы ситуаций, варианты решения и их сравнение |
-| `cjm/` | CJM и Service Blueprint: данные в `cjm.yaml`, сборка в HTML для приложения и для Miro |
+| `cjm/` | CJM и Service Blueprint: данные в `cjm.json`, `miro_svg.py` собирает доску Miro ([ссылка в STATUS](docs/STATUS.md)), приложение строится из тех же данных |
 | `model/` | финансовая модель (`build_model.py` собирает `.xlsx`) |
-| `deck/` | презентация: `slides.html` (источник), `build.mjs` (сборка PDF), `out/` (готовый PDF) |
+| `deck/` | презентация: `make_slides.py` (генератор, источник правды), `slides.html` (результат генератора, руками не править), `build.mjs` (сборка PDF), `out/` (готовый PDF) |
 
 ## Правила качества (из критериев жюри)
 
@@ -54,6 +54,10 @@
 # финмодель
 python3 model/build_model.py            # создаст model/out/*.xlsx
 
-# презентация (нужны Node 18+ и Playwright с Chromium)
-node deck/build.mjs                     # создаст deck/out/*.pdf и проверит размер
+# презентация (нужны Node 18+ и Playwright с Chromium); цифры берутся из model/out/numbers.json
+python3 deck/make_slides.py
+TEAM=<Название> node deck/build.mjs     # создаст deck/out/*.pdf и проверит размер
+
+# доска Miro (CJM + Blueprint), загрузка через Miro Canvas Composer
+python3 cjm/miro_svg.py                 # создаст cjm/out/miro_*.svg
 ```

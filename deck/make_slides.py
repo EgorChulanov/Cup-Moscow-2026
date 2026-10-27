@@ -12,6 +12,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 NUM = json.loads((ROOT / "model/out/numbers.json").read_text(encoding="utf-8"))
+MIRO = "https://miro.com/app/board/uXjVEUshVGo=/"
+MIRO_A = f'<a href="{MIRO}" style="color:inherit">доска Miro: miro.com/app/board/uXjVEUshVGo=</a>'
 CJM = json.loads((ROOT / "cjm/cjm.json").read_text(encoding="utf-8"))
 TEAM = os.environ.get("TEAM", "").strip()
 OPT = {o["code"]: o for o in NUM["options"]}
@@ -264,7 +266,7 @@ def s4():
     <div class="card" style="flex:1;padding:18px 22px"><h3><span class="chip c-ink">D</span> Потеря доверия: шаги 09, 11, 14</h3><p>Второе обращение «как первое», клиентка страхуется картой другого банка. <b style="color:var(--ink)">Меняем:</b> Я и Л (срок, владелец, сам вернулся)</p></div>
   </div></div>"""
     src = ("<b>Основа:</b> реальные отзывы research/01 (Ж1, Ж2, Ж4, Ж7, П1, П2) и типичный путь при блокировке research/03 (4а); эмоции по синтетическим интервью R01, R03, R05. "
-           "Оценки эмоций рабочие, не измерения. Полная CJM с 10 дорожками и Service Blueprint: приложения 8–10 и доска Miro.")
+           f"Оценки эмоций рабочие, не измерения. Полная CJM с 10 дорожками и Service Blueprint: приложения 8–10 и {MIRO_A}.")
     return page(4, "CJM: стресс на кассе, равнодушие в чате и <em>потеря доверия на повторном обращении</em>", body, src)
 
 
@@ -577,7 +579,7 @@ def a_cjm():
     p3 = page(10, "Service Blueprint: что видит клиент и что происходит за линией видимости", f"""<div class="col" style="flex:1"><div class="card" style="flex:1"><table class="t s"><tr><th style="width:150px">Шаги</th><th>Видимые действия банка</th><th>За кулисами (за линией видимости)</th><th>Люди и системы</th></tr>{bp}</table></div>
 <div class="row"><div class="card" style="flex:1.3"><h3>Точки сбоя (fail points по Шостак)</h3><table class="t s">{fails}</table></div>
 <div class="card yl" style="flex:1"><h3>Главный разрыв</h3><p style="color:var(--ink)">Тип ограничения и срок проверки живут у антифрода за линией видимости, а специалист и клиент их не видят. Поэтому подход ПОНЯЛ требует изменения 3 (тип ограничения виден специалисту), а не только новых слов.</p></div></div></div>""",
-              "Шаблон Service Blueprint: NN/g, G. L. Shostack (HBR, 1984); дорожки как на доске Miro курса «UX-исследование». Внутренние процессы банка восстановлены по открытым источникам и помечены как гипотезы.", appendix=True, label="CJM")
+              f"Шаблон Service Blueprint: NN/g, G. L. Shostack (HBR, 1984); дорожки как на доске Miro курса «UX-исследование». Внутренние процессы банка восстановлены по открытым источникам и помечены как гипотезы. Вся карта: {MIRO_A}.", appendix=True, label="CJM")
     return p1 + p2 + p3
 
 
