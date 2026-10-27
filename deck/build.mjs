@@ -37,11 +37,17 @@ try {
   if (main !== MAIN_SLIDES) throw new Error(`Main part must have ${MAIN_SLIDES} slides, found ${main}`);
 
   // Catch text that spills out of its slide before it reaches the jury
-  const overflow = await page.evaluate(() => [...document.querySelectorAll('section.slide')].flatMap((s, i) =>
-    [...s.querySelectorAll('*')].filter((el) => {
-      const r = el.getBoundingClientRect(), b = s.getBoundingClientRect();
-      return r.width && (r.right > b.right + 1 || r.bottom > b.bottom + 1);
-    }).slice(0, 1).map((el) => `slide ${i + 1}: <${el.tagName.toLowerCase()} class="${el.className}">`)));
+  // Content may not leave the slide or run into the sources line at the bottom
+  const overflow = await page.evaluate(() => [...document.querySelectorAll('section.slide')].flatMap((s, i) => {
+    const b = s.getBoundingClientRect();
+    const src = s.querySelector('.src');
+    const floor = src ? src.getBoundingClientRect().top : b.bottom;
+    const body = s.querySelector('.body') || s;
+    return [...body.querySelectorAll('*')].filter((el) => {
+      const r = el.getBoundingClientRect();
+      return r.width && (r.right > b.right + 1 || r.bottom > floor + 1);
+    }).slice(0, 1).map((el) => `slide ${i + 1}: <${el.tagName.toLowerCase()}> "${(el.textContent || '').trim().slice(0, 40)}"`);
+  }));
   if (overflow.length) console.warn('Overflow:\n  ' + overflow.join('\n  '));
 
   if (process.env.PNG_DIR) {
