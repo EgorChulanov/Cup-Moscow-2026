@@ -77,9 +77,9 @@ def frame(fid, x, y, w, h, title, body):
             + "\n".join(body) + "\n</g>")
 
 
-def inside(x, y, w, h, body):
+def inside(x, y, w, h, body, title=None):
     """Догрузка в уже созданный фрейм: FRAME_ID заменяется на data-miro-id фрейма перед загрузкой."""
-    return (f'<g data-miro-id="FRAME_ID" transform="translate({x},{y + OY})">\n'
+    return (f'<g data-miro-id="FRAME_ID" data-frame="{a(title or CJM["title"])}" transform="translate({x},{y + OY})">\n'
             f'<rect data-type="frame" x="0" y="0" width="{w}" height="{h}" fill="#ffffff" />\n'
             + "\n".join(body) + "\n</g>")
 
