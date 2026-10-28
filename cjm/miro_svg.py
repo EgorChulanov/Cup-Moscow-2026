@@ -1,241 +1,279 @@
-"""Builds the Miro board (CJM + Service Blueprint + legend) from cjm/cjm.json.
+"""Собирает доску Miro из cjm/cjm.json по шаблону доски команды (курс UX-исследований ВШЭ).
 
-Output: cjm/out/miro.svg in the Miro Canvas Composer SVG format.
-The board copies the lanes of the team's Miro template (HSE UX course):
-goal, actions, thoughts, emotions -2..+2, importance 1-3, reasons, touchpoints,
-barriers, source and status, materials; below it the Service Blueprint.
-Usage: python3 cjm/miro_svg.py, then pass the file to canvas_create_from_svg.
+Геометрия повторяет фрейм «CJM Алины: 24 шага и Service Blueprint»: колонка шага 448 px с зазором 32 px,
+подписи дорожек слева, эмоции и важность точками, Service Blueprint в том же фрейме.
+Результат: cjm/out/NN_*.svg, по файлу на загрузку в Miro (Canvas Composer). Большие фреймы режутся на части:
+первая создаёт фрейм, следующие добавляют стикеры в него.
+Запуск: python3 cjm/miro_svg.py
 """
 import json
+import re
 from pathlib import Path
 from xml.sax.saxutils import escape
 
 HERE = Path(__file__).parent
-cjm = json.loads((HERE / "cjm.json").read_text())
-steps = {s["n"]: s for s in cjm["steps"]}
+OUT = HERE / "out"
+CJM = json.loads((HERE / "cjm.json").read_text())
+STEPS = {s["n"]: s for s in CJM["steps"]}
+
+# Сдвиг всей раскладки вниз, под старые фреймы доски
+OY = 5000
 
 
 def a(text):
-    """Attribute-safe text."""
     return escape(str(text), {'"': "&quot;"})
 
 
-# Grid
-X0, COL, CW = 340, 250, 240     # first step x, column pitch, cell width
-LX, LW = 40, 240                # lane label column
-GAP = 10
-FRAME_W = X0 + 13 * COL + CW + 40
+def rich(text):
+    """data-content с переносами и жирным: экранируем, затем возвращаем разрешённые теги."""
+    return a(text)
 
 
-def cx(n):
-    return X0 + (n - 1) * COL
-
-
-def span(ns):
-    return cx(ns[0]), cx(ns[-1]) + CW - cx(ns[0])
-
-
-EMO = {-2: "#e5484d", -1: "#f5a524", 0: "#9aa0a6", 1: "#8bc34a", 2: "#2e9e5b"}
-MARK = {"S": ("стресс", "#ffd6d6"), "R": ("равнодушие", "#dfe3ea"), "D": ("потеря доверия", "#e7dcff")}
-DOTS = {1: "● 1 низкая", 2: "●● 2 средняя", 3: "●●● 3 высокая"}
-
-out = []
-
-
-def rect(x, y, w, h, content="", fill="#ffffff", color="#1f2329", size=14, bold=False,
-         align="left", valign="top", stroke="#d6d6d6", dash=None, rid=None, rx=8):
-    attrs = [f'x="{x}" y="{y}" width="{w}" height="{h}" rx="{rx}" fill="{fill}"']
-    attrs.append(f'stroke="{stroke}"' + (' stroke-width="2"' if stroke != "none" else ""))
-    if dash:
-        attrs.append(f'stroke-dasharray="{dash}"')
+def rect(x, y, w, h, content="", fill="#f7f7f7", size=14, bold=False, align="left", valign="top",
+         stroke="#e7e7e7", color="#1a1a1a", rx=None, dash=None, rid=None):
+    at = [f'x="{x}" y="{y}" width="{w}" height="{h}" fill="{fill}" stroke="{stroke}"']
     if rid:
-        attrs.insert(0, f'id="{rid}"')
+        at.insert(0, f'id="{rid}"')
+    if rx:
+        at.append(f'rx="{rx}"')
+    if dash:
+        at.append(f'stroke-dasharray="{dash}" stroke-width="2"')
     if content:
-        attrs.append(f'data-content="{a(content)}" data-text-color="{color}" data-font-size="{size}"'
-                     f' data-text-align="{align}" data-text-align-vertical="{valign}"')
+        tc = "" if color == "#1a1a1a" else f' data-text-color="{color}"'
+        al = "" if align == "center" else f' data-text-align="{align}"'
+        va = "" if valign == "middle" else f' data-text-align-vertical="{valign}"'
+        at.append(f'data-content="{a(content)}"{tc} data-font-size="{size}"{al}{va}')
         if bold:
-            attrs.append('data-font-weight="bold"')
-    out.append(f'  <rect {" ".join(attrs)} />')
+            at.append('data-font-weight="bold"')
+    return f'<rect {" ".join(at)} />'
 
 
-def text(x, y, body, size=14, fill="#1f2329", anchor="start", bold=False):
-    w = ' font-weight="bold"' if bold else ""
-    out.append(f'  <text x="{x}" y="{y}" font-size="{size}" fill="{fill}" text-anchor="{anchor}"{w}>{escape(body)}</text>')
+def text(x, y, w, body, size=24, color="#595959", bold=False):
+    b = ' font-weight="bold"' if bold else ""
+    return f'<textArea x="{x}" y="{y}" width="{w}" fill="{color}" font-size="{size}"{b}>{body}</textArea>'
 
 
-def label(y, h, title, sub=""):
-    body = f"<b>{escape(title)}</b>" + (f"<br>{escape(sub)}" if sub else "")
-    out.append(f'  <rect x="{LX}" y="{y}" width="{LW}" height="{h}" rx="8" fill="#1f2329" stroke="none"'
-               f' data-content="{a(body)}" data-text-color="#ffffff" data-font-size="15"'
-               f' data-text-align="left" data-text-align-vertical="top" />')
+def sticky(x, y, w, h, body, color="light_blue"):
+    return f'<rect data-type="sticky" x="{x}" y="{y}" width="{w}" height="{h}" data-color="{color}" data-content="{a(body)}" />'
 
 
-# ---------- Frame 1: CJM ----------
-LANES = [  # key, title, subtitle, height, fill
-    ("goal", "Цель шага", "что хочет клиент", 90, "#f3f0ff"),
-    ("actions", "Действия", "что делает", 120, "#ffffff"),
-    ("thoughts", "Мысли и вопросы", "что думает", 120, "#fff6b8"),
-    ("emotion", "Эмоции −2…+2", "линия: как есть; пунктир: с ПОНЯЛ", 360, None),
-    ("importance", "Важность 1–3", "значимость шага", 60, "#ffffff"),
-    ("why", "Причины оценок", "почему такая эмоция", 100, "#ffffff"),
-    ("touchpoints", "Точки контакта", "каналы и люди", 100, "#e8f4ff"),
-    ("barriers", "Барьеры и эффект", "что мешает", 110, "#ffe3e3"),
-    ("status", "Источник и статус", "С, О, Н, Г", 110, "#f2f2f2"),
-    ("materials", "Фото и материалы", "скрины, цитаты", 90, None),
-    ("tobe", "С подходом ПОНЯЛ", "что меняется на шаге", 130, "#fff4b3"),
+def link_html(s):
+    """Превращает «banki.ru/...» в полную ссылку, чтобы в Miro она открывалась."""
+    def full(m):
+        host = m.group(1)
+        url = "https://" + ("www." if host.startswith("banki.ru") else "") + m.group(0)
+        return f'<a href="{a(url)}">{escape(m.group(0))}</a>'
+    parts = re.split(r"((?:www\.)?(?:banki\.ru|otzovik\.com|brobank\.ru|vc\.ru|sravni\.ru)/\S+)", s)
+    out = []
+    for p in parts:
+        m = re.match(r"((?:www\.)?(?:banki\.ru|otzovik\.com|brobank\.ru|vc\.ru|sravni\.ru))(/\S+)", p)
+        out.append(full(m) if m else escape(p))
+    return "".join(out)
+
+
+def frame(fid, x, y, w, h, title, body):
+    return (f'<g id="{fid}" transform="translate({x},{y + OY})" data-frame="{a(title)}">\n'
+            f'<rect data-type="frame" x="0" y="0" width="{w}" height="{h}" fill="#ffffff" />\n'
+            + "\n".join(body) + "\n</g>")
+
+
+def inside(x, y, w, h, body, title=None):
+    """Догрузка в уже созданный фрейм: FRAME_ID заменяется на data-miro-id фрейма перед загрузкой."""
+    return (f'<g data-miro-id="FRAME_ID" data-frame="{a(title or CJM["title"])}" transform="translate({x},{y + OY})">\n'
+            f'<rect data-type="frame" x="0" y="0" width="{w}" height="{h}" fill="#ffffff" />\n'
+            + "\n".join(body) + "\n</g>")
+
+
+def svg(*groups):
+    return '<svg xmlns="http://www.w3.org/2000/svg">\n' + "\n".join(groups) + "\n</svg>\n"
+
+
+# ---------- CJM: геометрия шаблона ----------
+X0, PITCH, CW = 416, 480, 448
+N = len(STEPS)
+CJM_W = X0 + N * PITCH - 32 + 64           # 11968 при 24 шагах
+LANES = {  # y, высота
+    "goal": (576, 224), "actions": (832, 320), "thoughts": (1184, 256),
+    "reasons": (2432, 256), "touch": (2720, 256), "barriers": (3008, 384),
+    "src": (3424, 256), "mat": (3712, 320),
+    "vis": (4480, 288), "back": (4864, 288), "sys": (5184, 288), "tobe": (5568, 288),
+}
+LABELS = [
+    ("goal", "Цель шага", "Что нужно получить на этом шаге?"),
+    ("actions", "Действия", "Что делает? Куда переходит? Что повторяет?"),
+    ("thoughts", "Мысли и вопросы", "Что хочет понять? В чём сомневается?"),
+    ("reasons", "Причины оценок", "Что чувствует и почему? Почему шаг важен?"),
+    ("touch", "Точки контакта", "Люди, экраны, каналы, сервисы и альтернативы."),
+    ("barriers", "Барьеры и эффект", "Что мешает? Потерянное время, деньги, доверие."),
+    ("src", "Источник и статус", "Г / Н / С / О. Отзыв, интервью или вопрос для проверки."),
+    ("mat", "Фото и материалы", "Цитаты из отзывов со ссылкой, скрины, документы."),
+    ("vis", "Видимые действия", "Что видит клиент в работе банка?"),
+    ("back", "За кулисами", "Какая работа идёт вне поля зрения Ирины?"),
+    ("sys", "Люди и системы", "Кто обеспечивает шаг? На что опирается?"),
+    ("tobe", "С подходом ПОНЯЛ", "Что меняется на шаге после внедрения решения."),
 ]
-GRID_Y = 420
-FRAME_H = GRID_Y + sum(l[3] + GAP for l in LANES) + 40
+EMO_Y = {2: 1592, 1: 1656, 0: 1720, -1: 1784, -2: 1848}
+IMP_Y = {3: 2136, 2: 2200, 1: 2264}
+EMO_FILL = {2: "#8cfbaf", 1: "#c8f7d6", 0: "#e1ecff", -1: "#ffdede", -2: "#ffc6c6"}
+IMP_FILL = {1: "#f0f5fd", 2: "#c6dcff", 3: "#8fb8ff"}
+MARK = {"S": ("стресс", "#ffc6c6"), "R": ("равнодушие", "#e3e6ec"), "D": ("доверие", "#e6dbff")}
+CJM_H = 6260
 
-out.append(f'<g id="f_cjm" transform="translate(0,0)" data-frame="{a("CJM: " + cjm["title"].split(": ", 1)[1])}">')
-out.append(f'  <rect data-type="frame" x="0" y="0" width="{FRAME_W}" height="{FRAME_H}" fill="#ffffff" />')
-text(40, 80, "CJM: карта ограничена на кассе, решение на третий день", size=44, bold=True)
-out.append(f'  <textArea x="40" y="110" width="2300" font-size="18"><b>Персона.</b> {escape(cjm["persona"])}</textArea>')
-out.append(f'  <textArea x="40" y="190" width="2300" font-size="15" fill="#5f6368"><b>Основа.</b> {escape(cjm["basis"])}</textArea>')
-# legend, top right
-LGX = FRAME_W - 1180
-rect(LGX, 100, 1140, 150, "<b>Как читать</b><br>Эмоции: рабочие оценки команды по отзывам и интервью, не измерения.<br>"
-     "Статусы: <b>С</b> вторичный источник с URL, <b>О</b> отзыв или опрос, <b>Н</b> наблюдение, <b>Г</b> гипотеза.<br>"
-     "«синт.»: синтетические данные (опрос N=40, интервью R01–R08), собраны на основе реальных отзывов.<br>"
-     "Метки боли: красная стресс, серая равнодушие, фиолетовая потеря доверия.",
-     fill="#f7f7f7", size=15, stroke="none")
 
-# phases and step headers
-for ph in cjm["phases"]:
-    x, w = span(ph["steps"])
-    rect(x, 260, w, 60, ph["name"], fill="#ffdd2d", size=20, bold=True, align="center", valign="middle", stroke="none")
-for n, s in steps.items():
-    rect(cx(n), 330, CW, 80, f"<b>{n:02d}</b><br>{s['name']}", fill="#333a42", color="#ffffff", size=15, stroke="none")
+def sx(n):
+    return X0 + (n - 1) * PITCH
 
-y = GRID_Y
-for key, title, sub, h, fill in LANES:
-    label(y, h, title, sub)
-    if key == "emotion":
-        E_Y = y
-        # gap zone first so circles sit above it
-        gx, gw = span([8, 12])
-        rect(gx, y, gw, h, "С подходом ПОНЯЛ шагов 08–12 нет: вопрос решён в первом обращении",
-             fill="#eaf6ee", color="#2e7d4f", size=16, bold=True, align="center", valign="top", stroke="none")
-        for v in range(2, -3, -1):
-            ly = y + 30 + (2 - v) * 65
-            out.append(f'  <line data-type="divider" x1="{X0}" y1="{ly}" x2="{cx(14) + CW}" y2="{ly}"'
-                       f' stroke="{"#9aa0a6" if v == 0 else "#e3e3e3"}" stroke-width="{2 if v == 0 else 1}" />')
-            text(X0 - 14, ly + 5, f"{v:+d}".replace("-", "−") if v else "0", size=14, fill="#5f6368", anchor="end")
-    elif key == "materials":
-        for n, s in steps.items():
-            first = s["touchpoints"].split(",")[0]
-            rect(cx(n), y, CW, h, f"Место для скрина или цитаты: {first.lower()}", fill="#ffffff",
-                 color="#9aa0a6", size=13, stroke="#c9c9c9", dash="5,5")
-    elif key == "importance":
-        for n, s in steps.items():
-            rect(cx(n), y, CW, h, DOTS[s["importance"]], fill=fill, size=15, bold=s["importance"] == 3,
-                 valign="middle")
-    elif key == "tobe":
-        for n, s in steps.items():
-            gray = s["tobe"] is None
-            rect(cx(n), y, CW, h, s["tobe_note"], fill="#f2f2f2" if gray else fill,
-                 color="#9aa0a6" if gray else "#1f2329", size=14)
+
+def phase_span(steps):
+    return sx(steps[0]), sx(steps[-1]) + CW - sx(steps[0])
+
+
+def cjm_skeleton():
+    b = [text(64, 62, 11840, f"<b>{escape(CJM['heading'])}</b>", 67, "#1a1a1a"),
+         text(64, 171, 11840, escape(CJM["persona"]), 30)]
+    for st in CJM["stages"]:
+        x, w = sx(st["steps"][0]), sx(st["steps"][1]) + CW - sx(st["steps"][0])
+        b.append(rect(x, 224, w, 64, st["name"], "#eaf9ef", 36, True, "center", "middle"))
+    for ph in CJM["phases"]:
+        x, w = phase_span(ph["steps"])
+        b.append(rect(x, 320, w, 96, ph["name"], "#adf0c7", 44, True, "center", "middle"))
+        for key, (y, h) in LANES.items():
+            if key in ("vis", "back", "sys", "tobe"):
+                continue
+            b.append(rect(x, y, w, h))
+    for n, s in STEPS.items():
+        b.append(rect(sx(n), 448, CW, 96, f"{n:02d}. {s['name']}", "#eaf9ef", 26, False, "center", "middle"))
+    # белые зазоры между шагами внутри этапа, как в шаблоне
+    for n in STEPS:
+        if n % 3:
+            b.append(rect(sx(n) + CW, 576, 32, 3456, fill="#ffffff", stroke="#ffffff"))
+    for key, title, sub in LABELS:
+        y, h = LANES[key]
+        b.append(text(64, y + 28, 336, f"<b>{title}</b>", 30, "#1a1a1a"))
+        b.append(text(64, y + 81, 336, sub, 24))
+    # эмоции
+    b.append(text(64, 1472, 336, "<b>ЭМОЦИИ</b>", 33, "#1a1a1a"))
+    b.append(text(64, 1529, 336, "Как переживает этот шаг", 22))
+    b.append(text(416, 1468, 11488, "Рабочие оценки команды по отзывам и интервью, не измерения. Розовый: плохо; синий: нормально; зелёный: хорошо. "
+                  "Белые точки с жёлтой обводкой: тот же шаг с подходом ПОНЯЛ. Шагов 03, 06, 08, 13-19 с подходом ПОНЯЛ нет: вопрос решён в первом обращении.", 26))
+    for v, y in EMO_Y.items():
+        lab = {2: "+2 Очень хорошо", 1: "+1 Хорошо", 0: "0 Нормально", -1: "−1 Плохо", -2: "−2 Очень плохо"}[v]
+        b.append(text(64, y - 17, 336, lab, 24))
+        b.append(f'<line data-type="divider" x1="416" y1="{y}" x2="{CJM_W - 64}" y2="{y}" stroke="#e7e7e7" stroke-width="2" />')
+    b.append(text(64, 1903, 336, "<b>Точки боли</b>", 24, "#1a1a1a"))
+    b.append(rect(416, 1888, CJM_W - 480, 64, fill="#f7f7f7", stroke="#ffffff"))
+    # важность
+    b.append(text(64, 2016, 336, "<b>ВАЖНОСТЬ</b>", 33, "#1a1a1a"))
+    b.append(text(64, 2073, 336, "Значимость для Ирины", 22))
+    b.append(text(416, 2012, 11488, "Значимость шага для Ирины: светло-синий = 1, синий = 2, насыщенный синий = 3. Высокая важность не означает плохую эмоцию.", 26))
+    for v, y in IMP_Y.items():
+        b.append(text(64, y - 17, 336, {3: "3 Высокая", 2: "2 Средняя", 1: "1 Низкая"}[v], 24))
+        b.append(f'<line data-type="divider" x1="416" y1="{y}" x2="{CJM_W - 64}" y2="{y}" stroke="#e7e7e7" stroke-width="2" />')
+    # кривые: сначала линии, потом точки
+    ns = sorted(STEPS)
+    for p, q in zip(ns, ns[1:]):
+        b.append(f'<line x1="0" y1="0" x2="1" y2="1" data-start="e{p}" data-end="e{q}" stroke="#595959" stroke-width="2" data-shape="curved" data-start-side="right" data-end-side="left" />')
+        b.append(f'<line x1="0" y1="0" x2="1" y2="1" data-start="i{p}" data-end="i{q}" stroke="#595959" stroke-width="2" data-shape="curved" data-start-side="right" data-end-side="left" />')
+    tb = [n for n in ns if STEPS[n]["tobe_emo"] is not None]
+    for p, q in zip(tb, tb[1:]):
+        b.append(f'<line x1="0" y1="0" x2="1" y2="1" data-start="t{p}" data-end="t{q}" stroke="#d6a800" stroke-width="3" stroke-dasharray="5,5" data-shape="curved" data-start-side="right" data-end-side="left" />')
+    for n in ns:
+        s = STEPS[n]
+        c = sx(n) + 150
+        b.append(f'<circle id="e{n}" cx="{c}" cy="{EMO_Y[s["emo"]]}" r="24" fill="{EMO_FILL[s["emo"]]}" stroke="#595959" stroke-width="2" data-content="{n:02d}" data-font-size="18" />')
+        b.append(f'<circle id="i{n}" cx="{c}" cy="{IMP_Y[s["imp"]]}" r="24" fill="{IMP_FILL[s["imp"]]}" stroke="#595959" stroke-width="2" data-content="{n:02d}" data-font-size="18" />')
+        if s["tobe_emo"] is not None:
+            b.append(f'<circle id="t{n}" cx="{c + 150}" cy="{EMO_Y[s["tobe_emo"]]}" r="20" fill="#ffffff" stroke="#ffdc4a" stroke-width="4" data-content="{n:02d}" data-font-size="15" />')
+        for i, m in enumerate(s["marks"]):
+            name, col = MARK[m]
+            b.append(rect(sx(n) + 16 + i * 216, 1896, 200, 48, name, col, 22, True, "center", "middle", "#ffffff", rx=24))
+    # Service Blueprint
+    b.append(text(64, 4191, 11840, "<b>Service Blueprint</b>", 67, "#1a1a1a"))
+    b.append(text(64, 4300, 11840, "Тот же путь со стороны банка. Внутренние процессы описываем по открытым источникам и кейсу; неизвестное фиксируем вопросом.", 30))
+    for ph in CJM["phases"]:
+        x, w = phase_span(ph["steps"])
+        lo, hi = ph["steps"][0], ph["steps"][-1]
+        b.append(rect(x, 4352, w, 96, f"{lo:02d}-{hi:02d}. {ph['name'].split('. ', 1)[1]}", "#adf0c7", 33, True, "center", "middle"))
+        for key in ("vis", "back", "sys", "tobe"):
+            y, h = LANES[key]
+            b.append(rect(x, y, w, h, fill="#fff6b6" if key == "tobe" else "#f7f7f7", stroke="#ffdc4a" if key == "tobe" else "#e7e7e7"))
+    for n in STEPS:
+        if n % 3:
+            b.append(rect(sx(n) + CW, 4480, 32, 992, fill="#ffffff", stroke="#ffffff"))
+            b.append(rect(sx(n) + CW, 5568, 32, 288, fill="#ffffff", stroke="#ffffff"))
+    b.append(text(64, 4780, 336, "<b>Линия видимости</b>", 24, "#1a1a1a"))
+    b.append(f'<line data-type="divider" x1="416" y1="4816" x2="{CJM_W - 64}" y2="4816" stroke="#595959" stroke-width="3" data-line-style="dashed" />')
+    b.append(text(64, 5500, 11840, "<b>Решение команды поверх карты:</b> жёлтая дорожка показывает, что меняет подход ПОНЯЛ и изменения в продукте на каждом шаге.", 26, "#1a1a1a"))
+    b.append(text(64, 5900, 11840, escape(CJM["basis"]), 24))
+    b.append(text(64, 5990, 11840, "Цитаты в «» из отзывов прочитаны по выдержкам; перед защитой каждую открыть по ссылке. Цитаты с пометкой «синт.» написаны командой по мотивам реальных отзывов, это не слова реальных людей.", 24))
+    return frame("cjm", 0, 0, CJM_W, CJM_H, CJM["title"], b)
+
+
+def mat_cell(n, s):
+    x, (y, h) = sx(n), LANES["mat"]
+    m = s["mat"]
+    if m.startswith("Скрин") or m.startswith("Г:"):
+        return [rect(x + 24, y + 24, CW - 48, h - 48, m, "#ffffff", 20, False, "center", "middle", "#b0b0b0", dash="5,5")]
+    return [rect(x + 24, y + 24, CW - 48, 150, "", "#ffffff", stroke="#e7e7e7"),
+            text(x + 40, y + 40, CW - 80, link_html(m), 18, "#1a1a1a")]
+
+
+def step_stickies(n):
+    s, x = STEPS[n], sx(n)
+    b = [sticky(x + 80, 594, 289, 188, s["goal"], "light_green")]
+    for i, t in enumerate(s["actions"][:2]):
+        b.append(sticky(x + 16 + i * 216, 880, 199, 228, t))
+    th = s["thoughts"]
+    b.append(sticky(x + 59, 1205, 330, 215, " ".join(th)))
+    col = {"pink": "light_pink", "green": "light_green", "blue": "light_blue"}
+    for i, (t, c) in enumerate(s["reasons"][:2]):
+        b.append(sticky(x + 17 + i * 226, 2441, 188, 215, t, col[c]))
+    for i, t in enumerate(s["touch"][:2]):
+        b.append(sticky(x + 17 + i * 226, 2740, 188, 215, t))
+    for i, t in enumerate(s["barriers"][:2]):
+        b.append(sticky(x + 17 + i * 226, 3092, 188, 215, t, "light_pink"))
+    src = s["src"]
+    b.append(sticky(x + 59, 3445, 330, 215, src, "yellow" if src[:1] in "ОС" else "light_blue"))
+    b += mat_cell(n, s)
+    return b
+
+
+def step_blueprint(n):
+    s, x = STEPS[n], sx(n)
+    b = []
+    vis = s["vis"]
+    if len(vis) == 1:
+        b.append(sticky(x + 128, 4514, 192, 220, vis[0]))
     else:
-        for n, s in steps.items():
-            rect(cx(n), y, CW, h, s[key], fill=fill, size=14)
-    y += h + GAP
+        for i, t in enumerate(vis[:2]):
+            b.append(sticky(x + 17 + i * 222, 4514, 192, 220, t))
+    b.append(sticky(x + 38, 4887, 371, 242, s["back"]))
+    b.append(sticky(x + 38, 5207, 371, 242, s["sys"]))
+    none = s["tobe_emo"] is None and s["tobe"].startswith("Шаг")
+    b.append(sticky(x + 38, 5591, 371, 242, s["tobe"], "gray" if none else "yellow"))
+    return b
 
 
-def ey(v):
-    return E_Y + 30 + (2 - v) * 65
+def write_all():
+    OUT.mkdir(exist_ok=True)
+    for f in OUT.glob("*.svg"):
+        f.unlink()
+    files = {"10_cjm_skeleton.svg": svg(cjm_skeleton())}
+    ns = sorted(STEPS)
+    for k in range(0, N, 12):
+        body = []
+        for n in ns[k:k + 12]:
+            body += step_stickies(n)
+        files[f"11_cjm_steps_{k + 1:02d}.svg"] = svg(inside(0, 0, CJM_W, CJM_H, body))
+    for k in range(0, N, 24):
+        body = []
+        for n in ns[k:k + 24]:
+            body += step_blueprint(n)
+        files[f"12_cjm_blueprint_{k + 1:02d}.svg"] = svg(inside(0, 0, CJM_W, CJM_H, body))
+    for name, content in files.items():
+        (OUT / name).write_text(content)
+        print(f"{name}: {len(content)} символов")
 
 
-# emotion connectors first (z-order), then points
-for n in range(1, 14):
-    out.append(f'  <line x1="{cx(n) + 90}" y1="{ey(steps[n]["emotion"])}" x2="{cx(n + 1) + 90}" y2="{ey(steps[n + 1]["emotion"])}"'
-               f' stroke="#1f2329" stroke-width="3" data-shape="straight" data-start="e{n}" data-end="e{n + 1}" />')
-tobe = [n for n in steps if steps[n]["tobe"] is not None]
-for p, q in zip(tobe, tobe[1:]):
-    lab = ' data-content="решено в первом обращении"' if q - p > 1 else ""
-    out.append(f'  <line x1="{cx(p) + 150}" y1="{ey(steps[p]["tobe"])}" x2="{cx(q) + 150}" y2="{ey(steps[q]["tobe"])}"'
-               f' stroke="#2e9e5b" stroke-width="3" stroke-dasharray="5,5" data-shape="straight"'
-               f' data-start="t{p}" data-end="t{q}"{lab} />')
-for n, s in steps.items():
-    v = s["emotion"]
-    out.append(f'  <circle id="e{n}" cx="{cx(n) + 90}" cy="{ey(v)}" r="18" fill="{EMO[v]}" stroke="none"'
-               f' data-content="{f'{v:+d}'.replace('-', '−')}" data-text-color="#ffffff" data-font-size="13" data-font-weight="bold" />'.replace('"+0"', '"0"'))
-    if s["tobe"] is not None:
-        t = s["tobe"]
-        out.append(f'  <circle id="t{n}" cx="{cx(n) + 150}" cy="{ey(t)}" r="15" fill="#ffffff" stroke="#2e9e5b" stroke-width="3"'
-                   f' data-content="{f'{t:+d}'.replace('-', '−')}" data-text-color="#2e7d4f" data-font-size="12" data-font-weight="bold" />'.replace('"+0"', '"0"'))
-    for i, m in enumerate(s["marks"]):
-        name, col = MARK[m]
-        rect(cx(n) + i * 120, E_Y + 318, 115, 30, name, fill=col, size=12, bold=True, align="center",
-             valign="middle", stroke="none", rx=14)
-out.append("</g>")
-
-# ---------- Frame 2: Service Blueprint ----------
-BY = FRAME_H + 200
-BP = [  # key, title, subtitle, height, fill
-    ("client", "Действия клиента", "шаги CJM", 110, "#fff6b8"),
-    ("visible", "Видимые действия", "фронт: что видит клиент", 110, "#e8f4ff"),
-    ("line", "Линия видимости", "", 50, None),
-    ("backstage", "За кулисами", "что происходит в банке", 120, "#ffffff"),
-    ("systems", "Люди и системы", "кто и что поддерживает", 100, "#f2f2f2"),
-    ("change", "Что меняем", "ПОНЯЛ и 5 изменений (analysis/04)", 150, "#fff4b3"),
-]
-CHANGE = [
-    "Изм. 3: пуш и экран карты называют тип ограничения и дают кнопку «Подтвердить, что это я». Copilot видит отказ и ставит тип «Срочно»",
-    "П-О-Н-Я: прочитать контекст, назвать ситуацию, снять ограничение в диалоге. Изм. 1: copilot подсвечивает тип и сигналы. Изм. 3: специалист видит тип и срок",
-    "Изм. 2: карточка случая в чате: что сделано, что нужно от клиента, срок и ответственный. Неизвестности нет",
-    "Изм. 2: случай закреплён за специалистом, история видна, те же вопросы не задаём. Изм. 4: уступка по порогу для типа «Снова»",
-    "Л: специалист сам сообщает результат и объясняет, как избежать. Изм. 5: тег причины и сигнал в продукт антифрода",
-]
-BH = 200 + sum(b[3] + GAP for b in BP) + 40
-out.append(f'<g id="f_bp" transform="translate(0,{BY})" data-frame="Service Blueprint: тот же путь изнутри банка">')
-out.append(f'  <rect data-type="frame" x="0" y="0" width="{FRAME_W}" height="{BH}" fill="#ffffff" />')
-text(40, 80, "Service Blueprint: что происходит за линией видимости", size=44, bold=True)
-out.append('  <textArea x="40" y="110" width="2600" font-size="18">Колонки совпадают с шагами CJM выше. '
-           'Главный разрыв: тип ограничения и срок видит служба безопасности, а не специалист, и второе обращение не связано с первым.</textArea>')
-y = 200
-for key, title, sub, h, fill in BP:
-    if key == "line":
-        text(LX, y + 32, "Линия видимости", size=18, fill="#e5484d", bold=True)
-        out.append(f'  <line data-type="divider" x1="{X0}" y1="{y + 25}" x2="{cx(14) + CW}" y2="{y + 25}"'
-                   f' stroke="#e5484d" stroke-width="3" data-line-style="dashed" />')
-    else:
-        label(y, h, title, sub)
-        for i, row in enumerate(cjm["blueprint"]):
-            x, w = span(row["steps"])
-            if key == "client":
-                body = ", ".join(f"{n:02d} {steps[n]['name']}" for n in row["steps"])
-            elif key == "change":
-                body = CHANGE[i]
-            else:
-                body = row[key]
-            rect(x, y, w, h, body, fill=fill, size=15)
-    y += h + GAP
-out.append("</g>")
-
-# ---------- Frame 3: fail points and conclusions ----------
-FY = BY + BH + 200
-FW = FRAME_W
-out.append(f'<g id="f_fp" transform="translate(0,{FY})" data-frame="Точки боли и выводы для решения">')
-out.append(f'  <rect data-type="frame" x="0" y="0" width="{FW}" height="560" fill="#ffffff" />')
-text(40, 80, "Где клиент теряет доверие и что из этого следует", size=44, bold=True)
-cw = (FW - 80 - 3 * 40) // 4
-for i, fp in enumerate(cjm["fail_points"]):
-    name, col = MARK[fp["mark"]]
-    rect(40 + i * (cw + 40), 130, cw, 380, f"<b>{name.capitalize()}</b><br>{fp['where']}<br><br>{(lambda t: t[0].upper() + t[1:])(fp['what'].split(': ', 1)[-1])}",
-         fill=col, size=20, stroke="none", rx=12)
-rect(40 + 3 * (cw + 40), 130, cw, 380,
-     "<b>Вывод для подхода</b><br>Ошибка не в вежливости, а в том, что специалист отвечает на слова, а не на ситуацию, "
-     "и не видит тип ограничения. Шаги П и О убирают равнодушие, Я убирает стресс неизвестности, Л возвращает доверие. "
-     "Кривая «с ПОНЯЛ» короче на 5 шагов.",
-     fill="#ffdd2d", size=20, stroke="none", rx=12)
-out.append("</g>")
-
-svg = "<svg xmlns=\"http://www.w3.org/2000/svg\">\n" + "\n".join(out) + "\n</svg>\n"
-(HERE / "out").mkdir(exist_ok=True)
-(HERE / "out" / "miro.svg").write_text(svg)
-# one file per frame: smaller uploads, a failed one does not block the others
-starts = [i for i, line in enumerate(out) if line.startswith("<g ")] + [len(out)]
-for k, (b, e) in enumerate(zip(starts, starts[1:]), 1):
-    part = "<svg xmlns=\"http://www.w3.org/2000/svg\">\n" + "\n".join(out[b:e]) + "\n</svg>\n"
-    (HERE / "out" / f"miro_{k}.svg").write_text(part)
-print(f"cjm/out/miro.svg: {len(svg)} chars, frames 3, CJM {FRAME_W}x{FRAME_H}")
+if __name__ == "__main__":
+    write_all()

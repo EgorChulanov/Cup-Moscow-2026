@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ПОНЯЛ: решение кейса Т-Банка</title>
+<link rel="icon" href="../img/mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/tokens.css">
+<style>
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { font-family: var(--font); color: var(--ink); background: #0f0f10; -webkit-font-smoothing: antialiased; overflow: hidden; }
+p { margin: 0; } h1, h2, h3 { margin: 0; } ul, ol { margin: 0; padding: 0; list-style: none; }
+b { font-weight: 600; color: var(--ink-strong); }
+img { display: block; }
+
+/* Сцена: слайд 1920x1080, масштабируется под окно */
+.deck { position: fixed; inset: 0; overflow: hidden; }
+.slide { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; margin: -540px 0 0 -960px; transform: scale(var(--scale, 1));
+  overflow: hidden; background: var(--bg); padding: 44px 72px 0; visibility: hidden; opacity: 0; transition: opacity .35s var(--ease), visibility 0s linear .35s;
+  font-size: 21px; line-height: 1.38; }
+.slide.active { visibility: visible; opacity: 1; transition: opacity .35s var(--ease); z-index: 2; }
+.slide.dark { background: #1c1c1e; color: #fff; }
+.slide.yellow { background: radial-gradient(120% 140% at 85% 30%, #ffe45c 0%, var(--y) 40%, #ffd21f 72%, #fcc521 100%); }
+@page { size: 1920px 1080px; margin: 0; }
+@media print {
+  html, body { height: auto; overflow: visible; background: none; }
+  .deck { position: static; overflow: visible; }
+  .slide { position: relative; left: 0; top: 0; margin: 0; transform: none !important; visibility: visible; opacity: 1; transition: none; break-after: page; page-break-after: always; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .slide:last-child { break-after: auto; page-break-after: auto; }
+  .pager, .toc { display: none !important; }
+}
+html.print, html.print body { height: auto; overflow: visible; background: none; }
+html.print .deck { position: static; overflow: visible; }
+html.print .slide { position: relative; left: 0; top: 0; margin: 0; transform: none !important; visibility: visible; opacity: 1; transition: none; }
+html.print .pager, html.print .toc { display: none; }
+
+/* Шапка: знак, раздел, навигация по разделам */
+.hdr { display: flex; align-items: center; justify-content: space-between; height: 44px; }
+.eyebrow { display: inline-flex; align-items: center; gap: 14px; font-size: 20px; font-weight: 600; color: var(--ink-strong); }
+.eyebrow img { width: 36px; height: 36px; }
+.dark .eyebrow { color: #fff; }
+.nav { display: flex; gap: 6px; }
+.nav span { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 16px; border-radius: 999px; font-size: 16px; font-weight: 500; color: var(--muted); }
+.nav span.on { background: var(--y); color: var(--ink-strong); }
+.nav span.done { color: var(--ink-2); }
+.dark .nav span { color: #6f7277; } .dark .nav span.done { color: #a5a8ad; }
+.hl { margin-top: 22px; font-size: 50px; line-height: 1.08; font-weight: 700; letter-spacing: -.03em; max-width: 1740px; color: var(--ink-strong); }
+.dark .hl { color: #fff; }
+.hl mark { background: none; color: inherit; box-shadow: inset 0 -.32em 0 var(--y); }
+.dark .hl mark { color: var(--y); box-shadow: none; }
+.lead { margin-top: 14px; font-size: 23px; color: var(--ink-2); max-width: 1500px; }
+.dark .lead { color: #c4c6ca; }
+.foot { position: absolute; left: 72px; right: 72px; bottom: 26px; display: flex; justify-content: space-between; align-items: flex-end; gap: 40px; font-size: 15.5px; color: var(--muted); line-height: 1.35; }
+.foot .src b { color: var(--ink-2); font-weight: 600; }
+.dark .foot { color: #8a8d92; } .dark .foot .src b { color: #c4c6ca; }
+.foot .num { font-size: 18px; font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.foot .num b { color: var(--ink-strong); }
+.dark .foot .num b { color: #fff; }
+
+/* Карточки и типографика */
+.card { background: #fff; border-radius: 36px; padding: 32px 34px; position: relative; overflow: hidden; }
+.card.y { background: var(--y); }
+.card.ys { background: var(--y-soft); }
+.card.d { background: #1c1c1e; color: #fff; }
+.card.d b { color: #fff; }
+.card.g { background: #eceef0; }
+.lbl { font-size: 15px; font-weight: 600; letter-spacing: .02em; color: var(--muted); }
+.card.d .lbl { color: #9a9da2; }
+.card.y .lbl { color: #6b5300; }
+.big { font-size: 76px; line-height: .95; font-weight: 700; letter-spacing: -.04em; color: var(--ink-strong); }
+.mid { font-size: 44px; line-height: 1; font-weight: 700; white-space: nowrap; letter-spacing: -.03em; color: var(--ink-strong); }
+.card.d .big, .card.d .mid { color: #fff; }
+.t2 { font-size: 26px; line-height: 1.18; font-weight: 600; letter-spacing: -.015em; color: var(--ink-strong); }
+.card.d .t2 { color: #fff; }
+.mut { color: var(--ink-2); }
+.card.d .mut { color: #b9bbc0; }
+.sm { font-size: 18px; line-height: 1.35; }
+.xs { font-size: 16px; line-height: 1.32; }
+.grid { display: grid; gap: 18px; }
+.row { display: flex; gap: 18px; }
+.mt { margin-top: 30px; } .mt2 { margin-top: 14px; } .mt3 { margin-top: 8px; }
+.pill { display: inline-flex; align-items: center; height: 34px; padding: 0 14px; border-radius: 999px; font-size: 16px; font-weight: 600; background: var(--y-soft); color: #6b5300; white-space: nowrap; }
+.pill.d { background: #1c1c1e; color: #fff; } .pill.w { background: #fff; color: var(--ink-strong); } .pill.y { background: var(--y); color: var(--ink-strong); }
+.ltr { width: 64px; height: 64px; border-radius: 20px; background: var(--y); display: grid; place-items: center; font-size: 34px; font-weight: 700; color: var(--ink-strong); flex: none; }
+.k3d { position: absolute; pointer-events: none; filter: drop-shadow(0 24px 28px rgba(110, 80, 0, .25)); }
+
+/* Обложка */
+.s-cover { padding: 56px 80px; }
+.s-cover .org { display: flex; align-items: center; gap: 16px; font-size: 22px; font-weight: 600; color: var(--ink-strong); }
+.s-cover .org img { width: 52px; height: 52px; }
+.s-cover .org span { color: #5b4a00; font-weight: 500; }
+.s-cover h1 { margin-top: 120px; font-size: 104px; line-height: .98; letter-spacing: -.045em; font-weight: 700; color: var(--ink-strong); max-width: 1100px; }
+.s-cover .ld { margin-top: 30px; font-size: 30px; line-height: 1.3; color: #3a3420; max-width: 860px; }
+.s-cover .crew { position: absolute; left: 80px; bottom: 56px; display: flex; gap: 14px; }
+.s-cover .crew div { background: rgba(255, 255, 255, .62); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border-radius: 26px; padding: 10px 26px 10px 10px; display: flex; align-items: center; gap: 16px; }
+.s-cover .crew img, .s-cover .crew i { width: 64px; height: 64px; border-radius: 18px; object-fit: cover; object-position: 50% 20%; }
+.s-cover .crew i { display: grid; place-items: center; font-style: normal; font-weight: 700; font-size: 24px; background: var(--y-2); color: var(--ink-strong); }
+.s-cover .crew b { display: block; font-size: 22px; }
+.s-cover .crew span { font-size: 16px; color: #4a4330; }
+.s-cover .art .k3d.b { width: 620px; right: 70px; top: 130px; }
+.s-cover .art .k3d.c { width: 250px; right: 560px; top: 640px; }
+.s-cover .art .k3d.p { width: 230px; right: 70px; top: 720px; }
+
+/* Каскад, графики */
+svg text { font-family: var(--font); }
+.bars { display: grid; gap: 12px; }
+.bar { display: grid; grid-template-columns: 1fr 70px; gap: 14px; align-items: center; }
+.bar .l { position: relative; height: 50px; border-radius: 14px; background: var(--bg); overflow: hidden; }
+.bar .l i { position: absolute; inset: 0 auto 0 0; background: var(--y); border-radius: 14px; }
+.bar .l i.gd { background: #b8e8c4; }
+.bar .l span { position: relative; z-index: 1; display: flex; align-items: center; height: 100%; padding: 0 18px; font-size: 19px; font-weight: 500; color: var(--ink-strong); white-space: nowrap; }
+.bar b { text-align: right; font-size: 22px; }
+table.t { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 18px; line-height: 1.3; }
+table.t th { text-align: left; font-size: 14.5px; font-weight: 600; color: var(--muted); padding: 10px 12px; border-bottom: 2px solid var(--ink-strong); }
+table.t td { padding: 11px 12px; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--ink); }
+table.t td b { color: var(--ink-strong); }
+table.t tr.hi td { background: var(--y-soft); }
+table.t tr:last-child td { border-bottom: 0; }
+#chain td { padding: 8px 10px; }
+
+/* Навигация в режиме показа */
+.pager { position: fixed; right: 18px; bottom: 16px; z-index: 20; display: flex; gap: 6px; align-items: center; background: rgba(28, 28, 30, .78); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-radius: 16px; padding: 6px; }
+.pager button { border: 0; background: rgba(255, 255, 255, .1); color: #fff; height: 36px; min-width: 36px; border-radius: 11px; font: 500 14px var(--font); cursor: pointer; padding: 0 12px; }
+.pager button:hover { background: rgba(255, 255, 255, .2); }
+.pager .where b { color: var(--y); }
+.toc { position: fixed; right: 18px; bottom: 66px; z-index: 21; width: 340px; max-height: 70vh; overflow: auto; background: #fff; border-radius: 20px; padding: 10px; box-shadow: 0 20px 60px rgba(0, 0, 0, .35); display: none; }
+.toc.open { display: block; }
+.toc button { display: flex; gap: 10px; width: 100%; text-align: left; border: 0; background: none; padding: 9px 10px; border-radius: 10px; font: 14.5px var(--font); color: var(--ink-strong); cursor: pointer; }
+.toc button i { font-style: normal; color: var(--muted); width: 26px; }
+.toc button.on { background: var(--y-soft); }
+.toc .grp { font-size: 12px; font-weight: 600; color: var(--muted); padding: 10px 10px 4px; }
+</style>
+</head>
+<body>
+<main class="deck" id="deck">
+
+<!-- 1. Обложка -->
+<section class="slide yellow s-cover" data-title="Обложка">
+  <div class="org"><img src="../img/mark.svg" alt="">ПОНЯЛ <span>Changellenge Cup Moscow 2026, кейс Т-Банка</span></div>
+  <h1>Поддержка, после которой клиент говорит «меня поняли»</h1>
+  <p class="ld">Ситуационный подход для специалистов Т-Банка: 5 типов сложных ситуаций, 5 шагов, подсказки copilot, карточка случая и полномочия по формуле.</p>
+  <div class="art"><img class="k3d b" src="../img/3d-bubble.webp" alt=""><img class="k3d c" src="../img/3d-coin.webp" alt=""><img class="k3d p" src="../img/3d-pin.webp" alt=""></div>
+  <div class="crew">
+    <div><img src="../img/team-egor.webp" alt=""><span><b>Егор Чуланов</b>ВШБ НИУ ВШЭ, 2 курс</span></div>
+    <div><img src="../img/team-kate.webp" alt=""><span><b>Екатерина Макаренко</b>ВШБ НИУ ВШЭ, 2 курс</span></div>
+    <div><i>ИХ</i><span><b>Искандер Ханов</b>МГТУ им. Н. Э. Баумана, 2 курс</span></div>
+  </div>
+</section>
+
+<!-- 2. Опыт и практики -->
+<section class="slide" data-sec="1" data-title="Опыт поддержки">
+  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Подзадача 1. Опыт поддержки и лучшие практики</div><nav class="nav"></nav></header>
+  <h2 class="hl">Т-Банк хвалят за «решили сразу в чате», ругают за сложные случаи. У всех банков злит <mark>блокировка денег и тишина в ответ</mark></h2>
+  <div class="grid mt" style="grid-template-columns: 560px 1fr; gap: 16px">
+    <div class="card" style="padding:26px 30px"><span class="lbl">Отзывы о поддержке Т-Банка, число из 53</span><div class="bars mt2" id="rev"></div>
+      <p class="xs mut mt2"><span class="pill y" style="height:26px;font-size:13px">жалоба</span> <span class="pill" style="height:26px;font-size:13px;background:#b8e8c4;color:#0b5a20">похвала</span> Плюс 41 публикация в соцсетях и СМИ: блокировка без причины и срока самая частая тема, 15 из 41.</p></div>
+    <div class="grid" style="gap:14px;grid-template-rows:auto auto">
+      <div class="card" style="padding:22px 28px"><span class="lbl">Сравнение с другими компаниями</span><table class="t mt3" id="cmp" style="font-size:17.5px"></table></div>
+      <div class="card ys" style="padding:22px 28px"><span class="lbl" style="color:#6b5300">Лучшие практики, которые берём в решение</span><div class="grid mt2" style="grid-template-columns:repeat(3,1fr);gap:10px 22px" id="best"></div></div>
+    </div>
+  </div>
+  <div class="foot"><span class="src"><b>Источники:</b> banki.ru, otzovik, brobank, Сравни, 1000bankov, finuslugi (research/01, research/06); Frank RG 2026, Markswebb 2025; lenta.ru 20.10.2026 об итогах звонка в чат Сбера; HEARD, A.P.P.L.E., FCA FG21/1.</span><span class="num"></span></div>
+</section>
+
+<!-- 4. Типы ситуаций и ключевые действия -->
+<section class="slide" data-sec="2" data-title="Типы ситуаций">
+  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Подзадачи 2 и 3. Типы ситуаций и действия</div><nav class="nav"></nav></header>
+  <h2 class="hl">Пять типов по тому, <mark>что нужно человеку</mark> в эту минуту. Тип виден за 1-2 сообщения по сигналам в данных</h2>
+  <div class="grid mt" style="grid-template-columns: repeat(5, 1fr); gap: 14px" id="types"></div>
+  <div class="grid" style="grid-template-columns: 1fr 520px; gap: 14px; margin-top: 14px">
+    <div class="card" style="padding:24px 30px"><span class="lbl">Ключевые действия, которые решили исход в 6 ситуациях тренажёрного типа (смоделировано)</span>
+      <div class="grid mt2" style="grid-template-columns: repeat(5, 1fr); gap: 14px" id="acts"></div>
+    </div>
+    <div class="card ys" style="padding:24px 30px"><span class="lbl" style="color:#6b5300">Правило пересечения</span><p class="t2 mt3" style="font-size:23px">Мошенничество у пожилого клиента это Страшно и Тяжело. Уязвимый тип задаёт тон, срочный задаёт порядок действий</p></div>
+  </div>
+  <div class="foot"><span class="src"><b>Источники:</b> 12 ситуаций из отзывов (research/01, раздел 6); ситуации T1-T6 (смоделировано) и интервью R01-R08 (синт.); признаки мошеннических операций ЦБ с 01.01.2026; SQM; FCA FG21/1.</span><span class="num"></span></div>
+</section>
+
+<!-- 4. CJM -->
+<section class="slide" data-sec="3" data-title="Путь клиента">
+  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Подзадача 4. Путь клиента (CJM)</div><nav class="nav"></nav></header>
+  <h2 class="hl">Ирина 3 дня без карты и 2 обращения. Стресс, равнодушие и потеря доверия появляются там, где банк <mark>знает больше, чем говорит</mark></h2>
+  <div class="card mt" style="padding:24px 30px"><span class="lbl">Эмоция клиента по шагам, от минус 2 до плюс 2.&ensp;<i style="display:inline-block;width:26px;height:8px;border-radius:4px;background:#f2b8b0;vertical-align:middle"></i> сейчас&ensp;<i style="display:inline-block;width:26px;height:8px;border-radius:4px;background:#ffcf00;vertical-align:middle"></i> с подходом ПОНЯЛ</span><svg id="cjm" viewBox="0 0 1700 430" style="width:100%;height:auto;margin-top:8px"></svg></div>
+  <div class="grid" style="grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 14px">
+    <div class="card" style="padding:22px 26px;background:#ffe2dc"><span class="lbl" style="color:#8a2a1a">Стресс, шаги 2, 10, 13, 16, 19</span><p class="sm mt3">Деньги нужны сейчас, а причина и срок неизвестны</p></div>
+    <div class="card g" style="padding:22px 26px"><span class="lbl">Равнодушие, шаги 6, 8, 11, 12, 15, 17, 22</span><p class="sm mt3">Статья и инструкция вместо действия, те же вопросы второй раз</p></div>
+    <div class="card" style="padding:22px 26px;background:#ebe3ff"><span class="lbl" style="color:#4b2e9e">Потеря доверия, шаги 5, 14, 17, 18, 23, 24</span><p class="sm mt3">Второй раз как в первый, клиент страхуется картой другого банка</p></div>
+  </div>
+  <div class="foot"><span class="src"><b>Полная карта</b> со 12 дорожками, Service Blueprint и материалами к каждому шагу: доска Miro miro.com/app/board/uXjVEUshVGo=. Персона собрана по отзывам и интервью (синт.).</span><span class="num"></span></div>
+</section>
+
+<!-- 5. ПОНЯЛ -->
+<section class="slide" data-sec="4" data-title="Подход ПОНЯЛ">
+  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Подзадача 5. Рекомендации специалисту</div><nav class="nav"></nav></header>
+  <h2 class="hl">ПОНЯЛ: пять шагов, которые специалист проходит в каждом сложном обращении, и <mark>copilot ведёт по ним</mark></h2>
+  <div class="grid mt" style="grid-template-columns: repeat(5, 1fr); gap: 14px" id="steps"></div>
+  <div class="grid" style="grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 14px" id="recs"></div>
+  <div class="foot"><span class="src"><b>Основа:</b> что сработало в ситуациях T1-T6 и интервью R01-R08 (синт.); практики HEARD (Disney), A.P.P.L.E. (Apple), TEXAS и IDEA (британские банки), CES. Плейбук по типам в приложении 7.</span><span class="num"></span></div>
+</section>
+
+<!-- 7. Изменения в продуктах и процессах -->
+<section class="slide" data-sec="5" data-title="Изменения">
+  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Подзадача 6. Изменения в продуктах и процессах</div><nav class="nav"></nav></header>
+  <h2 class="hl">Пять изменений убирают корневые причины. Каждое специалист <mark>обосновывает смежной команде</mark> по шаблону</h2>
+  <div class="grid mt" style="grid-template-columns: 1fr 600px; gap: 16px; height: 680px">
+    <div class="card" style="padding:24px 28px"><table class="t" id="chg"></table></div>
+    <div class="grid" style="grid-template-rows: 1fr auto; gap: 14px">
+      <div class="card ys" style="padding:26px 30px"><span class="lbl" style="color:#6b5300">Шаблон-обоснование для смежной команды</span>
+        <ol class="mt2" style="display:grid;gap:14px;font-size:21px;line-height:1.35">
+          <li><b>Что произошло:</b> случай и тег причины</li>
+          <li><b>Масштаб:</b> похожие обращения по тегу, одно обращение это сигнал</li>
+          <li><b>Что предлагаю</b> и кому</li>
+          <li><b>Результат в рублях:</b> повторы × 274 ₽, уходы × 5 220 ₽</li>
+          <li><b>Как проверим</b> и что может ухудшиться</li>
+        </ol>
+      </div>
+      <div class="card d" style="padding:24px 30px"><span class="lbl">Когда компенсация выгодна банку</span>
+        <p class="sm mt3" style="color:#e2e3e6">Порог = снижение вероятности ухода × доля, ставшая уходом × прибыль клиента × горизонт + ожидаемые повторы × стоимость обращения</p>
+        <div class="row mt2" style="align-items:baseline;gap:24px"><div class="mid" style="color:var(--y)">809 ₽</div><span class="sm" style="color:#b9bbc0">консервативно</span><div class="mid" style="color:#fff">2 114 ₽</div><span class="sm" style="color:#b9bbc0">расширенно</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="src"><b>Источники:</b> дерево причин (приложение 2); обзор жалоб Банка России за 2025 год; McKinsey о корневых причинах обращений; финмодель, лист «Порог компенсации»; docs/JUSTIFICATION_TEMPLATE.md.</span><span class="num"></span></div>
+</section>
+
+<!-- 8. Влияние на бизнес -->
+<section class="slide" data-sec="6" data-title="Влияние на бизнес">
+  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Подзадача 7. Влияние на бизнес</div><nav class="nav"></nav></header>
+  <h2 class="hl">Действие специалиста превращается в деньги через повторы, удержание и продукт: <mark>685 млн ₽ в год</mark></h2>
+  <div class="grid mt" style="grid-template-columns: 820px 1fr; gap: 16px">
+    <div class="card" style="padding:20px 28px;height:395px"><span class="lbl">Эффект в год со второго года, млн ₽</span><svg id="wf" viewBox="0 0 760 375" style="width:100%;height:320px;margin-top:2px"></svg></div>
+    <div class="card" style="padding:20px 28px;height:395px"><span class="lbl">Цепочка от действия до денег</span><table class="t mt3" id="chain" style="font-size:17px"></table></div>
+  </div>
+  <div class="grid" style="grid-template-columns: 820px 1fr; gap: 16px; margin-top: 14px">
+    <div class="card" style="padding:20px 26px"><span class="lbl">Почему ПОНЯЛ: 5 вариантов по 7 факторам, балл из 5 и эффект в год</span><div class="grid mt3" style="gap:7px" id="optmini"></div></div>
+    <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 12px" id="plan"></div>
+  </div>
+  <div class="foot"><span class="src"><b>Допущения:</b> 17,8 млн сложных обращений в год, 274 ₽ за обращение, 5 220 ₽ прибыли клиента в год. Варианты в приложении 3, чувствительность в приложении 9.</span><span class="num"></span></div>
+</section>
+
+<!-- 8. Команда -->
+<section class="slide" data-sec="7" data-title="Команда">
+  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Резюме команды</div><nav class="nav"></nav></header>
+  <h2 class="hl">Команда: продукт, исследование и финансы. <mark>Каждый вывод проверяем данными</mark></h2>
+  <div class="grid mt" style="grid-template-columns: 1fr 1fr 1fr 540px; gap: 16px; height: 700px">
+    <div class="card" style="padding:14px 14px 26px;display:flex;flex-direction:column"><div style="height:330px;border-radius:26px;overflow:hidden;background:var(--bg)"><img src="../img/team-egor.webp" alt="" style="width:100%;height:100%;object-fit:cover;object-position:50% 20%"></div>
+      <b style="font-size:30px;margin:22px 14px 0;letter-spacing:-.02em">Егор Чуланов</b><span class="sm mut" style="margin:6px 14px 0">ВШБ НИУ ВШЭ, «Управление цифровым продуктом», 2 курс</span>
+      <span class="pill" style="margin:14px 14px 0;align-self:flex-start">продукт, исследование, CJM</span>
+      <p class="xs mut" style="margin:auto 14px 0">Подход ПОНЯЛ, CJM на 24 шага, прототип рабочего места специалиста</p></div>
+    <div class="card" style="padding:14px 14px 26px;display:flex;flex-direction:column"><div style="height:330px;border-radius:26px;overflow:hidden;background:var(--bg)"><img src="../img/team-kate.webp" alt="" style="width:100%;height:100%;object-fit:cover;object-position:50% 20%"></div>
+      <b style="font-size:30px;margin:22px 14px 0;letter-spacing:-.02em">Екатерина Макаренко</b><span class="sm mut" style="margin:6px 14px 0">ВШБ НИУ ВШЭ, «Управление цифровым продуктом», 2 курс</span>
+      <span class="pill" style="margin:14px 14px 0;align-self:flex-start">исследование, качество, данные</span>
+      <p class="xs mut" style="margin:auto 14px 0">Разметка 53 отзывов и 41 публикации, интервью и опрос, типы ситуаций</p></div>
+    <div class="card" style="padding:14px 14px 26px;display:flex;flex-direction:column"><div style="height:330px;border-radius:26px;display:grid;place-items:center;background:linear-gradient(160deg,var(--y-2),var(--y));font-size:110px;font-weight:700;color:var(--ink-strong)">ИХ</div>
+      <b style="font-size:30px;margin:22px 14px 0;letter-spacing:-.02em">Искандер Ханов</b><span class="sm mut" style="margin:6px 14px 0">МГТУ им. Н. Э. Баумана, 2 курс</span>
+      <span class="pill" style="margin:14px 14px 0;align-self:flex-start">финансовая модель, аналитика</span>
+      <p class="xs mut" style="margin:auto 14px 0">Финмодель, порог компенсации, сравнение вариантов и чувствительность</p></div>
+    <div class="card d" style="padding:30px 32px;display:flex;flex-direction:column"><span class="lbl">Решение в одном экране</span>
+      <p class="t2 mt2" style="font-size:24px">ПОНЯЛ: 5 типов ситуаций, 5 шагов специалиста, copilot по типу, карточка случая, уступка по формуле, сигнал в продукт</p>
+      <div class="grid mt" style="grid-template-columns:1fr 1fr;gap:20px">
+        <div><div class="mid" style="color:var(--y)">685 млн ₽</div><p class="xs mut mt3">эффект в год</p></div>
+        <div><div class="mid">3,2 мес.</div><p class="xs mut mt3">окупаемость</p></div>
+        <div><div class="mid">+10 п.п.</div><p class="xs mut mt3">к решению с первого обращения</p></div>
+        <div><div class="mid">68,5 тыс.</div><p class="xs mut mt3">клиентов в год остаются</p></div>
+      </div>
+      <p class="xs" style="margin-top:auto;color:#b9bbc0">Доска Miro с CJM: miro.com/app/board/uXjVEUshVGo=<br>Прототип рабочего места и финмодель в приложениях</p></div>
+  </div>
+  <div class="foot"><span class="src">Changellenge Cup Moscow 2026, секция Т-Банк. Приложения ниже не входят в 8 основных слайдов.</span><span class="num"></span></div>
+</section>
+
+<!-- Приложения: оглавление -->
+<section class="slide dark" data-sec="8" data-title="Приложения">
+  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Приложения</div><nav class="nav"></nav></header>
+  <h2 class="hl" style="font-size:64px;margin-top:60px">Приложения</h2>
+  <div class="grid mt" style="grid-template-columns: 1fr 1fr; gap: 14px 40px; max-width: 1500px" id="apx"></div>
+  <img class="k3d" src="../img/3d-card.webp" alt="" style="width:520px;right:90px;bottom:120px">
+  <div class="foot"><span class="src">Полные материалы: доска Miro miro.com/app/board/uXjVEUshVGo= (CJM на 24 шага, Service Blueprint, поле), финмодель в Excel, отчёты в репозитории.</span><span class="num"></span></div>
+</section>
+
+<!-- П1. Метод и данные -->
+<section class="slide" data-sec="8" data-title="П1. Метод и данные">
+  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Приложение 1. Метод и данные</div><nav class="nav"></nav></header>
+  <h2 class="hl">Опирались на реальные отзывы и открытые данные. Синтетика подписана и <mark>заменяется полем до защиты</mark></h2>
+  <div class="grid mt" style="grid-template-columns: repeat(3, 1fr); gap: 14px">
+    <div class="card"><span class="pill" style="background:#dff3e4;color:#0b5a20">реальные данные</span><div class="mid mt2">53</div><p class="sm mut mt3">отзыва о поддержке Т-Банка, разметка на 10 кодов жалоб и 7 кодов похвал</p></div>
+    <div class="card"><span class="pill" style="background:#dff3e4;color:#0b5a20">реальные данные</span><div class="mid mt2">41</div><p class="sm mut mt3">публикация в соцсетях и СМИ за 2025-2026 годы, 7 тем, сравнение с конкурентами</p></div>
+    <div class="card"><span class="pill" style="background:#dff3e4;color:#0b5a20">реальные данные</span><div class="mid mt2">≈70</div><p class="sm mut mt3">цифр экономики поддержки: Т-Технологии, ЦБ, SQM, Frank RG, у каждой ссылка</p></div>
+    <div class="card ys"><span class="pill">синт.</span><div class="mid mt2">40</div><p class="sm mt3" style="color:#4a3d00">ответов опроса: распределения из открытых данных, показывают форму будущих данных</p></div>
+    <div class="card ys"><span class="pill">синт.</span><div class="mid mt2">8</div><p class="sm mt3" style="color:#4a3d00">интервью R01-R08: каждый «респондент» собран из реального отзыва, цитаты написаны командой</p></div>
+    <div class="card ys"><span class="pill">смоделировано</span><div class="mid mt2">6</div><p class="sm mt3" style="color:#4a3d00">ситуаций T1-T6 тренажёрного типа: обычный ответ и ответ по ПОНЯЛ</p></div>
+  </div>
+  <div class="card d mt2" style="padding:22px 30px"><p class="sm" style="color:#e2e3e6"><b>Как заменяем синтетику:</b> 6-10 интервью по гайду воронкой, опрос в Google Forms на 30+ ответов с теми же 10 вопросами, каждый участник проходит тренажёр в личном кабинете. Счёт «N из M» пересчитываем, жёлтые стикеры CJM обновляем по полю.</p></div>
+  <div class="foot"><span class="src"><b>Файлы:</b> research/01, research/02, research/06, research/synthetic, research/04_field_plan.md.</span><span class="num"></span></div>
+</section>
+
+<!-- П2. Дерево причин -->
+<section class="slide" data-sec="8" data-title="П2. Дерево причин">
+  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Приложение 2. Ключевая проблема и дерево причин</div><nav class="nav"></nav></header>
+  <h2 class="hl">Клиент уходит без помощи не из-за грубости, а потому что ответ <mark>верный по процедуре</mark>, но не про его ситуацию</h2>
+  <div class="grid mt" style="grid-template-columns: 640px 1fr; height: 700px">
+    <div class="card"><span class="lbl">Отзывы о поддержке Т-Банка, число из 53</span>
+      <div class="bars mt2" id="rev2"></div>
+      <p class="xs mut mt2"><span class="pill y" style="height:26px;font-size:13px">жалоба</span> <span class="pill" style="height:26px;font-size:13px;background:#b8e8c4;color:#0b5a20">похвала</span> Хвалят скорость в простом, ругают сложные случаи.</p>
+    </div>
+    <div class="grid" style="grid-template-rows: auto 1fr; gap: 14px">
+      <div class="card d" style="padding:24px 30px"><span class="lbl">Уровень 1. Ключевая проблема</span><p class="t2 mt3">После обращения в сложной ситуации клиент уходит без ощущения, что ему помогли: пишет снова, жалуется или уходит из банка</p></div>
+      <div class="grid" style="grid-template-columns: repeat(5, 1fr); gap: 12px" id="tree"></div>
+    </div>
+  </div>
+  <div class="foot"><span class="src"><b>Источники:</b> отзывы banki.ru, otzovik, brobank, Сравни (research/01); 8 интервью и 6 ситуаций (синт., на основе реальных отзывов); материалы кейса, с. 3-4, 12; 115-ФЗ, 161-ФЗ.</span><span class="num"></span></div>
+</section>
+
+<!-- П3. Варианты -->
+<section class="slide" data-sec="8" data-title="П3. Варианты решения">
+  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Приложение 3. Варианты решения и выбор</div><nav class="nav"></nav></header>
+  <h2 class="hl">Сравнили 5 вариантов по 7 факторам. Выбрали ПОНЯЛ и взяли из других вариантов <mark>только то, что окупается</mark></h2>
+  <div class="grid mt" style="grid-template-columns: 1fr 560px; gap: 16px; height: 680px">
+    <div class="card" style="padding:26px 30px">
+      <table class="t" id="opt" style="font-size:20px"></table>
+      <p class="xs mut mt2">Веса: решение с первого обращения 25%, «меня поняли» 20%, удержание 15%, экономика 15%, риски 10%, реализуемость 10%, причины в продуктах 5%. Оценки по факторам в приложении 8.</p>
+    </div>
+    <div class="card y" style="padding:28px 32px"><span class="lbl">Рекомендация, балл 4,65 из 5</span>
+      <p class="t2 mt2">ПОНЯЛ, узкие полномочия по формуле и сигнал в продукт</p>
+      <ul class="sm mt2" style="display:grid;gap:12px;color:#3a3420">
+        <li><b>Из O4:</b> подход ПОНЯЛ, ветки причин А, Б, Г</li>
+        <li><b>Из O5:</b> только уступка до 809-2 114 ₽ для «Несправедливо» и «Снова», около 2% сложных обращений</li>
+        <li><b>Из O2:</b> модуль 4 часа про называние эмоции</li>
+        <li><b>Сигнал в продукт:</b> минус 2% сложных обращений</li>
+      </ul>
+      <div class="grid mt" style="grid-template-columns:1fr 1fr;gap:16px">
+        <div><div class="mid">685 млн ₽</div><p class="xs mt3" style="color:#5b4a00">эффект в год</p></div>
+        <div><div class="mid">3,2 мес.</div><p class="xs mt3" style="color:#5b4a00">окупаемость</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="src"><b>Источники:</b> финмодель (model/out, листы «Варианты» и «Сравнение»); SQM, Frank RG, Gartner; de Matos и др., 2007; удовлетворённость ИИ-сотрудником из открытых публикаций Т-Банка, 2026.</span><span class="num"></span></div>
+</section>
+
+<!-- П4. Service Blueprint -->
+<section class="slide" data-sec="8" data-title="П4. Service Blueprint">
+  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Приложение 4. Service Blueprint</div><nav class="nav"></nav></header>
+  <h2 class="hl">За линией видимости: тип ограничения виден только безопасности, а <mark>второе обращение не связано с первым</mark></h2>
+  <div class="card mt" style="padding:20px 26px"><table class="t" id="bp" style="font-size:20px"></table></div>
+  <div class="foot"><span class="src"><b>Источник:</b> CJM Ирины (cjm/cjm.json), доска Miro. Статус каждой строки на доске: гипотеза, наблюдение, слова участника или опубликованное описание.</span><span class="num"></span></div>
+</section>
+
+<!-- П5. Опрос -->
+<section class="slide" data-sec="8" data-title="П5. Опрос (синт.)">
+  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Приложение 5. Опрос N=40 (синт.)</div><nav class="nav"></nav></header>
+  <h2 class="hl">Главный рычаг не скорость ответа, а <mark>решение с первого обращения</mark> в сложных ситуациях</h2>
+  <div class="grid mt" style="grid-template-columns: 1fr 1fr 1fr; gap: 14px">
+    <div class="card" style="padding:34px"><span class="lbl">Решено с первого обращения, 25 из 40</span><div class="mid mt2">5 из 25</div><p class="sm mut mt3">потеряли доверие, средний CES 6,1 из 7</p></div>
+    <div class="card d"><span class="lbl">Понадобилось 2+ обращения, 15 из 40</span><div class="mid mt2">8 из 15</div><p class="sm mut mt3">потеряли доверие, средний CES 2,8 из 7</p></div>
+    <div class="card y"><span class="lbl">Сложная ситуация против обычной</span><div class="mid mt2">11 из 20</div><p class="sm mt3" style="color:#4a3d00">потеряли доверие в сложной, в обычной 2 из 20</p></div>
+  </div>
+  <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px">
+    <div class="card" style="padding:32px 36px"><span class="lbl">Что раздражало, можно несколько</span><div class="bars mt2" id="irr"></div></div>
+    <div class="card"><span class="lbl">Было ли ощущение, что поняли</span><div class="bars mt2" id="und"></div></div>
+  </div>
+  <div class="foot"><span class="src"><b>Синтетические данные:</b> сгенерированы по распределениям из открытых источников, показывают форму данных и метод счёта «N из M». Заменяются ответами из Google Forms с теми же вопросами.</span><span class="num"></span></div>
+</section>
+
+<!-- П6. Интервью -->
+<section class="slide" data-sec="8" data-title="П6. Интервью (синт.)">
+  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Приложение 6. Интервью R01-R08 (синт.)</div><nav class="nav"></nav></header>
+  <h2 class="hl">«Меня поняли» это когда <mark>назвали ситуацию своими словами</mark> и сделали, а не объяснили</h2>
+  <div class="grid mt" style="grid-template-columns: repeat(4, 1fr); gap: 14px" id="int"></div>
+  <div class="card ys" style="padding:20px 28px;margin-top:14px"><p class="sm"><b>Сводка, N из 8:</b> верно по процедуре, но ждали действия 4; «поняли» значит назвал ситуацию своими словами 5; неизвестность тяжелее отказа 4; рассказывали историю заново 3; признаки особой ситуации были видны заранее 5; потеря доверия или уход 5.</p></div>
+  <div class="foot"><span class="src"><b>Синтетические интервью:</b> каждый респондент собран из реального публичного отзыва (ссылки в research/synthetic/interviews.md), цитаты написаны командой и не являются словами реальных людей.</span><span class="num"></span></div>
+</section>
+
+<!-- П7. Плейбук -->
+<section class="slide" data-sec="8" data-title="П7. Плейбук">
+  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Приложение 7. Плейбук по типам</div><nav class="nav"></nav></header>
+  <h2 class="hl">Что сказать первым, что спросить, что сделать и <mark>чего не делать</mark> в каждом типе</h2>
+  <div class="card mt" style="padding:20px 26px"><table class="t" id="pb" style="font-size:19.5px"></table></div>
+  <div class="foot"><span class="src"><b>Основа:</b> analysis/03_approach_ponyal.md; «Защита близких» и «Защитим или вернём деньги» (tbank.ru); 369-ФЗ; TEXAS и IDEA для уязвимых клиентов.</span><span class="num"></span></div>
+</section>
+
+<!-- П8. Оценки вариантов -->
+<section class="slide" data-sec="8" data-title="П8. Оценки вариантов">
+  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Приложение 8. Оценки вариантов по факторам</div><nav class="nav"></nav></header>
+  <h2 class="hl">Оценки от 1 до 5 по каждому фактору. Рекомендация <mark>сильнее O4</mark> за счёт удержания и причин в продуктах</h2>
+  <div class="card mt" style="padding:22px 28px"><table class="t" id="fac" style="font-size:19px"></table></div>
+  <div class="foot"><span class="src"><b>Источник:</b> финмодель, лист «Сравнение». Оценки командные, обоснование каждой в analysis/02_options.md.</span><span class="num"></span></div>
+</section>
+
+<!-- П9. Финмодель -->
+<section class="slide" data-sec="8" data-title="П9. Финмодель">
+  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Приложение 9. Финмодель и чувствительность</div><nav class="nav"></nav></header>
+  <h2 class="hl">Решение окупается уже при <mark>+4 п.п.</mark> к решению с первого обращения, и это проверяет пилот</h2>
+  <div class="grid mt" style="grid-template-columns: 1fr 1fr; gap: 16px">
+    <div class="card"><span class="lbl">Ключевые допущения</span><table class="t mt3" id="inp" style="font-size:21px"></table></div>
+    <div class="grid" style="gap:14px">
+      <div class="card"><span class="lbl">Эффект в год, млн ₽: прирост решения с первого обращения × доля намерения, ставшая уходом</span><table class="t mt3" id="sens" style="font-size:20px"></table></div>
+      <div class="card y" style="padding:24px 30px"><span class="lbl">Пилот</span><p class="sm mt3" style="color:#3a3420"><b>1 000 специалистов, 8 недель, 137 тыс. сложных обращений, 35 млн ₽.</b> A/B с контрольной группой. Критерий перехода: +4 п.п. к решению с первого обращения при росте времени не больше 5%.</p></div>
+    </div>
+  </div>
+  <div class="foot"><span class="src"><b>Источник:</b> model/build_model.py, model/out (Excel). Цифры Т-Технологий за 2025 год, SQM, Frank RG, ЦБ (research/02).</span><span class="num"></span></div>
+</section>
+
+<!-- П10. Метрики и риски -->
+<section class="slide" data-sec="8" data-title="П10. Метрики и риски">
+  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Приложение 10. Метрики и риски</div><nav class="nav"></nav></header>
+  <h2 class="hl">Каждая целевая метрика идёт <mark>в паре с контрольной</mark>, чтобы рост одной не ломал другую</h2>
+  <div class="grid mt" style="grid-template-columns: 1fr 1fr; gap: 16px">
+    <div class="card"><span class="lbl">Метрики</span><table class="t mt3" id="met" style="font-size:20px"></table></div>
+    <div class="card"><span class="lbl">Риски и что делаем</span><table class="t mt3" id="risk" style="font-size:20px"></table></div>
+  </div>
+  <div class="foot"><span class="src"><b>Источник:</b> analysis/04_business_impact.md.</span><span class="num"></span></div>
+</section>
+
+<!-- П11. Источники -->
+<section class="slide" data-sec="8" data-title="П11. Источники">
+  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Приложение 11. Источники</div><nav class="nav"></nav></header>
+  <h2 class="hl">Источники</h2>
+  <div class="grid mt" style="grid-template-columns: 1fr 1fr; gap: 14px" id="srcs"></div>
+  <div class="foot"><span class="src">Полные ссылки и цитаты: research/01-06. Синтетические данные подписаны «синт.».</span><span class="num"></span></div>
+</section>
+
+<!-- Спасибо -->
+<section class="slide yellow" data-title="Спасибо">
+  <div class="org" style="display:flex;align-items:center;gap:16px;font-size:22px;font-weight:600;color:var(--ink-strong)"><img src="../img/mark.svg" alt="" style="width:52px">ПОНЯЛ</div>
+  <h2 style="margin-top:150px;font-size:120px;letter-spacing:-.05em;line-height:.95;color:var(--ink-strong)">Спасибо!</h2>
+  <p style="margin-top:28px;font-size:30px;color:#3a3420;max-width:900px">Готовы ответить на вопросы. Прототип рабочего места, доска Miro и финмодель доступны по ссылкам ниже.</p>
+  <div class="row" style="margin-top:44px;gap:14px">
+    <span class="pill w" style="height:52px;font-size:20px;padding:0 22px">Доска Miro: miro.com/app/board/uXjVEUshVGo=</span>
+  </div>
+  <img class="k3d" src="../img/3d-bubble.webp" alt="" style="width:640px;right:110px;top:200px">
+  <div style="position:absolute;left:80px;bottom:56px;display:flex;gap:14px">
+    <div style="background:rgba(255,255,255,.62);border-radius:26px;padding:16px 26px"><b style="font-size:22px;display:block">Егор Чуланов</b><span style="font-size:16px;color:#4a4330">продукт, исследование, CJM</span></div>
+    <div style="background:rgba(255,255,255,.62);border-radius:26px;padding:16px 26px"><b style="font-size:22px;display:block">Екатерина Макаренко</b><span style="font-size:16px;color:#4a4330">исследование, качество, данные</span></div>
+    <div style="background:rgba(255,255,255,.62);border-radius:26px;padding:16px 26px"><b style="font-size:22px;display:block">Искандер Ханов</b><span style="font-size:16px;color:#4a4330">финансовая модель, аналитика</span></div>
+  </div>
+</section>
+
+</main>
+<div class="pager"><button class="prev" aria-label="Назад">‹</button><button class="where" aria-expanded="false"></button><button class="next" aria-label="Вперёд">›</button></div>
+<div class="toc" id="toc"></div>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  function fill(id, html) { var el = $(id); if (el) el.innerHTML = html; }
+
+  // Слайд 3: отзывы и дерево причин
+  var REV = [['Решили быстро в чате', 8, 1], ['Шаблонный ответ без решения', 7], ['Затягивание сроков', 5], ['Специалист сам сделал действие', 4, 1], ['Бот не решает, нет человека', 4], ['Блокировки 115-ФЗ и 161-ФЗ', 4], ['Мошенничество: отказ', 3], ['Повторы и передачи', 2]];
+  var revHtml = REV.map(function (r) { return '<div class="bar"><div class="l"><i class="' + (r[2] ? 'gd' : '') + '" style="width:' + r[1] / 8 * 100 + '%"></i><span>' + r[0] + '</span></div><b>' + r[1] + '</b></div>'; }).join('');
+  fill('rev', revHtml); fill('rev2', revHtml);
+  // Слайд 2: сравнение с другими компаниями и лучшие практики
+  var CMP = [['Т-Банк', 'решили сразу в чате, специалист сам делает действие, человечность в стрессе', 'блокировки 115-ФЗ и 161-ФЗ без причины и срока, шаблон, затягивание'],
+    ['Сбер', 'итог разговора с горячей линией приходит в чат (с 10.2026)', 'голосовой бот не понимает, не переключает на человека'],
+    ['Альфа-Банк', 'лучший контакт-центр 2026 по Frank RG, оператор уточняет вопрос', '«с оператором связаться невозможно», отписки при спорах'],
+    ['ВТБ', 'чат-бот на 1 месте Markswebb 2025', 'восемь операторов за несколько часов, отправляют в офис'],
+    ['Яндекс Банк', 'диалог продолжается с оператором, а не откатывается к боту', 'деньги заблокированы, поддержка перестала отвечать']];
+  fill('cmp', '<tr><th>Компания</th><th>Что удобно</th><th>Что разочаровало</th></tr>' + CMP.map(function (r, i) { return '<tr class="' + (i === 0 ? 'hi' : '') + '"><td><b>' + r[0] + '</b></td><td>' + r[1] + '</td><td>' + r[2] + '</td></tr>'; }).join(''));
+  var BEST = [['Действие вместо инструкции', 'Т-Банк: заблокировал, перевыпустил и перевёл деньги в одном чате'], ['Итог разговора письменно', 'Сбер: тезисы звонка в чат, нет спора «оператор обещал»'], ['Сначала выслушать', 'HEARD (Disney), A.P.P.L.E. (Apple): ситуация до процедуры'],
+    ['Полномочия без согласований', 'Ritz-Carlton: до $2 000 на гостя; у нас по формуле'], ['Человек и голос для уязвимых', 'FCA FG21/1, Monzo, TEXAS и IDEA'], ['Причина документом', 'список документов и срок при блокировке письменно']];
+  fill('best', BEST.map(function (b) { return '<div><b style="font-size:19px">' + b[0] + '</b><p class="xs mt3" style="color:#4a3d00">' + b[1] + '</p></div>'; }).join(''));
+  // Слайд 5: вопросы, инструменты, данные и сигналы, принципы
+  var RECS = [['Вопросы', ['«Правильно понимаю, что...?»', '«Насколько срочно нужны деньги?»', '«Сейчас кто-то просит перевести деньги или назвать код?»', '«Это уже было раньше?»', '«Кто из близких может помочь?»']],
+    ['Инструменты', ['история обращений и суммаризация', 'copilot: тип ситуации, вопросы, «не делать»', 'действия в чате: разблокировка, перевыпуск, возврат', 'калькулятор порога уступки', 'карточка случая и шаблон-обоснование']],
+    ['Данные и сигналы', ['отказ операции за 15 минут', 'тип ограничения: антифрод, 161-ФЗ, 115-ФЗ', '2+ обращения по теме за 30 дней', 'новое устройство, смена номера', 'слова «срочно», «развели», «третий раз»']],
+    ['Принципы', ['не спрашивать то, что банк уже знает', 'сначала человек, потом процедура', 'вопрос дешевле неверного ответа', 'срок вместо «ожидайте»', 'закрыт не ответ, а проблема']]];
+  fill('recs', RECS.map(function (r, i) { return '<div class="card' + (i === 3 ? ' d' : '') + '" style="padding:22px 26px"><span class="lbl">' + r[0] + '</span><ul class="xs mt3" style="display:grid;gap:6px">' + r[1].map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul></div>'; }).join(''));
+  var TREE = [
+    ['А', 'Не понята настоящая проблема', 'Одинаковые слова значат разное, контекст не прочитан', 'Copilot подсказывает статью, а не тип ситуации', 'Т1, R01, R05'],
+    ['Б', 'Ответ верный, но это ещё одна задача', 'Инструкция вместо действия испуганному человеку', 'Качество меряют соответствием процедуре', 'Ж1 7 из 53, П2 4 из 53'],
+    ['В', '«Нельзя», и это не объяснено', 'Нет срока, документов, альтернативы. Спор за 98 ₽', 'Тип ограничения не виден, нет правила уступки', 'Ж4, Ж10, R03, R07'],
+    ['Г', 'Вопрос не доведён до конца', '«Передано в отдел», сдвиг сроков, история заново', 'Закрывается ответ, а не проблема', 'Ж2, Ж7, R05'],
+    ['Д', 'Причина в продукте остаётся', 'Тот же сбой у тысяч клиентов', 'Нет канала от наблюдения к продукту', 'T5, сбой 15.07.2026']
+  ];
+  fill('tree', TREE.map(function (t) {
+    return '<div class="card" style="padding:20px 20px;display:flex;flex-direction:column;gap:10px"><div class="ltr" style="width:48px;height:48px;font-size:24px;border-radius:15px">' + t[0] + '</div>' +
+      '<b style="font-size:20px;line-height:1.2">' + t[1] + '</b><p class="xs mut"><span class="lbl" style="display:block;font-size:12.5px">Уровни 3-4, в диалоге</span>' + t[2] + '</p>' +
+      '<p class="xs" style="margin-top:auto;background:var(--bg);border-radius:14px;padding:10px 12px"><span class="lbl" style="display:block;font-size:12.5px">Уровень 5, корень</span>' + t[3] + '</p><p class="xs" style="color:var(--muted)">' + t[4] + '</p></div>';
+  }).join(''));
+
+  // Слайд 4: типы и действия
+  var TYPES = [
+    ['Срочно', '#ffe45c', 'Действие за минуты, минимум усилий', 'отказ операции за 15 минут, «на кассе», зарубежная геолокация', 'статья и инструкция из 5 шагов'],
+    ['Страшно', '#ffd2c6', 'Остановить потерю, снять вину, честные шансы', 'перевод новому получателю, смена номера, «звонили из службы»', '«вы перевели сами», обещать возврат'],
+    ['Несправедливо', '#d8e6ff', 'Причина, маршрут, срок, один ответственный', 'ограничение на счёте, 2+ обращения, «на каком основании»', '«по требованиям законодательства» без шагов'],
+    ['Тяжело', '#dff3e4', 'Бережный темп, человек, помощь близких', 'возраст, путаница в тексте, «не могу платить», «умер»', 'тон взыскания, полотно текста'],
+    ['Снова', '#e9e0ff', 'Признание, владелец, решение до конца', '2+ обращения по теме за 30 дней, «третий раз»', 'начинать с нуля, просить те же данные']
+  ];
+  fill('types', TYPES.map(function (t, i) {
+    return '<div class="card" style="background:' + t[1] + ';padding:24px 22px;height:420px;display:flex;flex-direction:column"><span class="lbl" style="color:rgba(0,0,0,.5)">Тип ' + (i + 1) + '</span>' +
+      '<div style="font-size:34px;font-weight:700;letter-spacing:-.03em;color:var(--ink-strong);margin-top:2px">' + t[0] + '</div><p style="font-size:20px;font-weight:500;color:var(--ink-strong);margin-top:8px;line-height:1.25">' + t[2] + '</p>' +
+      '<p class="xs" style="margin-top:auto;background:rgba(255,255,255,.62);border-radius:16px;padding:12px 14px"><span class="lbl" style="display:block;font-size:12.5px">Сигналы</span>' + t[3] + '</p>' +
+      '<p class="xs" style="margin-top:8px;background:#1c1c1e;color:#fff;border-radius:16px;padding:12px 14px"><span class="lbl" style="display:block;font-size:12.5px;color:#9a9da2">Нельзя</span>' + t[4] + '</p></div>';
+  }).join(''));
+  var ACTS = [['Прочитал контекст до первого вопроса', 4], ['Назвал ситуацию и эмоцию, снял вину', 4], ['Сделал сам, а не прислал инструкцию', 3], ['Дал план и срок, вернулся сам', 5], ['Честно про «нельзя» с альтернативой', 2]];
+  fill('acts', ACTS.map(function (a, i) { return '<div><div class="mid">' + a[1] + '<span style="font-size:22px;color:var(--muted)"> из 6</span></div><p class="xs mt3"><b>' + (i + 1) + '.</b> ' + a[0] + '</p></div>'; }).join(''));
+
+  // Слайд 5: шаги
+  var STEPS = [
+    ['П', 'Прочитать контекст', 'История, операции за 24 часа, статус ограничений, прошлые обращения. Определить тип.', 'Не спрашиваю то, что банк уже знает'],
+    ['О', 'Обозначить, что понял', 'Своими словами назвать ситуацию и состояние, снять вину.', 'Правильно понимаю, что вы на кассе и оплата не проходит?'],
+    ['Н', 'Найти настоящую задачу', '1-2 уточняющих вопроса, по одному. Вопрос дешевле неверного ответа.', 'Сейчас кто-то просит перевести деньги или назвать код?'],
+    ['Я', 'Ясный план и действие', 'Сделать самому всё, что можно. Что сделано, что от клиента, когда итог.', 'Я уже сделал это. От вас только одно. Итог до 18:00'],
+    ['Л', 'Лично довести и вернуть сигнал', 'Остаться владельцем, вернуться с итогом, системную причину передать в продукт.', 'Если что-то пойдёт не так, ответьте в этот чат, я увижу']
+  ];
+  fill('steps', STEPS.map(function (s) {
+    return '<div class="card" style="padding:24px 24px;height:380px;display:flex;flex-direction:column"><div class="ltr">' + s[0] + '</div><b style="font-size:24px;line-height:1.15;margin-top:18px">' + s[1] + '</b><p class="sm mut mt3">' + s[2] + '</p>' +
+      '<p class="xs" style="margin-top:auto;background:var(--y-soft);border-radius:16px;padding:12px 14px;color:#4a3d00">«' + s[3] + '»</p></div>';
+  }).join(''));
+
+  // Слайд 6: варианты
+  var OPT = [
+    ['', 'Суть', 'Решение с 1-го, п.п.', 'Разово', 'Эффект в год', 'Окупаемость', 'Балл'],
+    ['O1 Стандарты и скрипты', 'шаблоны и чек-лист', '+1', '15 млн', '99 млн', '2 мес.', '2,35'],
+    ['O2 Тренинг эмпатии', '8 часов всем', '+3', '152 млн', '179 млн', '10 мес.', '3,15'],
+    ['O3 ИИ решает сам', '10% сложных диалогов', 'минус 3', '300 млн', '48 млн', '75 мес.', '1,90'],
+    ['O4 Подход ПОНЯЛ', 'типы, шаги, copilot, карточка', '+8', '171 млн', '588 млн', '3,5 мес.', '4,15'],
+    ['O5 Компенсации всем', 'до 3 000 ₽ без согласования', '+5', '10 млн', 'минус 2,1 млрд', 'нет', '2,60'],
+    ['Рекомендация', 'O4, порог из O5, модуль O2, сигнал в продукт', '+10', '181 млн', '685 млн', '3,2 мес.', '4,65']
+  ];
+  fill('opt', '<tr>' + OPT[0].map(function (h) { return '<th>' + h + '</th>'; }).join('') + '</tr>' + OPT.slice(1).map(function (r, i) {
+    return '<tr class="' + (i === 5 ? 'hi' : '') + '"><td><b>' + r[0] + '</b></td><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td><td>' + r[4] + '</td><td>' + r[5] + '</td><td><b>' + r[6] + '</b></td></tr>';
+  }).join('') + '<tr><td colspan="7" style="padding-top:16px"><span class="lbl">Главные риски:</span> <span class="xs mut">O1 ещё больше шаблонов; O2 навык выветривается без инструмента; O3 обещает то, что не решает, удовлетворённость ИИ-сотрудником 78,7% при цели 84,3%; O5 злоупотребления, удержание не доказано; рекомендация: время на сложное обращение растёт на 5%, окупается сокращением повторов.</span></td></tr>');
+
+  // Слайд 7: изменения
+  var CHG = [
+    ['Корневая причина', 'Изменение', 'Кому', 'Аргумент', 'Метрика'],
+    ['А, Б: copilot подсказывает статью', '<b>1. Copilot подсвечивает тип ситуации</b>, сигналы, вопросы и «не делать»', 'ИТ, команда copilot', '+10 п.п. к решению с первого обращения = 732 млн ₽ в год на повторах', 'решение за 7 дней по типам'],
+    ['Г: закрывается ответ, а не проблема', '<b>2. Карточка случая в чате</b>, случай закреплён за специалистом', 'методология, ИТ', 'история заново у 3 из 8; каждый повтор минус 15% CSAT', 'доля повторов, CES'],
+    ['В: тип ограничения не виден', '<b>3. Тип ограничения виден специалисту</b>, формулировки, документы файлом, срок', 'риски, комплаенс', 'жалобы на антифрод в ЦБ в 2,3 раза; тайна проверки не раскрывается', 'жалобы в ЦБ по теме'],
+    ['В: нет правила уступки', '<b>4. Уступка по порогу</b> 809-2 114 ₽ для «Несправедливо» и «Снова»', 'финансы, риски', '214 млн ₽ уступок против 358 млн ₽ сохранённой прибыли', 'доля уступок, удержание 90 дней'],
+    ['Д: нет канала в продукт', '<b>5. Сигнал в продукт:</b> тег причины, шаблон, топ-10 причин в рублях', 'продуктовые команды', 'McKinsey: минус 25-40% обращений; мы берём минус 2% = 98 млн ₽', 'обращения по тегу до и после']
+  ];
+  fill('chg', '<tr>' + CHG[0].map(function (h) { return '<th>' + h + '</th>'; }).join('') + '</tr>' + CHG.slice(1).map(function (r) { return '<tr><td class="mut" style="width:15%">' + r[0] + '</td><td style="width:31%">' + r[1] + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td><td>' + r[4] + '</td></tr>'; }).join(''));
+
+  // Слайд 8: каскад, цепочка, план
+  var WF = [['Повторы', 732], ['Причины', 98], ['Удержание', 358], ['Время', -244], ['Уступки', -214], ['Затраты', -45], ['Итого', 685, 1]];
+  (function () {
+    var H = 330, max = 1188, sc = (H - 40) / max, x = 24, w = 84, gap = 22, run = 0, o = '<line x1="10" x2="750" y1="' + H + '" y2="' + H + '" stroke="#e7e8ea" stroke-width="2"/>';
+    WF.forEach(function (d) {
+      var v = d[1], y0, h, f;
+      if (d[2]) { y0 = H - v * sc; h = v * sc; f = '#1c1c1e'; } else if (v > 0) { y0 = H - (run + v) * sc; h = v * sc; f = '#ffdd2d'; run += v; } else { y0 = H - run * sc; h = -v * sc; f = '#f2b8b0'; run += v; }
+      o += '<rect x="' + x + '" y="' + y0 + '" width="' + w + '" height="' + h + '" rx="12" fill="' + f + '"/>';
+      o += '<text x="' + (x + w / 2) + '" y="' + (y0 - 10) + '" text-anchor="middle" font-size="22" font-weight="700" fill="#1c1c1e">' + (v > 0 ? '' : '−') + Math.abs(v) + '</text>';
+      o += '<text x="' + (x + w / 2) + '" y="' + (H + 30) + '" text-anchor="middle" font-size="18" fill="#5c6066">' + d[0] + '</text>';
+      x += w + gap;
+    });
+    $('wf').innerHTML = o;
+  })();
+  var CH = [['Прочитал контекст, вопрос до инструкции', 'повторов меньше', '732 млн ₽'], ['Назвал ситуацию, дал план и срок', 'CES и «поняли» выше', 'вход в удержание'], ['Решил спор в пределах порога', 'отток и жалобы ниже', '358 млн ₽, 68,5 тыс. клиентов'], ['Отправил сигнал в продукт', 'обращений по теме меньше', '98 млн ₽']];
+  fill('chain', '<tr><th>Действие</th><th>Метрика</th><th>Деньги в год</th></tr>' + CH.map(function (r) { return '<tr><td><b>' + r[0] + '</b></td><td>' + r[1] + '</td><td>' + r[2] + '</td></tr>'; }).join('') + '<tr class="hi"><td><b>Всё вместе</b></td><td>удержание и рост</td><td><b>685 млн ₽</b></td></tr>');
+  var PLAN = [['4 недели', 'Подготовка', 'правила по 5 типам, формулировки с комплаенсом, MVP подсказок', 'правила согласованы с рисками', 1], ['8 недель', 'Пилот на 1 000 специалистов', 'A/B, 137 тыс. обращений, 35 млн ₽', '+4 п.п., время не больше +5%'], ['3 месяца', 'Волны', 'чаты, звонки, вторая линия; обучение 4 часа', 'метрики держатся на 3 волнах'], ['6 месяцев', 'Весь департамент', '20 тыс. специалистов, ежемесячный топ причин', 'эффект подтверждён фактом']];
+  var OM = [['O1 Стандарты и скрипты', 2.35, '99 млн'], ['O2 Тренинг эмпатии', 3.15, '179 млн'], ['O3 ИИ решает сам', 1.90, '48 млн'], ['O4 Подход ПОНЯЛ', 4.15, '588 млн'], ['O5 Компенсации всем', 2.60, 'минус 2,1 млрд'], ['Рекомендация: ПОНЯЛ, порог, сигнал в продукт', 4.65, '685 млн', 1]];
+  fill('optmini', OM.map(function (o) { return '<div style="display:grid;grid-template-columns:1fr 60px 150px;gap:12px;align-items:center"><div style="position:relative;height:34px;border-radius:10px;background:var(--bg);overflow:hidden"><i style="position:absolute;inset:0 auto 0 0;width:' + o[1] / 5 * 100 + '%;background:' + (o[3] ? 'var(--y)' : '#dcdfe3') + ';border-radius:10px"></i><span style="position:relative;display:flex;align-items:center;height:100%;padding:0 12px;font-size:16px;font-weight:500;color:var(--ink-strong)">' + o[0] + '</span></div><b style="font-size:18px">' + o[1].toFixed(2).replace('.', ',') + '</b><span class="xs" style="text-align:right;' + (o[2].indexOf('минус') === 0 ? 'color:#a11d1d' : '') + '">' + o[2] + ' ₽</span></div>'; }).join(''));
+  fill('plan', PLAN.map(function (p) {
+    return '<div class="card' + (p[4] ? ' d' : '') + '" style="padding:16px 20px"><span class="lbl">' + p[0] + '</span><b style="display:block;font-size:19px;margin-top:2px">' + p[1] + '</b><p class="xs mut mt3">' + p[2] + '</p><p class="xs" style="margin-top:6px;border-radius:10px;padding:5px 10px;' + (p[4] ? 'background:var(--y);color:var(--ink-strong)' : 'background:var(--y-soft);color:#4a3d00') + '">' + p[3] + '</p></div>';
+  }).join(''));
+
+  // Оглавление приложений
+  var APX = ['Метод и данные: что реальное, что синтетическое', 'Ключевая проблема и дерево причин на 5 уровнях', 'Варианты решения: финансы, риски, выбор', 'Service Blueprint: за линией видимости', 'Опрос N=40 (синт.): ключевой срез', 'Интервью R01-R08 (синт.)', 'Плейбук по 5 типам ситуаций', 'Оценки вариантов по 7 факторам', 'Финмодель: допущения и чувствительность', 'Метрики с контрольными и риски', 'Источники'];
+  fill('apx', APX.map(function (t, i) { return '<div style="display:flex;gap:18px;align-items:center;font-size:26px;color:#fff;cursor:pointer" data-go="' + (i + 9) + '"><span class="pill y" style="height:44px;min-width:60px;justify-content:center;font-size:20px">П' + (i + 1) + '</span>' + t + '</div>'; }).join(''));
+
+  // П2: кривая эмоций CJM
+  var EMO = [-1, -2, -1, -1, -1, -1, 0, -1, -1, -2, -2, -1, -2, -2, -1, -2, -2, -1, -2, 1, 0, -1, -1, -1];
+  var TOBE = [0, 0, null, 0, 1, null, 1, null, 0, 0, 1, 2, null, null, null, null, null, null, null, 2, 1, 0, 1, 1];
+  var NAMES = ['Оплата отклонена', 'Повторная попытка', 'Платит чужой картой', 'Открывает приложение', '«Карта ограничена»', 'Ищет в справке', 'Пишет в чат', 'Бот: статья', 'Просит специалиста', 'Очередь', 'Ответ-инструкция', 'Узнаёт про ограничение', 'Вечер без карты', 'Читает чужие истории', 'Проверяет статус', 'Пишет снова', 'Те же вопросы', 'Передано на проверку', 'Горячая линия', 'Ограничение снято', 'Проверяет карту', 'Оценивает диалог', 'Рассказывает знакомым', 'Запасная карта'];
+  (function () {
+    var W = 1700, x0 = 60, dx = (W - 90) / 23, y = function (e) { return 40 + (2 - e) * 62; }, o = '';
+    [2, 1, 0, -1, -2].forEach(function (e) { o += '<line x1="40" x2="' + (W - 10) + '" y1="' + y(e) + '" y2="' + y(e) + '" stroke="' + (e === 0 ? '#cfd2d6' : '#eceef0') + '" stroke-width="2"/><text x="0" y="' + (y(e) + 6) + '" font-size="16" fill="#9299a2">' + (e > 0 ? '+' + e : e < 0 ? '−' + (-e) : '0') + '</text>'; });
+    var STG = [[1, 6, 'До обращения'], [7, 12, 'Первое обращение'], [13, 15, 'Между'], [16, 18, 'Повторное'], [19, 24, 'Решение и после']];
+    STG.forEach(function (s, i) { var a = x0 + (s[0] - 1) * dx - dx / 2 + 4, b = x0 + (s[1] - 1) * dx + dx / 2 - 4; o += '<rect x="' + a + '" y="0" width="' + (b - a) + '" height="26" rx="13" fill="' + (i % 2 ? '#eaf9ef' : '#fff7cc') + '"/><text x="' + ((a + b) / 2) + '" y="18" text-anchor="middle" font-size="15" font-weight="600" fill="#333">' + s[2] + '</text>'; });
+    var p = EMO.map(function (e, i) { return (x0 + i * dx) + ',' + y(e); }).join(' ');
+    o += '<polyline points="' + p + '" fill="none" stroke="#f2b8b0" stroke-width="5" stroke-linejoin="round"/>';
+    var q = []; TOBE.forEach(function (e, i) { if (e !== null) q.push((x0 + i * dx) + ',' + y(e)); });
+    o += '<polyline points="' + q.join(' ') + '" fill="none" stroke="#ffcf00" stroke-width="6" stroke-linejoin="round"/>';
+    EMO.forEach(function (e, i) { o += '<circle cx="' + (x0 + i * dx) + '" cy="' + y(e) + '" r="8" fill="#fff" stroke="#e58a7b" stroke-width="3"/>'; });
+    TOBE.forEach(function (e, i) { if (e !== null) o += '<circle cx="' + (x0 + i * dx) + '" cy="' + y(e) + '" r="9" fill="#ffdd2d" stroke="#1c1c1e" stroke-width="2"/>'; });
+    NAMES.forEach(function (n, i) { o += '<text transform="translate(' + (x0 + i * dx + 5) + ',' + (y(-2) + 26) + ') rotate(35)" font-size="14.5" fill="#5c6066">' + (i + 1) + '. ' + n + '</text>'; });
+    $('cjm').innerHTML = o;
+  })();
+
+  // П3: blueprint
+  var BP = [
+    ['1-3', 'Пуш об отказе, экран «карта ограничена»', 'Антифрод остановил операцию по модели риска', 'Антифрод, процессинг, приложение', 'Причина и срок на экране карты'],
+    ['4-6', 'Экран карты без причины, статья справки', 'Тип ограничения виден только безопасности', 'Приложение, база знаний', 'Тип ограничения виден специалисту'],
+    ['7-9', 'Бот, статья, очередь', 'Классификация по словам, без признака срочности', 'Бот, маршрутизация', 'Сигнал «Срочно» поднимает в очереди'],
+    ['10-12', 'Ответ специалиста, «ожидайте проверки»', 'Поиск статьи по словам, заявка в очередь проверки', 'Copilot, база 25+ тыс. статей, CRM', 'Copilot по типу, действие в чате'],
+    ['13-15', 'Нет контакта', 'Проверка ждёт рабочего дня', 'Очередь антифрода', 'Карточка случая со сроком'],
+    ['16-18', 'Второй специалист, «передано на проверку»', 'Новое обращение без связи с первым', 'CRM, история обращений', 'Владелец случая, без повтора'],
+    ['19-21', 'Горячая линия, пуш «ограничение снято»', 'Ручная проверка, закрытие без итога', 'Телефония, уведомления', 'Специалист сам возвращается с итогом'],
+    ['22-24', 'Опрос качества', 'Причина не попадает в продукт', 'Опросы, BI, аналитика оттока', 'Тег причины и топ-10 для продукта']
+  ];
+  fill('bp', '<tr><th>Шаги</th><th>Видит клиент</th><th>За линией видимости</th><th>Люди и системы</th><th>С подходом ПОНЯЛ</th></tr>' + BP.map(function (r) { return '<tr><td><b>' + r[0] + '</b></td><td>' + r[1] + '</td><td>' + r[2] + '</td><td class="mut">' + r[3] + '</td><td style="background:var(--y-soft)"><b>' + r[4] + '</b></td></tr>'; }).join(''));
+
+  // П4: опрос
+  function bars(id, rows, n) { fill(id, rows.map(function (r) { return '<div class="bar"><div class="l"><i style="width:' + r[1] / n * 100 + '%"></i><span>' + r[0] + '</span></div><b>' + r[1] + '</b></div>'; }).join('')); }
+  bars('irr', [['Долго ждал ответа', 14], ['Пришлось объяснять заново', 13], ['Шаблонный ответ', 12], ['Отказали без объяснения', 6], ['Бот не понял', 6]], 20);
+  bars('und', [['Да', 18], ['Частично', 17], ['Нет', 5]], 20);
+
+  // П5: интервью
+  var INT = [['R01. Марина, 34', 'Срочно', 'Я стою с пакетами, на меня смотрят пять человек, а мне присылают инструкцию'], ['R02. Олег, 41', 'Страшно', 'Мне было стыдно, а мне ещё и отвечают как будто я сам виноват'], ['R03. Алексей, 29', 'Несправедливо', 'Я против того, что мне никто не говорит, что нужно и сколько ждать'], ['R04. Валентина Петровна, 68', 'Тяжело', 'Девочка в чате была терпеливая, всё объясняла по одному'], ['R05. Дарья, 23', 'Снова', 'Я уже не про 1 240 рублей, я про то, что меня не слышат'], ['R06. Игорь, 37', 'Срочно', 'Связь рвётся ровно в момент, когда соединяют с нужным человеком'], ['R07. Светлана, 45', 'Несправедливо', 'Вы теряете клиента из-за 98 рублей'], ['R08. Тимур, 30', 'Тяжело', 'Я пришёл сам, честно, а со мной как с должником']];
+  fill('int', INT.map(function (r) { return '<div class="card" style="padding:24px 26px;height:300px;display:flex;flex-direction:column"><div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:19px">' + r[0] + '</b><span class="pill">' + r[1] + '</span></div><p style="font-size:22px;line-height:1.3;margin-top:14px;color:var(--ink-strong)">«' + r[2] + '»</p></div>'; }).join(''));
+
+  // П6: плейбук
+  var PB = [['Срочно', '«Вижу, оплата не прошла. Уже смотрю, это займёт минуту»', '«Вы сейчас на кассе или есть время?»', 'Снять ограничение или дать обходной путь', 'Статья из базы знаний', 'Обычно не нужна'],
+    ['Страшно', '«Понимаю, как это страшно. Вы правильно сделали, что сразу написали»', '«Сейчас кто-то просит перевести деньги или назвать код?»', 'Заблокировать, запросить банк получателя, заявление за клиента, «Защита близких»', '«Вы перевели сами», обещание возврата', 'Только по «Защитим или вернём деньги»'],
+    ['Несправедливо', '«Вижу ограничение и понимаю, что это мешает работать»', '«Какие операции нужны в первую очередь?»', 'Тип ограничения, документы файлом, срок, один ответственный', '«По требованиям законодательства» без шагов', 'По порогу, если банк не прав'],
+    ['Тяжело', '«Я с вами, разберёмся вместе, без спешки»', '«Удобнее здесь или голосом?»', 'Короткие сообщения, голос, близкий рядом, тон партнёра', 'Полотно текста, перекидывание', 'Реструктуризация по процедуре'],
+    ['Снова', '«Вижу, вы пишете третий раз. Это наша ошибка, разберусь до конца сам»', '«Что из обещанного не сделано?»', 'Взять случай на себя, решить или дать дату', 'Просить те же данные заново', 'По порогу, за ошибку банка']];
+  fill('pb', '<tr><th>Тип</th><th>Первая фраза</th><th>Главный вопрос</th><th>Сделать</th><th>Не делать</th><th>Уступка</th></tr>' + PB.map(function (r) { return '<tr><td><b>' + r[0] + '</b></td><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td><td style="color:#a11d1d">' + r[4] + '</td><td class="mut">' + r[5] + '</td></tr>'; }).join(''));
+
+  // П7: факторы
+  var FAC = [['Решение с первого обращения', '25%', [2, 3, 1, 4, 3, 5]], ['«Меня поняли», усилие клиента', '20%', [1, 4, 2, 5, 3, 5]], ['Удержание клиентов', '15%', [2, 3, 2, 4, 3, 5]], ['Экономика: эффект минус затраты', '15%', [2, 2, 3, 4, 1, 4]], ['Риски: безопасность, комплаенс', '10%', [5, 5, 2, 4, 1, 4]], ['Реализуемость за 6 месяцев', '10%', [5, 3, 2, 4, 5, 4]], ['Устраняет причины в продуктах', '5%', [1, 1, 2, 3, 1, 5]]];
+  var heat = ['', '#f4f5f7', '#f4f5f7', '#fff7cc', '#ffe866', '#ffdd2d'];
+  fill('fac', '<tr><th>Фактор</th><th>Вес</th><th>O1</th><th>O2</th><th>O3</th><th>O4</th><th>O5</th><th>Рекомендация</th></tr>' + FAC.map(function (f) { return '<tr><td><b>' + f[0] + '</b></td><td>' + f[1] + '</td>' + f[2].map(function (v) { return '<td style="text-align:center;background:' + heat[v] + '"><b>' + v + '</b></td>'; }).join('') + '</tr>'; }).join('') +
+    '<tr class="hi"><td><b>Взвешенный балл</b></td><td></td><td style="text-align:center">2,35</td><td style="text-align:center">3,15</td><td style="text-align:center">1,90</td><td style="text-align:center">4,15</td><td style="text-align:center">2,60</td><td style="text-align:center"><b>4,65</b></td></tr>');
+
+  // П8: допущения и чувствительность
+  var INP = [['Обращений в месяц, всего', '18 млн'], ['Доля, которую закрывает ИИ', '45%'], ['Сложных среди обращений к человеку', '15%, 17,8 млн в год'], ['Решение с первого раза в сложных сейчас', '55%'], ['Повторов на нерешённое', '1,5'], ['Стоимость обращения к специалисту', '274 ₽'], ['Операционная прибыль активного клиента', '5 220 ₽ в год'], ['Намерение уйти после плохого опыта', '25%'], ['Доля намерения, ставшая уходом', '25%'], ['Специалистов', '20 тыс.']];
+  fill('inp', INP.map(function (r) { return '<tr><td>' + r[0] + '</td><td style="text-align:right"><b>' + r[1] + '</b></td></tr>'; }).join(''));
+  var SENS = [[4, -55, 31, 174], [6, 120, 249, 463], [8, 295, 467, 753], [10, 470, 685, 1043], [12, 645, 903, 1332]];
+  fill('sens', '<tr><th>Прирост, п.п.</th><th>уход 10%</th><th>уход 25%</th><th>уход 50%</th></tr>' + SENS.map(function (r) { return '<tr class="' + (r[0] === 10 ? 'hi' : '') + '"><td><b>+' + r[0] + '</b></td>' + r.slice(1).map(function (v, k) { return '<td style="' + (v < 0 ? 'color:#a11d1d' : '') + (k === 1 ? ';font-weight:700' : '') + '">' + (v < 0 ? 'минус ' + (-v) : v) + '</td>'; }).join('') + '</tr>'; }).join(''));
+
+  // П9: метрики и риски
+  var MET = [['Решение с первого обращения', 'нет повтора 7 дней', 'время обработки, рост до 5%'], ['«Меня поняли»', 'да, частично, нет', 'оценки после отказа'], ['CES', '«насколько легко», 1-7', 'число сообщений клиента'], ['Удержание', 'активен через 90 дней', 'уступки на клиента'], ['Жалобы', 'в ЦБ на 100 тыс. клиентов', 'доля обоснованных'], ['Сигналы в продукт', 'принятые обоснования', 'обращения по тегу через 2 мес.']];
+  fill('met', '<tr><th>Целевая</th><th>Как считать</th><th>Контрольная</th></tr>' + MET.map(function (r) { return '<tr><td><b>' + r[0] + '</b></td><td>' + r[1] + '</td><td class="mut">' + r[2] + '</td></tr>'; }).join(''));
+  var RISK = [['Время на обращение растёт больше 5%', 'copilot готовит контекст заранее, контроль в пилоте'], ['Злоупотребления уступками', 'порог, сегмент, лимит в год, выборочный контроль'], ['Copilot ошибается в типе', 'подсказка, а не решение; подтверждение одним кликом'], ['Формулировки по 115-ФЗ раскроют лишнее', 'согласует комплаенс; называем тип и шаги, не данные'], ['«Опять новые правила»', '5 шагов вместо скриптов, метрика «поняли» в оценке'], ['Допущения модели не подтвердятся', 'A/B в пилоте, точка окупаемости +4 п.п.']];
+  fill('risk', '<tr><th>Риск</th><th>Что делаем</th></tr>' + RISK.map(function (r) { return '<tr><td><b>' + r[0] + '</b></td><td>' + r[1] + '</td></tr>'; }).join(''));
+
+  // П10: источники
+  var SRC = [['Т-Банк', 'Материалы кейса Cup Moscow 2026. Отчётность Т-Технологий за 2025 год. Публикации об ИИ-сотруднике (finance.mail.ru, vbr.ru, 2026). Сервисы «Защита близких» и «Защитим или вернём деньги» (tbank.ru).'],
+    ['Регулятор и законы', 'Банк России: обзор жалоб за 2025 год, данные о мошеннических операциях. 115-ФЗ, 161-ФЗ, 369-ФЗ, признаки мошеннических операций с 01.01.2026, 9-ФЗ, 41-ФЗ.'],
+    ['Исследования', 'SQM Group (FCR и CSAT), Frank RG (поддержка банков), Gartner (CES), McKinsey (корневые причины), de Matos и др., 2007 (парадокс восстановления сервиса).'],
+    ['Практики', 'Disney HEARD, Apple A.P.P.L.E., Ritz-Carlton, Zappos, Amazon, Monzo, Revolut, Nubank, Сбер, Альфа-Банк, ВкусВилл. FCA FG21/1, TEXAS и IDEA.'],
+    ['Отзывы и медиа', '53 отзыва о поддержке Т-Банка (banki.ru, otzovik, brobank, Сравни и другие), 41 публикация в соцсетях и СМИ за 2025-2026 годы.'],
+    ['Данные команды', 'Опрос N=40, интервью R01-R08, ситуации T1-T6 (синт., на основе реальных отзывов), финмодель, CJM на 24 шага на доске Miro.']];
+  fill('srcs', SRC.map(function (s) { return '<div class="card" style="padding:28px 32px"><span class="lbl">' + s[0] + '</span><p class="mt3" style="font-size:22px">' + s[1] + '</p></div>'; }).join(''));
+
+  // ---------- Навигация ----------
+  var root = document.documentElement;
+  var printMode = new URLSearchParams(location.search).has('print');
+  if (printMode) root.classList.add('print');
+  var SECTIONS = ['Опыт', 'Ситуации', 'CJM', 'Рекомендации', 'Изменения', 'Эффект', 'Команда', 'Приложения'];
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var total = slides.length, MAIN = 8;
+  slides.forEach(function (s, i) {
+    var num = s.querySelector('.foot .num');
+    if (num) num.innerHTML = i < MAIN ? '<b>' + (i + 1) + '</b> / ' + MAIN : '';
+    var nav = s.querySelector('.nav');
+    if (nav) {
+      var cur = parseInt(s.getAttribute('data-sec') || '0', 10);
+      nav.innerHTML = SECTIONS.map(function (t, k) { var c = k + 1 === cur ? 'on' : (k + 1 < cur ? 'done' : ''); return '<span class="' + c + '">' + t + '</span>'; }).join('');
+    }
+  });
+  if (printMode) return;
+
+  var cur = 0;
+  function fit() { root.style.setProperty('--scale', Math.min(window.innerWidth / 1920, window.innerHeight / 1080)); }
+  var where = document.querySelector('.pager .where'), toc = $('toc');
+  function go(n, fromHash) {
+    n = Math.max(0, Math.min(total - 1, n));
+    slides[cur].classList.remove('active'); cur = n; slides[cur].classList.add('active');
+    if (!fromHash) history.replaceState(null, '', '#' + (cur + 1));
+    where.innerHTML = '<b>' + (cur + 1) + '</b> / ' + total + '&ensp;' + slides[cur].getAttribute('data-title');
+    Array.prototype.forEach.call(toc.querySelectorAll('button'), function (b, i) { b.classList.toggle('on', i === cur); });
+  }
+  toc.innerHTML = slides.map(function (s, i) { return (i === 0 ? '<div class="grp">Основные слайды</div>' : i === MAIN ? '<div class="grp">Приложения</div>' : '') + '<button type="button" data-go="' + i + '"><i>' + (i + 1) + '</i>' + s.getAttribute('data-title') + '</button>'; }).join('');
+  function closeToc() { toc.classList.remove('open'); where.setAttribute('aria-expanded', 'false'); }
+  document.querySelector('.pager').addEventListener('click', function (e) {
+    e.stopPropagation(); var b = e.target.closest('button'); if (!b) return;
+    if (b.classList.contains('prev')) go(cur - 1); else if (b.classList.contains('next')) go(cur + 1);
+    else { var o = toc.classList.toggle('open'); where.setAttribute('aria-expanded', String(o)); }
+  });
+  toc.addEventListener('click', function (e) { e.stopPropagation(); var b = e.target.closest('button[data-go]'); if (b) { go(+b.dataset.go); closeToc(); } });
+  Array.prototype.forEach.call(document.querySelectorAll('#apx [data-go]'), function (el) { el.addEventListener('click', function (e) { e.stopPropagation(); go(+el.dataset.go); }); });
+  function fromHash() { var n = parseInt(location.hash.slice(1), 10); return isNaN(n) ? 0 : n - 1; }
+  fit(); window.addEventListener('resize', fit);
+  go(fromHash(), true);
+  window.addEventListener('hashchange', function () { go(fromHash(), true); });
+  document.addEventListener('keydown', function (e) {
+    if (e.metaKey || e.ctrlKey || e.altKey) return; var k = e.key;
+    if (k === 'Escape') { closeToc(); return; }
+    if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'].indexOf(k) >= 0) { e.preventDefault(); go(cur + 1); }
+    else if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].indexOf(k) >= 0) { e.preventDefault(); go(cur - 1); }
+    else if (k === 'Home') go(0); else if (k === 'End') go(total - 1);
+    else if (k === 'f' || k === 'F') { if (!document.fullscreenElement) document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); else document.exitFullscreen && document.exitFullscreen(); }
+  });
+  document.addEventListener('click', function (e) { if (toc.classList.contains('open')) { closeToc(); return; } if (e.clientX < window.innerWidth * 0.3) go(cur - 1); else go(cur + 1); });
+  var tx = null;
+  document.addEventListener('touchstart', function (e) { tx = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', function (e) { if (tx === null) return; var dx = e.changedTouches[0].clientX - tx; tx = null; if (Math.abs(dx) > 40) go(cur + (dx < 0 ? 1 : -1)); });
+})();
+</script>
+</body>
+</html>
