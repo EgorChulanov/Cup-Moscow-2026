@@ -27,8 +27,7 @@
 | `analysis/` | дерево причин, типы ситуаций, варианты решения и их сравнение, подход ПОНЯЛ, влияние на бизнес |
 | `cjm/` | CJM и Service Blueprint (`cjm.json`), сборка доски Miro |
 | `model/` | финансовая модель: `build_model.py` собирает Excel с формулами |
-| `site/` | сайт решения: описание подхода, прототип рабочего места специалиста, презентация |
-| `deck/` | сборка PDF для сдачи из презентации сайта |
+| `site/` | сайт решения с прототипом рабочего места специалиста; `site/deck/` презентация и PDF для сдачи |
 
 ## Правила качества
 
@@ -55,10 +54,12 @@
 ## Как собрать
 
 ```bash
-python3 model/build_model.py      # Excel: model/out/*.xlsx и цифры для сайта
-python3 site/build.py             # сайт и презентация из данных: site/
-TEAM=<Название> node deck/build.mjs   # PDF для сдачи: deck/out/*.pdf, проверка 8 слайдов и 18 МБ
-python3 cjm/miro_svg.py           # фреймы доски Miro: cjm/out/*.svg
+python3 model/build_model.py              # Excel: model/out/*.xlsx
+TEAM=<Название> node site/deck/build-pdf.mjs   # PDF для сдачи: site/deck/CupMoscow2026-Т-Банк-<Название>.pdf
+python3 cjm/miro_svg.py                   # CJM для доски Miro: cjm/out/*.svg
+cd cjm && python3 miro_frames.py          # остальные фреймы доски: cjm/out/2*.svg, 3*.svg
 ```
 
+Сайт открывается без сборки: `site/index.html`, презентация `site/deck/index.html` (стрелки, пробел, F на весь экран).
 Для PDF нужны Node 18+ и Playwright с Chromium, для пересчёта формул Excel нужен LibreOffice.
+3D-объекты сайта рендерятся из `site/tools/render3d/` (three.js).

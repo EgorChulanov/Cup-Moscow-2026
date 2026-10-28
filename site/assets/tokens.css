@@ -1,0 +1,31 @@
+/* Общие токены сайта и презентации: цвета, радиусы и шрифты в духе дизайн-кода Т-Банка.
+   Шрифт. Если положить файлы фирменного шрифта в site/fonts/tbank/ (tbank-sans-400.woff2, -500, -700),
+   они подхватятся сами: семейство «TBank Sans» стоит первым. Без них используется Onest. */
+@font-face { font-family: "TBank Sans"; font-weight: 400; font-display: swap; src: url(../fonts/tbank/tbank-sans-400.woff2) format("woff2"); }
+@font-face { font-family: "TBank Sans"; font-weight: 500; font-display: swap; src: url(../fonts/tbank/tbank-sans-500.woff2) format("woff2"); }
+@font-face { font-family: "TBank Sans"; font-weight: 700; font-display: swap; src: url(../fonts/tbank/tbank-sans-700.woff2) format("woff2"); }
+@font-face { font-family: "Onest"; font-weight: 100 900; font-display: swap; src: url(../fonts/onest-cyrillic-wght-normal.woff2) format("woff2"); unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: "Onest"; font-weight: 100 900; font-display: swap; src: url(../fonts/onest-latin-wght-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+20BD, U+2122, U+2212; }
+@font-face { font-family: "Onest"; font-weight: 100 900; font-display: swap; src: url(../fonts/onest-latin-ext-wght-normal.woff2) format("woff2"); unicode-range: U+0100-024F, U+20A0-20AB, U+20AD-20CF; }
+
+:root {
+  --y: #ffdd2d;          /* фирменный жёлтый */
+  --y-2: #ffe866;
+  --y-deep: #fcc521;
+  --y-soft: #fff7cc;
+  --ink: #333333;        /* основной текст */
+  --ink-strong: #1c1c1e;
+  --ink-2: #5c6066;
+  --muted: #9299a2;
+  --bg: #f6f7f8;         /* серый фон страниц */
+  --card: #ffffff;
+  --line: #e7e8ea;
+  --dark: #1c1c1e;
+  --blue: #428bf9;
+  --green: #00b92d;
+  --red: #f52222;
+  --violet: #8d6cf6;
+  --r-xl: 40px; --r-l: 32px; --r-m: 24px; --r-s: 16px;
+  --font: "TBank Sans", "Tinkoff Sans", "Onest", -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --ease: cubic-bezier(.22, 1, .36, 1);
+}

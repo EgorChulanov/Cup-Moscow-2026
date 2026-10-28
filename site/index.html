@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ПОНЯЛ: поддержка, после которой клиент чувствует, что его поняли</title>
+<meta name="description" content="Решение кейса Т-Банка на Changellenge Cup Moscow 2026: ситуационный подход для специалистов поддержки, подсказки copilot, карточка случая и полномочия по формуле.">
+<link rel="icon" href="img/mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/tokens.css">
+<style>
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--bg); -webkit-font-smoothing: antialiased; line-height: 1.5; }
+a { color: inherit; }
+img { display: block; max-width: 100%; height: auto; }
+button { font: inherit; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; border-radius: 10px; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+.wrap > * { min-width: 0; }
+
+/* Шапка как у бренд-портала: логотип, ссылки, кнопки справа */
+.top { position: sticky; top: 0; z-index: 40; background: rgba(246, 247, 248, .82); -webkit-backdrop-filter: saturate(180%) blur(18px); backdrop-filter: saturate(180%) blur(18px); }
+.top .wrap { display: flex; align-items: center; gap: 28px; height: 72px; }
+.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; font-weight: 700; font-size: 20px; letter-spacing: .01em; color: var(--ink-strong); }
+.brand img { width: 36px; height: 36px; }
+.brand small { display: block; font-size: 12px; font-weight: 500; color: var(--muted); letter-spacing: 0; line-height: 1.1; }
+.links { display: flex; gap: 4px; }
+.links a { text-decoration: none; font-size: 15.5px; font-weight: 500; padding: 8px 14px; border-radius: 12px; color: var(--ink); }
+.links a:hover { background: rgba(0, 0, 0, .05); }
+.top .act { margin-left: auto; display: flex; gap: 8px; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 48px; padding: 0 22px; border-radius: 14px; border: 0; cursor: pointer; text-decoration: none;
+  font: 500 16px/1 var(--font); white-space: nowrap; transition: background .2s, transform .3s var(--ease); }
+.btn:active { transform: scale(.98); }
+.btn.y { background: var(--y); color: var(--ink-strong); }
+.btn.y:hover { background: var(--y-deep); }
+.btn.w { background: #fff; color: var(--ink-strong); }
+.btn.w:hover { background: #f1f2f4; }
+.btn.g { background: rgba(0, 0, 0, .06); color: var(--ink-strong); }
+.btn.g:hover { background: rgba(0, 0, 0, .1); }
+.btn.d { background: var(--dark); color: #fff; }
+.btn.sm { height: 40px; padding: 0 16px; border-radius: 12px; font-size: 15px; }
+.btn svg { width: 18px; height: 18px; }
+
+/* Жёлтый баннер, как «Новый подход к бренду» */
+.hero { position: relative; margin-top: 12px; border-radius: var(--r-xl); overflow: hidden; padding: 56px 56px 60px;
+  background: radial-gradient(120% 140% at 85% 30%, #ffe45c 0%, var(--y) 38%, #ffd21f 70%, #fcc521 100%); display: grid; grid-template-columns: 1.1fr .9fr; gap: 24px; min-height: 460px; }
+.hero::after { content: ""; position: absolute; right: -10%; bottom: -30%; width: 70%; height: 90%; pointer-events: none;
+  background: repeating-linear-gradient(100deg, rgba(255, 255, 255, .0) 0 14px, rgba(255, 255, 255, .22) 14px 16px); filter: blur(2px); transform: skewY(-8deg); opacity: .7;
+  -webkit-mask: radial-gradient(60% 60% at 60% 60%, #000 30%, transparent 75%); mask: radial-gradient(60% 60% at 60% 60%, #000 30%, transparent 75%); }
+.hero .tx { position: relative; z-index: 2; align-self: center; }
+.hero .kick { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 500; background: rgba(255, 255, 255, .55); padding: 6px 14px; border-radius: 999px; color: var(--ink-strong); }
+h1 { margin: 18px 0 0; font-size: clamp(36px, 4.6vw, 60px); line-height: 1.03; letter-spacing: -.035em; font-weight: 700; color: var(--ink-strong); }
+.hero p.lead { margin: 18px 0 0; font-size: 19px; max-width: 540px; color: #3a3a3a; }
+.hero .cta { margin-top: 28px; display: flex; gap: 10px; flex-wrap: wrap; }
+.hero .art { position: relative; z-index: 2; }
+.hero .art img { position: absolute; filter: drop-shadow(0 26px 30px rgba(120, 80, 0, .28)); animation: float 7s ease-in-out infinite; }
+.hero .art .b { width: 70%; right: 6%; top: 4%; }
+.hero .art .c { width: 34%; left: 0; bottom: 2%; animation-delay: -3s; }
+.hero .art .p { width: 26%; right: 0; bottom: -4%; animation-delay: -5s; }
+@keyframes float { 50% { translate: 0 -12px; } }
+@media (prefers-reduced-motion: reduce) { .hero .art img, .glassphone { animation: none !important; } }
+
+/* Большая карточка со стеклянным телефоном, как вторая карточка бренд-портала */
+.stage { position: relative; margin-top: 24px; border-radius: var(--r-xl); overflow: hidden; height: 640px;
+  background: radial-gradient(90% 120% at 30% 10%, #6d5a3c 0%, #3a3631 40%, #24252a 75%); perspective: 1600px; }
+.stage .cap { position: absolute; left: 48px; top: 44px; z-index: 3; color: #fff; max-width: 420px; }
+.stage .cap b { display: block; font-size: 30px; letter-spacing: -.02em; line-height: 1.1; }
+.stage .cap span { display: block; margin-top: 10px; color: rgba(255, 255, 255, .72); font-size: 16px; }
+.glassphone { position: absolute; left: 50%; top: 52%; width: 430px; height: 760px; margin: -380px 0 0 -120px; border-radius: 64px;
+  transform: rotateX(48deg) rotateZ(-30deg) rotateY(0deg); transform-style: preserve-3d;
+  background: linear-gradient(160deg, rgba(255, 255, 255, .78), rgba(255, 255, 255, .42)); border: 1px solid rgba(255, 255, 255, .8);
+  box-shadow: 0 60px 80px -30px rgba(0, 0, 0, .55), inset 0 2px 0 rgba(255, 255, 255, .9); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); padding: 30px 22px; }
+.glassphone .scr { position: absolute; inset: 14px; border-radius: 52px; background: linear-gradient(180deg, #fffdf4, #f4f1e6); overflow: hidden; padding: 70px 22px 22px; }
+.chatline { display: flex; margin-top: 12px; }
+.chatline.me { justify-content: flex-end; }
+.chatline .msg { max-width: 80%; padding: 12px 16px; border-radius: 20px; font-size: 16px; line-height: 1.35; background: #fff; color: var(--ink-strong); box-shadow: 0 2px 6px rgba(0, 0, 0, .06); }
+.chatline.me .msg { background: var(--y); border-bottom-right-radius: 6px; }
+.chatline .msg.op { border-bottom-left-radius: 6px; }
+.casecard { margin-top: 14px; background: #fff; border-radius: 22px; padding: 16px; box-shadow: 0 8px 20px rgba(0, 0, 0, .08); font-size: 14.5px; }
+.casecard b { display: block; font-size: 15px; margin-bottom: 6px; color: var(--ink-strong); }
+.casecard .row { display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; border-top: 1px solid var(--line); }
+.casecard .row span:first-child { color: var(--muted); }
+.floater { position: absolute; z-index: 4; border-radius: 26px; background: rgba(255, 255, 255, .72); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, .85); box-shadow: 0 30px 50px -20px rgba(0, 0, 0, .5), inset 0 1px 0 #fff; padding: 16px 20px; color: var(--ink-strong); }
+.floater.f1 { right: 4%; top: 9%; width: 330px; transform: rotate(-4deg); }
+.floater.f2 { right: 12%; bottom: 12%; width: 300px; transform: rotate(3deg); }
+.floater .t { font-size: 13px; color: var(--ink-2); font-weight: 500; }
+.floater .h { font-size: 20px; font-weight: 700; letter-spacing: -.01em; margin-top: 2px; }
+.floater .s { font-size: 14px; color: var(--ink-2); margin-top: 6px; }
+.tag { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border-radius: 999px; font-size: 13.5px; font-weight: 500; background: var(--y-soft); color: #6b5300; }
+.tag.dark { background: var(--dark); color: #fff; }
+
+.kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 16px; }
+.kpi { background: var(--card); border-radius: var(--r-m); padding: 20px 22px; }
+.kpi b { display: block; font-size: 32px; letter-spacing: -.03em; line-height: 1.1; color: var(--ink-strong); }
+.kpi span { font-size: 14px; color: var(--ink-2); }
+
+section { padding: 96px 0 0; }
+h2 { margin: 0; font-size: clamp(30px, 3.6vw, 46px); letter-spacing: -.03em; line-height: 1.06; font-weight: 700; color: var(--ink-strong); }
+.sub { margin: 14px 0 0; color: var(--ink-2); font-size: 18px; max-width: 780px; }
+.card { background: var(--card); border-radius: var(--r-l); padding: 28px; }
+
+/* Проблема */
+.prob { display: grid; grid-template-columns: 1.05fr .95fr; gap: 16px; margin-top: 32px; }
+.prob .main { background: var(--dark); color: #fff; border-radius: var(--r-l); padding: 34px; position: relative; overflow: hidden; }
+.prob .main b { display: block; font-size: 28px; line-height: 1.15; letter-spacing: -.02em; max-width: 520px; }
+.prob .main p { color: rgba(255, 255, 255, .72); margin: 14px 0 0; font-size: 16px; max-width: 520px; }
+.prob .main img { position: absolute; right: -40px; bottom: -40px; width: 260px; opacity: .95; }
+.bars { display: grid; gap: 10px; margin-top: 8px; }
+.bar { display: grid; grid-template-columns: 1fr 60px; align-items: center; gap: 10px; font-size: 14.5px; }
+.bar .l { position: relative; height: 40px; border-radius: 12px; background: var(--bg); overflow: hidden; }
+.bar .l i { position: absolute; inset: 0 auto 0 0; border-radius: 12px; background: var(--y); }
+.bar .l i.good { background: #b8e8c4; }
+.bar .l span { position: relative; z-index: 1; display: flex; align-items: center; height: 100%; padding: 0 14px; font-weight: 500; color: var(--ink-strong); }
+.bar b { text-align: right; font-size: 15px; color: var(--ink-strong); }
+.legend { display: flex; gap: 16px; font-size: 13.5px; color: var(--ink-2); margin-top: 14px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 4px; vertical-align: -1px; margin-right: 6px; background: var(--y); }
+.legend i.good { background: #b8e8c4; }
+
+.tree { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 16px; }
+.br { background: var(--card); border-radius: var(--r-m); padding: 22px; display: flex; flex-direction: column; gap: 10px; }
+.br .k { width: 44px; height: 44px; border-radius: 14px; background: var(--y); display: grid; place-items: center; font-weight: 700; font-size: 20px; color: var(--ink-strong); }
+.br b { font-size: 17px; line-height: 1.25; color: var(--ink-strong); }
+.br p { margin: 0; font-size: 14.5px; color: var(--ink-2); }
+.br .root { margin-top: auto; font-size: 13.5px; background: var(--bg); border-radius: 12px; padding: 10px 12px; color: var(--ink); }
+.br .root em { font-style: normal; font-weight: 600; display: block; color: var(--muted); font-size: 12px; margin-bottom: 2px; }
+
+/* Типы ситуаций */
+.types { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 32px; }
+.ty { border-radius: var(--r-l); padding: 24px 22px; min-height: 360px; display: flex; flex-direction: column; color: var(--ink-strong); position: relative; overflow: hidden; }
+.ty .n { font-size: 14px; font-weight: 500; opacity: .75; }
+.ty h3 { margin: 4px 0 0; font-size: 25px; letter-spacing: -.03em; overflow-wrap: anywhere; }
+.ty .need { margin-top: 10px; font-size: 16px; font-weight: 500; }
+.ty .sig { margin-top: auto; font-size: 13.5px; background: rgba(255, 255, 255, .6); border-radius: 14px; padding: 10px 12px; }
+.ty .sig em { display: block; font-style: normal; font-weight: 600; font-size: 12px; opacity: .7; margin-bottom: 2px; }
+.ty .no { margin-top: 8px; font-size: 13.5px; background: rgba(28, 28, 30, .86); color: #fff; border-radius: 14px; padding: 10px 12px; }
+.ty .no em { display: block; font-style: normal; font-weight: 600; font-size: 12px; opacity: .7; margin-bottom: 2px; }
+.t1 { background: #ffe45c; } .t2 { background: #ffd2c6; } .t3 { background: #d8e6ff; } .t4 { background: #dff3e4; } .t5 { background: #e9e0ff; }
+.rule { margin-top: 12px; background: var(--card); border-radius: var(--r-m); padding: 18px 22px; font-size: 16px; display: flex; gap: 14px; align-items: center; }
+.rule img { width: 56px; flex: none; }
+
+/* ПОНЯЛ */
+.steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 32px; }
+.st { background: var(--card); border-radius: var(--r-l); padding: 24px 22px 22px; display: flex; flex-direction: column; }
+.st .L { width: 64px; height: 64px; border-radius: 20px; background: var(--y); display: grid; place-items: center; font-size: 34px; font-weight: 700; color: var(--ink-strong); }
+.st b { margin-top: 16px; font-size: 19px; line-height: 1.2; color: var(--ink-strong); }
+.st p { margin: 8px 0 0; font-size: 14.5px; color: var(--ink-2); }
+.st q { display: block; margin-top: auto; padding-top: 14px; font-size: 14px; color: var(--ink); quotes: "«" "»"; }
+.st q::before { content: open-quote; } .st q::after { content: close-quote; }
+
+.seg { position: relative; display: grid; grid-template-columns: repeat(5, 1fr); padding: 4px; margin-top: 28px; border-radius: 18px; background: #eceef0; }
+.seg button { position: relative; z-index: 1; height: 46px; border: 0; background: none; font-weight: 500; font-size: 15.5px; color: var(--ink); cursor: pointer; border-radius: 14px; transition: color .3s; }
+.seg .thumb { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc((100% - 8px) / 5); border-radius: 14px; background: #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, .08); transition: transform .45s var(--ease); }
+.play { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 12px; }
+.play > div { background: var(--card); border-radius: var(--r-m); padding: 20px 22px; }
+.play em { display: block; font-style: normal; font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+.play p { margin: 0; font-size: 16px; color: var(--ink-strong); }
+.play .bad { background: #2a2a2d; color: #fff; }
+.play .bad p { color: #fff; }
+
+/* Прототип рабочего места */
+.ws { margin-top: 32px; background: #e9ebee; border-radius: var(--r-xl); padding: 14px; }
+.ws .win { background: #fff; border-radius: 28px; overflow: hidden; display: grid; grid-template-columns: 260px 1fr 380px; grid-template-rows: auto 1fr; }
+.ws .bar0 { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; padding: 12px 18px; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--ink-2); }
+.ws .bar0 .dot { width: 10px; height: 10px; border-radius: 50%; background: #e3e5e8; }
+.ws .bar0 b { color: var(--ink-strong); margin-left: 8px; }
+.ws .bar0 .r { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+.q { border-right: 1px solid var(--line); padding: 10px; display: flex; flex-direction: column; gap: 6px; background: #fafafb; }
+.q button { text-align: left; border: 0; background: none; border-radius: 16px; padding: 12px; cursor: pointer; display: grid; gap: 4px; }
+.q button:hover { background: #f0f1f3; }
+.q button.on { background: #fff; box-shadow: 0 2px 10px rgba(0, 0, 0, .07); }
+.q .nm { font-weight: 600; font-size: 14.5px; color: var(--ink-strong); display: flex; justify-content: space-between; }
+.q .nm span { font-weight: 500; font-size: 12.5px; color: var(--muted); }
+.q .pv { font-size: 13px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.q .tg { justify-self: start; }
+.chat { display: flex; flex-direction: column; background: #f6f7f8; min-width: 0; }
+.chat .hd { padding: 14px 20px; border-bottom: 1px solid var(--line); background: #fff; display: flex; align-items: center; gap: 12px; }
+.chat .av { width: 38px; height: 38px; border-radius: 50%; background: var(--y-soft); display: grid; place-items: center; font-weight: 700; color: #6b5300; }
+.chat .hd b { display: block; font-size: 15px; color: var(--ink-strong); }
+.chat .hd span { font-size: 13px; color: var(--muted); }
+.chat .lg { flex: 1; min-height: 420px; overflow: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+.bub { max-width: 78%; padding: 11px 15px; border-radius: 18px; font-size: 15px; line-height: 1.38; background: #fff; color: var(--ink-strong); box-shadow: 0 1px 3px rgba(0, 0, 0, .06); }
+.bub.cl { align-self: flex-start; border-bottom-left-radius: 6px; }
+.bub.op { align-self: flex-end; background: var(--y); border-bottom-right-radius: 6px; }
+.bub.sys { align-self: center; background: none; box-shadow: none; color: var(--muted); font-size: 13px; padding: 2px; }
+.bub .cc { margin-top: 8px; background: #fff; border-radius: 14px; padding: 10px 12px; font-size: 13.5px; }
+.bub .cc div { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; }
+.bub .cc div span:first-child { color: var(--muted); }
+.chat .cmp { padding: 12px 16px; background: #fff; border-top: 1px solid var(--line); display: flex; gap: 8px; align-items: flex-end; }
+.chat textarea { flex: 1; resize: none; border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; font: 15px/1.35 var(--font); min-height: 46px; max-height: 120px; color: var(--ink-strong); background: #fafafb; }
+.cop { border-left: 1px solid var(--line); padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.cop h4 { margin: 0; font-size: 13px; font-weight: 600; color: var(--muted); }
+.blk { background: #f7f8f9; border-radius: 18px; padding: 14px; }
+.blk.type { background: var(--y); }
+.blk.type .ty-n { font-size: 24px; font-weight: 700; letter-spacing: -.02em; color: var(--ink-strong); }
+.blk.type .ty-w { font-size: 14px; color: #4a3d00; margin-top: 2px; }
+.sigs { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 13.5px; }
+.sigs li { display: flex; gap: 8px; }
+.sigs li i { flex: none; width: 8px; height: 8px; border-radius: 3px; background: var(--ink-strong); margin-top: 6px; }
+.sigs li span { color: var(--muted); }
+.chk { display: grid; gap: 6px; margin-top: 8px; }
+.chk label { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; cursor: pointer; padding: 8px 10px; border-radius: 12px; background: #fff; }
+.chk input { accent-color: #1c1c1e; width: 18px; height: 18px; margin: 1px 0 0; flex: none; }
+.chk label b { color: var(--ink-strong); }
+.chk label.done { background: #eaf8ee; }
+.sugg { font-size: 14.5px; color: var(--ink-strong); background: #fff; border-radius: 12px; padding: 10px 12px; margin-top: 8px; }
+.sugg + .btn { margin-top: 8px; }
+.calc { display: grid; gap: 8px; margin-top: 8px; font-size: 14px; }
+.calc .rw { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.calc input[type=number] { width: 110px; border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; font: 15px var(--font); text-align: right; }
+.calc select { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; font: 14px var(--font); background: #fff; }
+.verdict { border-radius: 12px; padding: 10px 12px; font-size: 14px; font-weight: 500; }
+.verdict.ok { background: #e3f6e8; color: #0b6b25; }
+.verdict.no { background: #fdecec; color: #a11d1d; }
+.score { display: flex; gap: 8px; margin-top: 4px; }
+.score div { flex: 1; background: #fff; border-radius: 12px; padding: 8px 10px; font-size: 12.5px; color: var(--ink-2); }
+.score b { display: block; font-size: 18px; color: var(--ink-strong); }
+
+/* Эффект */
+.fx { display: grid; grid-template-columns: 1.25fr .75fr; gap: 16px; margin-top: 32px; }
+.fx svg { width: 100%; height: auto; display: block; }
+.opts { display: grid; gap: 8px; margin-top: 12px; }
+.opt { display: grid; grid-template-columns: 1fr 52px; gap: 10px; align-items: center; font-size: 14px; }
+.opt .l { height: 36px; border-radius: 10px; background: var(--bg); position: relative; overflow: hidden; }
+.opt .l i { position: absolute; inset: 0 auto 0 0; background: #d9dce0; border-radius: 10px; }
+.opt.rec .l i { background: var(--y); }
+.opt .l span { position: relative; z-index: 1; display: flex; align-items: center; height: 100%; padding: 0 12px; font-weight: 500; color: var(--ink-strong); white-space: nowrap; }
+.opt b { text-align: right; color: var(--ink-strong); }
+.plan { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 16px; }
+.ph { background: var(--card); border-radius: var(--r-m); padding: 22px; position: relative; }
+.ph .w { font-size: 13px; font-weight: 600; color: var(--muted); }
+.ph b { display: block; margin-top: 6px; font-size: 19px; color: var(--ink-strong); }
+.ph p { margin: 8px 0 0; font-size: 14.5px; color: var(--ink-2); }
+.ph .gate { margin-top: 12px; font-size: 13.5px; background: var(--y-soft); border-radius: 12px; padding: 8px 10px; color: #4a3d00; }
+.ph.now { background: var(--dark); color: #fff; }
+.ph.now b { color: #fff; } .ph.now p { color: rgba(255, 255, 255, .72); } .ph.now .w { color: rgba(255, 255, 255, .6); }
+.ph.now .gate { background: var(--y); color: var(--ink-strong); }
+.mets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 12px; }
+.met { background: var(--card); border-radius: var(--r-m); padding: 20px 22px; }
+.met b { display: block; font-size: 17px; color: var(--ink-strong); }
+.met span { display: block; font-size: 14px; color: var(--ink-2); margin-top: 4px; }
+.met .ctl { margin-top: 10px; font-size: 13px; color: var(--ink-2); border-top: 1px solid var(--line); padding-top: 10px; }
+.met .ctl em { font-style: normal; font-weight: 600; color: var(--ink-strong); }
+
+/* Подзадачи кейса */
+.crit { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 32px; }
+.cr { background: var(--card); border-radius: var(--r-m); padding: 22px; display: flex; flex-direction: column; gap: 8px; }
+.cr .n { width: 36px; height: 36px; border-radius: 12px; background: var(--y); display: grid; place-items: center; font-weight: 700; color: var(--ink-strong); }
+.cr b { font-size: 16.5px; line-height: 1.25; color: var(--ink-strong); }
+.cr p { margin: 0; font-size: 14px; color: var(--ink-2); }
+.cr a { margin-top: auto; font-size: 14px; font-weight: 500; text-decoration: none; color: var(--ink-strong); border-bottom: 1.5px solid var(--y); align-self: flex-start; }
+.cr.miro { background: var(--dark); color: #fff; }
+.cr.miro b { color: #fff; } .cr.miro p { color: rgba(255, 255, 255, .72); } .cr.miro a { color: #fff; }
+
+/* Команда */
+.team { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px; }
+.pr { background: var(--card); border-radius: var(--r-l); padding: 12px 12px 24px; }
+.pr .ph0 { height: 300px; border-radius: 22px; overflow: hidden; background: var(--bg); }
+.pr .ph0 img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; }
+.pr .ph0.ini { display: grid; place-items: center; background: linear-gradient(160deg, var(--y-2), var(--y)); font-size: 80px; font-weight: 700; color: var(--ink-strong); }
+.pr b { display: block; margin: 18px 12px 0; font-size: 22px; color: var(--ink-strong); letter-spacing: -.01em; }
+.pr span { display: block; margin: 4px 12px 0; font-size: 15px; color: var(--ink-2); }
+.pr em { display: block; margin: 10px 12px 0; font-style: normal; font-size: 14px; font-weight: 500; color: #6b5300; }
+
+footer { margin-top: 96px; background: #fff; }
+footer .wrap { display: flex; gap: 24px; align-items: center; justify-content: space-between; padding-top: 32px; padding-bottom: 40px; font-size: 14px; color: var(--ink-2); flex-wrap: wrap; }
+footer .brand { font-size: 17px; }
+
+@media (max-width: 1100px) {
+  .links { display: none; }
+  .hero { grid-template-columns: 1fr; padding: 40px 28px; }
+  .hero .art { height: 300px; }
+  .kpis { grid-template-columns: repeat(2, 1fr); }
+  .prob, .fx { grid-template-columns: 1fr; }
+  .tree, .types, .steps { grid-template-columns: 1fr 1fr; }
+  .play, .plan, .crit { grid-template-columns: 1fr 1fr; }
+  .mets { grid-template-columns: 1fr; }
+  .ws .win { grid-template-columns: 1fr; }
+  .q { flex-direction: row; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+  .q button { min-width: 220px; }
+  .cop { border-left: 0; border-top: 1px solid var(--line); max-height: none; }
+  .team { grid-template-columns: 1fr; }
+  .stage { height: 560px; }
+  .floater { display: none; }
+}
+@media (max-width: 640px) {
+  .wrap { padding: 0 16px; }
+  .top .act .btn.g { display: none; }
+  .tree, .types, .steps, .play, .plan, .crit { grid-template-columns: 1fr; }
+  .seg { grid-template-columns: repeat(5, auto); overflow-x: auto; }
+  .seg .thumb { display: none; }
+  .seg button[aria-selected="true"] { background: #fff; }
+  .ty { min-height: 0; }
+  .stage { height: 620px; }
+  .stage .cap { left: 20px; right: 20px; top: 24px; }
+  .stage .cap b { font-size: 24px; }
+  .glassphone { margin-left: -200px; top: 74%; }
+  .prob .main { padding-bottom: 170px; }
+  .prob .main img { width: 170px; right: -20px; bottom: -40px; }
+  .kpi b { font-size: 26px; }
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#"><img src="img/mark.svg" alt="" width="36" height="36"><span>ПОНЯЛ<small>для поддержки Т-Банка</small></span></a>
+    <nav class="links" aria-label="Разделы">
+      <a href="#problem">Проблема</a><a href="#types">Ситуации</a><a href="#ponyal">Подход</a><a href="#proto">Прототип</a><a href="#effect">Эффект</a><a href="#team">Команда</a>
+    </nav>
+    <div class="act">
+      <a class="btn g sm" href="https://miro.com/app/board/uXjVEUshVGo=/" target="_blank" rel="noopener">Доска Miro</a>
+      <a class="btn y sm" href="deck/">Презентация</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<div class="hero">
+  <div class="tx">
+    <span class="kick">Changellenge Cup Moscow 2026, кейс Т-Банка</span>
+    <h1>Поддержка, после которой клиент говорит «меня поняли»</h1>
+    <p class="lead">Подход для специалистов в сложных ситуациях: 5 типов, 5 шагов, подсказки copilot, карточка случая и полномочия по формуле.</p>
+    <div class="cta">
+      <a class="btn d" href="deck/">Открыть презентацию</a>
+      <a class="btn w" href="#proto">Попробовать прототип</a>
+    </div>
+  </div>
+  <div class="art" aria-hidden="true">
+    <img class="b" src="img/3d-bubble.webp" alt="" width="790" height="768">
+    <img class="c" src="img/3d-coin.webp" alt="" width="711" height="800">
+    <img class="p" src="img/3d-pin.webp" alt="" width="672" height="800">
+  </div>
+</div>
+
+<div class="stage" aria-label="Пример: ответ специалиста по подходу ПОНЯЛ в чате приложения">
+  <div class="cap"><b>Тот же чат, другой результат</b><span>Ирина стоит на кассе, оплата не проходит. Специалист видит отказ операции до первого вопроса и отвечает действием, а не статьёй.</span></div>
+  <div class="glassphone" aria-hidden="true">
+    <div class="scr">
+      <div class="chatline me"><div class="msg">Карта не проходит, стою на кассе</div></div>
+      <div class="chatline"><div class="msg op">Вижу, оплату остановила проверка новой покупки. Уже снял ограничение, попробуйте ещё раз. Я на связи</div></div>
+      <div class="chatline me"><div class="msg">Прошло, спасибо!</div></div>
+      <div class="casecard"><b>Карточка случая</b>
+        <div class="row"><span>Сделано</span><span>ограничение снято</span></div>
+        <div class="row"><span>От вас</span><span>ничего</span></div>
+        <div class="row"><span>Ответственный</span><span>Анна, до 21:00</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="floater f1"><div class="t">Copilot, тип ситуации</div><div class="h">Срочно</div><div class="s">Отказ операции 2 минуты назад, слово «касса». Сначала действие, потом объяснение.</div></div>
+  <div class="floater f2"><div class="t">Итог диалога</div><div class="h">Решено с первого раза</div><div class="s">1 обращение вместо 2-3, 4 минуты вместо трёх дней.</div></div>
+</div>
+
+<div class="kpis">
+  <div class="kpi"><b>685 млн ₽</b><span>эффект в год со второго года</span></div>
+  <div class="kpi"><b>3,2 мес.</b><span>окупаемость, разово 181 млн ₽</span></div>
+  <div class="kpi"><b>+10 п.п.</b><span>к решению с первого обращения в сложных ситуациях</span></div>
+  <div class="kpi"><b>68,5 тыс.</b><span>клиентов в год остаются в банке</span></div>
+  <div class="kpi"><b>+4 п.п.</b><span>точка окупаемости, проверяем в пилоте</span></div>
+</div>
+
+<section id="problem">
+  <h2>Рутина уже у ИИ. Качество поддержки теперь решают сложные случаи</h2>
+  <p class="sub">До 45% обращений закрывает ИИ, к специалисту приходят нестандартные ситуации. Именно в них клиент уходит без ощущения помощи: пишет снова, жалуется или уходит из банка.</p>
+  <div class="prob">
+    <div class="main">
+      <b>Хвалят за скорость в простых вопросах, ругают в сложных</b>
+      <p>53 отзыва о поддержке Т-Банка с banki.ru, otzovik, Сравни и других площадок, разметка по кодам жалоб и похвал. Тот же сдвиг видит регулятор: жалобы на банки в ЦБ за 2025 год выросли на 14,7%, на антифрод в 2,3 раза.</p>
+      <img src="img/3d-pin.webp" alt="" width="672" height="800">
+    </div>
+    <div class="card">
+      <div class="bars" id="bars"></div>
+      <div class="legend"><span><i></i>жалобы</span><span><i class="good"></i>похвала</span><span>число отзывов из 53</span></div>
+    </div>
+  </div>
+  <div class="tree">
+    <div class="br"><div class="k">А</div><b>Не понята настоящая проблема</b><p>Одинаковые слова значат разное, контекст не прочитан.</p><div class="root"><em>Корень</em>Copilot подсказывает статью, а не тип ситуации</div></div>
+    <div class="br"><div class="k">Б</div><b>Ответ верный, но это ещё одна задача</b><p>Инструкция вместо действия испуганному человеку.</p><div class="root"><em>Корень</em>Качество меряют соответствием процедуре</div></div>
+    <div class="br"><div class="k">В</div><b>«Нельзя», и это не объяснено</b><p>Нет срока, списка документов, альтернативы.</p><div class="root"><em>Корень</em>Тип ограничения не виден специалисту</div></div>
+    <div class="br"><div class="k">Г</div><b>Вопрос не доведён до конца</b><p>«Передано в отдел», сдвиг сроков, история заново.</p><div class="root"><em>Корень</em>Закрывается ответ, а не проблема</div></div>
+    <div class="br"><div class="k">Д</div><b>Причина в продукте остаётся</b><p>Тот же сбой у тысяч клиентов, сигнал не уходит дальше.</p><div class="root"><em>Корень</em>Нет канала от наблюдения к продукту</div></div>
+  </div>
+</section>
+
+<section id="types">
+  <h2>Пять типов ситуаций, которым нужен особый подход</h2>
+  <p class="sub">Группируем по тому, что нужно человеку в эту минуту, а не по продукту. Тип виден за 1-2 сообщения, copilot подсвечивает его по сигналам в данных.</p>
+  <div class="types">
+    <div class="ty t1"><span class="n">Тип 1</span><h3>Срочно</h3><div class="need">Действие за минуты, минимум усилий</div><div class="sig"><em>Сигналы</em>отказ операции за 15 минут, «стою на кассе», геолокация за рубежом</div><div class="no"><em>Нельзя</em>статья и инструкция из 5 шагов</div></div>
+    <div class="ty t2"><span class="n">Тип 2</span><h3>Страшно</h3><div class="need">Остановить потерю, снять вину, честные шансы</div><div class="sig"><em>Сигналы</em>перевод новому получателю, смена номера, «звонили из службы»</div><div class="no"><em>Нельзя</em>«вы перевели сами», обещать возврат</div></div>
+    <div class="ty t3"><span class="n">Тип 3</span><h3>Несправедливо</h3><div class="need">Причина, маршрут, срок, один ответственный</div><div class="sig"><em>Сигналы</em>ограничение на счёте, 2+ обращения, «на каком основании»</div><div class="no"><em>Нельзя</em>«по требованиям законодательства» без шагов</div></div>
+    <div class="ty t4"><span class="n">Тип 4</span><h3>Тяжело</h3><div class="need">Бережный темп, человек, помощь близких</div><div class="sig"><em>Сигналы</em>возраст, путаница в тексте, «не могу платить», «умер»</div><div class="no"><em>Нельзя</em>тон взыскания, полотно текста</div></div>
+    <div class="ty t5"><span class="n">Тип 5</span><h3>Снова</h3><div class="need">Признание, владелец, решение до конца</div><div class="sig"><em>Сигналы</em>2+ обращения по теме за 30 дней, «третий раз»</div><div class="no"><em>Нельзя</em>начинать с нуля, просить те же данные</div></div>
+  </div>
+  <div class="rule"><img src="img/3d-bubble.webp" alt="" width="790" height="768"><span><b>Типы пересекаются.</b> Мошенничество у пожилого клиента это Страшно и Тяжело. Более уязвимый тип задаёт тон, более срочный задаёт порядок действий.</span></div>
+</section>
+
+<section id="ponyal">
+  <h2>ПОНЯЛ: пять шагов специалиста</h2>
+  <p class="sub">Шаги собраны из того, что решило исход в разборах ситуаций и интервью, и сверены с практиками Disney, Apple, британских банков для уязвимых клиентов. Последний шаг продолжает работу после ответа клиенту.</p>
+  <div class="steps">
+    <div class="st"><div class="L">П</div><b>Прочитать контекст</b><p>История, операции за 24 часа, статус ограничений, прошлые обращения. Определить тип.</p><q>Не спрашиваю то, что банк уже знает</q></div>
+    <div class="st"><div class="L">О</div><b>Обозначить, что понял</b><p>Своими словами назвать ситуацию и состояние, снять вину.</p><q>Правильно понимаю, что вы на кассе и оплата не проходит?</q></div>
+    <div class="st"><div class="L">Н</div><b>Найти настоящую задачу</b><p>1-2 уточняющих вопроса, по одному. Вопрос дешевле неверного ответа.</p><q>Сейчас кто-то просит перевести деньги или назвать код?</q></div>
+    <div class="st"><div class="L">Я</div><b>Ясный план и действие</b><p>Сделать самому всё, что можно. Что сделано, что нужно от клиента, когда итог.</p><q>Я уже сделал это. От вас только одно. Итог до 18:00</q></div>
+    <div class="st"><div class="L">Л</div><b>Лично довести и вернуть сигнал</b><p>Остаться владельцем случая, вернуться с итогом, системную причину передать в продукт.</p><q>Если что-то пойдёт не так, ответьте в этот чат, я увижу</q></div>
+  </div>
+
+  <div class="seg" role="tablist" id="seg">
+    <span class="thumb"></span>
+    <button role="tab" aria-selected="true" data-t="0">Срочно</button>
+    <button role="tab" aria-selected="false" data-t="1">Страшно</button>
+    <button role="tab" aria-selected="false" data-t="2">Несправедливо</button>
+    <button role="tab" aria-selected="false" data-t="3">Тяжело</button>
+    <button role="tab" aria-selected="false" data-t="4">Снова</button>
+  </div>
+  <div class="play" id="play"></div>
+</section>
+
+<section id="proto">
+  <h2>Прототип рабочего места специалиста</h2>
+  <p class="sub">Выберите обращение. Copilot подсвечивает тип ситуации по сигналам, ведёт по шагам ПОНЯЛ, считает порог уступки и собирает карточку случая для клиента. Данные обращений смоделированы на основе реальных отзывов.</p>
+  <div class="ws">
+    <div class="win">
+      <div class="bar0"><span class="dot"></span><span class="dot"></span><span class="dot"></span><b>Рабочее место специалиста</b><span class="r"><span class="tag">Сложные обращения: 5</span></span></div>
+      <div class="q" id="queue" role="tablist" aria-label="Очередь обращений"></div>
+      <div class="chat">
+        <div class="hd"><div class="av" id="av">И</div><div><b id="cn">Клиент</b><span id="cm">чат в приложении</span></div></div>
+        <div class="lg" id="log" aria-live="polite"></div>
+        <div class="cmp"><textarea id="ta" rows="2" aria-label="Ответ клиенту"></textarea><button class="btn y" id="send">Отправить</button></div>
+      </div>
+      <aside class="cop" aria-label="Подсказки copilot">
+        <div class="blk type"><h4 style="color:#6b5300">Тип ситуации</h4><div class="ty-n" id="tyn"></div><div class="ty-w" id="tyw"></div></div>
+        <div class="blk"><h4>Сигналы в данных</h4><ul class="sigs" id="sigs"></ul></div>
+        <div class="blk"><h4>Шаги ПОНЯЛ</h4><div class="chk" id="chk"></div></div>
+        <div class="blk"><h4>Фраза под тип, текст свой</h4><div class="sugg" id="sugg"></div><button class="btn g sm" id="use">Вставить в ответ</button></div>
+        <div class="blk"><h4>Порог уступки</h4>
+          <div class="calc">
+            <div class="rw"><span>Сумма спора, ₽</span><input type="number" id="amt" min="0" step="10"></div>
+            <div class="rw"><span>Сторона банка</span><select id="fault"><option value="1">ошибка или спорно</option><option value="0">банк прав</option></select></div>
+            <div class="rw"><span>Допущения</span><select id="segm"><option value="809">консервативные, 809 ₽</option><option value="2114">расширенные, 2 114 ₽</option></select></div>
+            <div class="verdict" id="verd"></div>
+          </div>
+        </div>
+        <div class="blk"><h4>Карточка случая</h4><div class="score" id="cardp"></div><button class="btn d sm" id="sendcard" style="margin-top:10px;width:100%">Отправить карточку клиенту</button></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section id="effect">
+  <h2>685 млн ₽ в год и окупаемость за 3,2 месяца</h2>
+  <p class="sub">Финмодель на открытых данных: 17,8 млн сложных обращений к специалисту в год, стоимость обращения 274 ₽, операционная прибыль активного клиента 5 220 ₽ в год. Время специалистов и уступки учтены как расходы.</p>
+  <div class="fx">
+    <div class="card"><b style="font-size:18px;color:var(--ink-strong)">Из чего складывается эффект, млн ₽ в год</b><svg id="wf" viewBox="0 -40 720 400" role="img" aria-label="Каскад эффекта: экономия на повторах 732, устранение причин 98, сохранённая прибыль 358, время специалистов минус 244, уступки минус 214, ежегодные затраты минус 45, итого 685 млн рублей"></svg></div>
+    <div class="card"><b style="font-size:18px;color:var(--ink-strong)">Сравнили 5 вариантов по 7 факторам</b>
+      <div class="opts" id="opts"></div>
+      <p style="margin:14px 0 0;font-size:14px;color:var(--ink-2)">Балл из 5, веса факторов: решение с первого обращения 25%, «меня поняли» 20%, удержание 15%, экономика 15%, риски 10%, реализуемость 10%, причины в продуктах 5%.</p>
+    </div>
+  </div>
+  <div class="plan">
+    <div class="ph now"><span class="w">4 недели</span><b>Подготовка</b><p>Правила по 5 типам, формулировки для ограничений с комплаенсом, порог с финансами, MVP подсказок.</p><div class="gate">Правила согласованы с рисками</div></div>
+    <div class="ph"><span class="w">8 недель</span><b>Пилот на 1 000 специалистов</b><p>A/B с контрольной группой, 137 тыс. сложных обращений, бюджет 35 млн ₽.</p><div class="gate">+4 п.п. к решению с первого обращения, время не больше +5%</div></div>
+    <div class="ph"><span class="w">3 месяца</span><b>Волны</b><p>Чаты, затем звонки и вторая линия. Обучение 4 часа.</p><div class="gate">Метрики держатся на 3 волнах</div></div>
+    <div class="ph"><span class="w">6 месяцев от старта</span><b>Весь департамент</b><p>20 тыс. специалистов, ежемесячный топ причин для продуктовых команд.</p><div class="gate">Эффект модели подтверждён фактом</div></div>
+  </div>
+  <div class="mets">
+    <div class="met"><b>Решение с первого обращения</b><span>нет повтора по теме 7 дней</span><div class="ctl"><em>Контроль:</em> время обработки растёт не больше чем на 5%</div></div>
+    <div class="met"><b>«Меня поняли» и CES</b><span>вопрос после диалога и «насколько легко», 1-7</span><div class="ctl"><em>Контроль:</em> число сообщений клиента, оценки после отказа</div></div>
+    <div class="met"><b>Удержание и жалобы</b><span>активен через 90 дней, жалобы в ЦБ на 100 тыс. клиентов</span><div class="ctl"><em>Контроль:</em> расходы на уступки на клиента</div></div>
+  </div>
+</section>
+
+<section id="criteria">
+  <h2>Все 7 подзадач кейса</h2>
+  <p class="sub">Где лежит ответ на каждую подзадачу кейса. Дерево причин и сравнение вариантов в приложениях 2 и 3 презентации.</p>
+  <div class="crit">
+    <div class="cr"><div class="n">1</div><b>Опыт поддержки и лучшие практики</b><p>Т-Банк против Сбера, Альфы, ВТБ и Яндекса: что удобно и что разочаровало, 6 практик, которые берём.</p><a href="deck/#2">Слайд 2</a></div>
+    <div class="cr"><div class="n">2</div><b>Типы ситуаций с особым подходом</b><p>5 типов по потребности человека, сигналы для распознавания и что нельзя.</p><a href="deck/#3">Слайд 3</a></div>
+    <div class="cr"><div class="n">3</div><b>Ключевые действия из тренажёров</b><p>5 действий и в скольких ситуациях каждое решило исход.</p><a href="deck/#3">Слайд 3</a></div>
+    <div class="cr"><div class="n">4</div><b>Путь клиента (CJM)</b><p>24 шага: где стресс, где равнодушие, где теряется доверие. Service Blueprint под картой.</p><a href="deck/#4">Слайд 4</a></div>
+    <div class="cr"><div class="n">5</div><b>Рекомендации специалисту</b><p>ПОНЯЛ: вопросы, инструменты, данные и сигналы, принципы, плейбук по типам.</p><a href="deck/#5">Слайд 5</a></div>
+    <div class="cr"><div class="n">6</div><b>Изменения и шаблон-обоснование</b><p>5 изменений под корневые причины, шаблон для смежных команд, когда компенсация выгодна банку.</p><a href="deck/#6">Слайд 6</a></div>
+    <div class="cr"><div class="n">7</div><b>Влияние на бизнес</b><p>От действия специалиста до денег: удержание, повторы, продукт. Варианты, план, метрики.</p><a href="deck/#7">Слайд 7</a></div>
+    <div class="cr miro"><div class="n">M</div><b>Доска Miro</b><p>CJM на 24 шага, Service Blueprint, персона, JTBD, поле, дерево причин и варианты.</p><a href="https://miro.com/app/board/uXjVEUshVGo=/" target="_blank" rel="noopener">Открыть доску</a></div>
+  </div>
+</section>
+
+<section id="team">
+  <h2>Команда</h2>
+  <div class="team">
+    <div class="pr"><div class="ph0"><img src="img/team-egor.webp" alt="Егор Чуланов" loading="lazy"></div><b>Егор Чуланов</b><span>ВШБ НИУ ВШЭ, «Управление цифровым продуктом», 2 курс</span><em>Продукт, исследование, CJM</em></div>
+    <div class="pr"><div class="ph0"><img src="img/team-kate.webp" alt="Екатерина Макаренко" loading="lazy"></div><b>Екатерина Макаренко</b><span>ВШБ НИУ ВШЭ, «Управление цифровым продуктом», 2 курс</span><em>Исследование, качество, данные</em></div>
+    <div class="pr"><div class="ph0 ini">ИХ</div><b>Искандер Ханов</b><span>МГТУ им. Н. Э. Баумана, 2 курс</span><em>Финансовая модель, аналитика</em></div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="brand" href="#"><img src="img/mark.svg" alt="" width="30" height="30"><span>ПОНЯЛ</span></a>
+    <span>Решение кейса Т-Банка, Changellenge Cup Moscow 2026. Синтетические данные в прототипе подписаны и построены на реальных отзывах.</span>
+    <span style="display:flex;gap:8px"><a class="btn g sm" href="deck/CupMoscow2026-Т-Банк-Команда.pdf">PDF</a><a class="btn y sm" href="deck/">Презентация</a></span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // Отзывы: коды жалоб и похвал, число из 53 (research/01)
+  var BARS = [
+    ['Решили быстро в чате', 8, 1], ['Шаблонный ответ без решения', 7, 0], ['Затягивание сроков', 5, 0],
+    ['Специалист сам сделал действие', 4, 1], ['Бот не решает, трудно дойти до человека', 4, 0], ['Блокировки по 115-ФЗ и 161-ФЗ', 4, 0],
+    ['Мошенничество: отказ, нет заморозки', 3, 0], ['Передачи и повторные обращения', 2, 0]
+  ];
+  var bars = document.getElementById('bars');
+  bars.innerHTML = BARS.map(function (b) {
+    return '<div class="bar"><div class="l"><i class="' + (b[2] ? 'good' : '') + '" style="width:' + (b[1] / 8 * 100) + '%"></i><span>' + b[0] + '</span></div><b>' + b[1] + '</b></div>';
+  }).join('');
+
+  // Плейбук по типам
+  var PLAY = [
+    ['«Вижу, оплата не прошла. Уже смотрю, это займёт минуту»', '«Вы сейчас на кассе или есть время?»', 'Снять ограничение или дать обходной путь за минуты', 'Статья из базы знаний'],
+    ['«Понимаю, как это страшно. Вы правильно сделали, что сразу написали»', '«Сейчас кто-то просит вас перевести деньги или назвать код?»', 'Заблокировать, запросить банк получателя, заполнить заявление за клиента, предложить «Защиту близких»', '«Вы перевели сами», обещание возврата'],
+    ['«Вижу ограничение и понимаю, что это мешает работать»', '«Какие операции нужны в первую очередь?»', 'Назвать тип ограничения, список документов файлом, срок, один ответственный', '«По требованиям законодательства» без шагов'],
+    ['«Я с вами, разберёмся вместе, без спешки»', '«Удобнее продолжить здесь или позвонить голосом?»', 'Короткие сообщения, голос, участие близкого, тон партнёра', 'Полотно текста, перекидывание'],
+    ['«Вижу, вы пишете третий раз. Это наша ошибка, разберусь до конца сам»', '«Что из обещанного раньше не сделано?»', 'Взять случай на себя, решить или дать дату и вернуться', 'Просить те же данные заново']
+  ];
+  var play = document.getElementById('play'), seg = document.getElementById('seg');
+  function showPlay(i) {
+    var p = PLAY[i];
+    play.innerHTML = '<div><em>Первая фраза</em><p>' + p[0] + '</p></div><div><em>Главный вопрос</em><p>' + p[1] + '</p></div><div><em>Сделать</em><p>' + p[2] + '</p></div><div class="bad"><em style="color:#c9cbd0">Не делать</em><p>' + p[3] + '</p></div>';
+    seg.querySelector('.thumb').style.transform = 'translateX(' + (i * 100) + '%)';
+    Array.prototype.forEach.call(seg.querySelectorAll('button'), function (b, k) { b.setAttribute('aria-selected', String(k === i)); });
+  }
+  seg.addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) showPlay(+b.dataset.t); });
+  showPlay(0);
+
+  // Прототип: обращения смоделированы на основе реальных отзывов (research/synthetic/interviews.md)
+  var STEPS = [['П', 'Прочитать контекст'], ['О', 'Обозначить, что понял'], ['Н', 'Найти настоящую задачу'], ['Я', 'Ясный план и действие'], ['Л', 'Лично довести']];
+  var CASES = [
+    { n: 'Марина', a: 34, ch: 'чат в приложении', type: 'Срочно', why: 'Сначала действие, потом объяснение', amt: 0, fault: 0,
+      msgs: ['Карта не проходит, стою на кассе с пакетами!!', 'Бот прислал статью, мне сейчас не до неё'],
+      sigs: [['Отказ операции', '2 минуты назад, 3 840 ₽, супермаркет'], ['Причина отказа', 'антифрод: новая покупка в интернет-магазине'], ['Слова клиента', '«стою на кассе», два восклицательных знака']],
+      say: 'Вижу, оплату остановила проверка после покупки в новом магазине. Уже снял ограничение, попробуйте ещё раз. Я на связи, если не пройдёт.',
+      card: [['Сделано', 'ограничение снято'], ['От вас', 'ничего'], ['Итог', 'сейчас']] },
+    { n: 'Олег', a: 41, ch: 'чат в приложении', type: 'Страшно', why: 'Остановить потерю, снять вину, честные шансы', amt: 46000, fault: 0,
+      msgs: ['Мне позвонили из «службы безопасности», я перевёл 46 000 на «безопасный счёт»', 'Что теперь делать? Мне сказали, что это защита'],
+      sigs: [['Перевод', '46 000 ₽ новому получателю 12 минут назад'], ['Устройство', 'вход с нового телефона вчера'], ['Признак ЦБ', 'смена устройства перед крупным переводом']],
+      say: 'Понимаю, как это тяжело. Вы правильно сделали, что сразу написали, мошенники умеют убеждать. Карту я уже заблокировал и отправляю запрос в банк получателя. Сейчас кто-то просит вас назвать код или перевести ещё?',
+      card: [['Сделано', 'карта заблокирована, запрос в банк получателя'], ['От вас', 'заявление, заполню за вас'], ['Итог', 'ответ банка получателя до 3 дней']] },
+    { n: 'Алексей', a: 29, ch: 'чат ИП', type: 'Несправедливо', why: 'Причина, маршрут, срок, один ответственный', amt: 0, fault: 0,
+      msgs: ['Счёт ограничен уже 9 дней, мне ответили «по требованиям законодательства»', 'На каком основании? Срок уже три раза сдвигали'],
+      sigs: [['Ограничение', '115-ФЗ, запрос документов от 19.10'], ['Обращения', '3 по теме за 10 дней'], ['Слова клиента', '«на каком основании», «сдвигали»']],
+      say: 'Вижу ограничение и понимаю, что оно мешает работать. Это проверка операций по 115-ФЗ. Нужны три документа, отправляю список файлом. После загрузки решение до 4 ноября, я веду ваш вопрос сам.',
+      card: [['Сделано', 'список документов отправлен'], ['От вас', '3 документа в чат'], ['Итог', 'до 4 ноября, ответственный Анна']] },
+    { n: 'Валентина Петровна', a: 68, ch: 'чат в приложении', type: 'Тяжело', why: 'Бережный темп, человек, помощь близких', amt: 0, fault: 0,
+      msgs: ['здравствуйте мне звонили из полиции сказали оформить кредит чтобы защитить деньги', 'я не понимаю что делать'],
+      sigs: [['Возраст', '68 лет'], ['Кредит', 'заявка 20 минут назад на 300 000 ₽'], ['Текст', 'нет пунктуации, путаница']],
+      say: 'Я с вами, разберёмся вместе, без спешки. Полиция никогда не просит оформлять кредит. Заявку я остановил. Можно позвонить вам голосом? Кто из близких может побыть рядом?',
+      card: [['Сделано', 'заявка на кредит остановлена'], ['От вас', 'ничего, перезвоню сам'], ['Итог', 'звонок в течение 10 минут']] },
+    { n: 'Дарья', a: 23, ch: 'чат в приложении', type: 'Снова', why: 'Признание, владелец, решение до конца', amt: 1240, fault: 1,
+      msgs: ['Пишу третий раз про кешбэк 1 240 рублей', 'Каждый раз объясняю всё заново'],
+      sigs: [['Обращения', '3 по теме «кешбэк» за 21 день'], ['Обещание', '«начислим до 15.10», не выполнено'], ['Сумма', '1 240 ₽, ошибка категории у партнёра']],
+      say: 'Вижу, вы пишете третий раз, и это наша ошибка. Повторять ничего не нужно, я всё вижу. Начисляю 1 240 ₽ сейчас и передаю ошибку категории в продукт, чтобы она не повторилась.',
+      card: [['Сделано', '1 240 ₽ начислено'], ['От вас', 'ничего'], ['Итог', 'сейчас, ошибка передана в продукт']] }
+  ];
+  var cur = 0, done = [];
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function fmt(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+  $('queue').innerHTML = CASES.map(function (c, i) {
+    return '<button role="tab" data-i="' + i + '"><span class="nm">' + esc(c.n) + '<span>' + (2 + i * 3) + ' мин</span></span><span class="pv">' + esc(c.msgs[0]) + '</span><span class="tag tg">' + c.type + '</span></button>';
+  }).join('');
+  function renderChk() {
+    $('chk').innerHTML = STEPS.map(function (s, k) {
+      var on = done[k];
+      return '<label class="' + (on ? 'done' : '') + '"><input type="checkbox" data-k="' + k + '"' + (on ? ' checked' : '') + '><span><b>' + s[0] + '.</b> ' + s[1] + '</span></label>';
+    }).join('');
+  }
+  function verdict() {
+    var a = +$('amt').value || 0, f = $('fault').value === '1', thr = +$('segm').value, v = $('verd');
+    if (!a) { v.className = 'verdict'; v.style.background = '#f1f2f4'; v.textContent = 'Спора о деньгах нет, уступка не нужна'; return; }
+    v.style.background = '';
+    if (f && a <= thr) { v.className = 'verdict ok'; v.textContent = 'Можно вернуть сразу: ' + fmt(a) + ' ₽ меньше порога ' + fmt(thr) + ' ₽. Уступка дешевле ухода и повторов.'; }
+    else if (!f) { v.className = 'verdict no'; v.textContent = 'Банк прав: уступка не положена. Объяснить причину и предложить альтернативу.'; }
+    else { v.className = 'verdict no'; v.textContent = 'Выше порога ' + fmt(thr) + ' ₽: решение по процедуре, срок и ответственный в карточке.'; }
+  }
+  function show(i) {
+    cur = i; done = [true, false, false, false, false];
+    var c = CASES[i];
+    Array.prototype.forEach.call($('queue').children, function (b, k) { b.classList.toggle('on', k === i); b.setAttribute('aria-selected', String(k === i)); });
+    $('av').textContent = c.n[0]; $('cn').textContent = c.n + ', ' + c.a; $('cm').textContent = c.ch;
+    $('log').innerHTML = '<div class="bub sys">Сегодня</div>' + c.msgs.map(function (m) { return '<div class="bub cl">' + esc(m) + '</div>'; }).join('');
+    $('tyn').textContent = c.type; $('tyw').textContent = c.why;
+    $('sigs').innerHTML = c.sigs.map(function (s) { return '<li><i></i><div>' + esc(s[0]) + '<br><span>' + esc(s[1]) + '</span></div></li>'; }).join('');
+    $('sugg').textContent = c.say; $('ta').value = '';
+    $('amt').value = c.amt; $('fault').value = c.fault ? '1' : '0';
+    $('cardp').innerHTML = c.card.map(function (r) { return '<div>' + esc(r[0]) + '<b style="font-size:13.5px">' + esc(r[1]) + '</b></div>'; }).join('');
+    renderChk(); verdict();
+  }
+  function tick(k) { done[k] = true; renderChk(); }
+  $('queue').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) show(+b.dataset.i); });
+  $('chk').addEventListener('change', function (e) { done[+e.target.dataset.k] = e.target.checked; renderChk(); });
+  $('use').addEventListener('click', function () { $('ta').value = CASES[cur].say; tick(1); $('ta').focus(); });
+  $('send').addEventListener('click', function () {
+    var t = $('ta').value.trim(); if (!t) return;
+    $('log').insertAdjacentHTML('beforeend', '<div class="bub op">' + esc(t) + '</div>'); $('ta').value = ''; tick(1); tick(2); tick(3);
+    $('log').scrollTop = 1e6;
+  });
+  $('sendcard').addEventListener('click', function () {
+    var c = CASES[cur];
+    $('log').insertAdjacentHTML('beforeend', '<div class="bub op"><b>Карточка случая</b><div class="cc">' + c.card.map(function (r) { return '<div><span>' + esc(r[0]) + '</span><span>' + esc(r[1]) + '</span></div>'; }).join('') + '<div><span>Ответственный</span><span>Анна, вернусь сама</span></div></div></div>');
+    tick(3); tick(4); $('log').scrollTop = 1e6;
+  });
+  ['amt', 'fault', 'segm'].forEach(function (id) { $(id).addEventListener('input', verdict); });
+  show(0);
+
+  // Каскад эффекта, млн ₽ в год (model/out, лист «Варианты», рекомендация)
+  var WF = [['Повторы', 732], ['Причины', 98], ['Удержание', 358], ['Время', -244], ['Уступки', -214], ['Затраты', -45], ['Итого', 685, 1]];
+  var svg = $('wf'), H = 300, top = 20, max = 1188, sc = (H - top) / max, x = 30, w = 72, gap = 22, run = 0, out = '';
+  out += '<line x1="20" x2="710" y1="' + (top + H - top) + '" y2="' + (top + H - top) + '" stroke="#e7e8ea"/>';
+  WF.forEach(function (d) {
+    var v = d[1], y0, h, fill;
+    if (d[2]) { y0 = H - v * sc; h = v * sc; fill = '#1c1c1e'; }
+    else if (v > 0) { y0 = H - (run + v) * sc; h = v * sc; fill = '#ffdd2d'; run += v; }
+    else { y0 = H - run * sc; h = -v * sc; fill = '#f2b8b0'; run += v; }
+    out += '<rect x="' + x + '" y="' + y0 + '" width="' + w + '" height="' + h + '" rx="10" fill="' + fill + '"/>';
+    out += '<text x="' + (x + w / 2) + '" y="' + (y0 - 8) + '" text-anchor="middle" font-size="16" font-weight="700" fill="#1c1c1e">' + (v > 0 ? '' : '−') + Math.abs(v) + '</text>';
+    out += '<text x="' + (x + w / 2) + '" y="' + (H + 26) + '" text-anchor="middle" font-size="14" fill="#5c6066">' + d[0] + '</text>';
+    x += w + gap;
+  });
+  svg.innerHTML = out;
+
+  var OPTS = [['O1 Стандарты и скрипты', 2.35], ['O2 Тренинг эмпатии', 3.15], ['O3 ИИ решает сам', 1.90], ['O4 Подход ПОНЯЛ', 4.15], ['O5 Компенсации всем', 2.60], ['Рекомендация: ПОНЯЛ и полномочия', 4.65, 1]];
+  $('opts').innerHTML = OPTS.map(function (o) {
+    return '<div class="opt' + (o[2] ? ' rec' : '') + '"><div class="l"><i style="width:' + (o[1] / 5 * 100) + '%"></i><span>' + o[0] + '</span></div><b>' + o[1].toFixed(2).replace('.', ',') + '</b></div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>
