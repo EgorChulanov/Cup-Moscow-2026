@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ПОНЯЛ: поддержка, после которой клиент чувствует, что его поняли</title>
 <meta name="description" content="Решение кейса Т-Банка на Changellenge Cup Moscow 2026: ситуационный подход для специалистов поддержки, подсказки copilot, карточка случая и полномочия по формуле.">
-<link rel="icon" href="img/mark.svg" type="image/svg+xml">
+<link rel="icon" href="img/tbank-icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/tokens.css">
 <style>
 * { box-sizing: border-box; }
@@ -20,12 +20,14 @@ button { font: inherit; }
 
 /* Шапка как у бренд-портала: логотип, ссылки, кнопки справа */
 .top { position: sticky; top: 0; z-index: 40; background: rgba(246, 247, 248, .82); -webkit-backdrop-filter: saturate(180%) blur(18px); backdrop-filter: saturate(180%) blur(18px); }
-.top .wrap { display: flex; align-items: center; gap: 28px; height: 72px; }
+.top .wrap { display: flex; align-items: center; gap: 22px; height: 72px; }
 .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; font-weight: 700; font-size: 20px; letter-spacing: .01em; color: var(--ink-strong); }
-.brand img { width: 36px; height: 36px; }
+.brand img { width: 32px; height: 32px; }
+.brand img.tlogo { width: auto; height: 34px; }
+.brand .sep { width: 1.5px; height: 28px; background: rgba(0,0,0,.15); display: block; }
 .brand small { display: block; font-size: 12px; font-weight: 500; color: var(--muted); letter-spacing: 0; line-height: 1.1; }
 .links { display: flex; gap: 4px; }
-.links a { text-decoration: none; font-size: 15.5px; font-weight: 500; padding: 8px 14px; border-radius: 12px; color: var(--ink); }
+.links a { text-decoration: none; font-size: 15px; font-weight: 500; padding: 8px 11px; border-radius: 12px; color: var(--ink); }
 .links a:hover { background: rgba(0, 0, 0, .05); }
 .top .act { margin-left: auto; display: flex; gap: 8px; }
 
@@ -96,7 +98,7 @@ h1 { margin: 18px 0 0; font-size: clamp(36px, 4.6vw, 60px); line-height: 1.03; l
 .kpi b { display: block; font-size: 32px; letter-spacing: -.03em; line-height: 1.1; color: var(--ink-strong); }
 .kpi span { font-size: 14px; color: var(--ink-2); }
 
-section { padding: 96px 0 0; }
+section { padding: 96px 0 0; scroll-margin-top: 60px; }
 h2 { margin: 0; font-size: clamp(30px, 3.6vw, 46px); letter-spacing: -.03em; line-height: 1.06; font-weight: 700; color: var(--ink-strong); }
 .sub { margin: 14px 0 0; color: var(--ink-2); font-size: 18px; max-width: 780px; }
 .card { background: var(--card); border-radius: var(--r-l); padding: 28px; }
@@ -139,6 +141,27 @@ h2 { margin: 0; font-size: clamp(30px, 3.6vw, 46px); letter-spacing: -.03em; lin
 .t1 { background: #ffe45c; } .t2 { background: #ffd2c6; } .t3 { background: #d8e6ff; } .t4 { background: #dff3e4; } .t5 { background: #e9e0ff; }
 .rule { margin-top: 12px; background: var(--card); border-radius: var(--r-m); padding: 18px 22px; font-size: 16px; display: flex; gap: 14px; align-items: center; }
 .rule img { width: 56px; flex: none; }
+
+
+/* CJM */
+.jr { display: grid; grid-template-columns: 280px 1fr; gap: 14px; margin-top: 32px; }
+.pc { background: var(--card); border-radius: var(--r-l); padding: 12px 12px 22px; }
+.pc img { width: 100%; height: 330px; object-fit: cover; object-position: 50% 15%; border-radius: 22px; }
+.pc b { display: block; margin: 16px 8px 0; font-size: 22px; color: var(--ink-strong); }
+.pc span { display: block; margin: 6px 8px 0; font-size: 14.5px; color: var(--ink-2); }
+.pc em { display: block; margin: 12px 8px 0; font-style: normal; font-size: 14px; background: var(--y-soft); border-radius: 14px; padding: 10px 12px; color: #4a3d00; }
+.jmap { background: var(--card); border-radius: var(--r-l); padding: 18px; overflow-x: auto; }
+.jgrid { display: grid; grid-template-columns: 84px repeat(8, minmax(96px, 1fr)); gap: 6px; font-size: 13px; line-height: 1.3; min-width: 880px; }
+.jgrid .rl { font-size: 12.5px; font-weight: 600; color: var(--muted); display: flex; align-items: center; }
+.jgrid .stg { border-radius: 10px; font-size: 12.5px; font-weight: 600; display: flex; align-items: center; justify-content: center; height: 28px; color: var(--ink-strong); }
+.jgrid .ph8 { background: var(--y); border-radius: 12px; padding: 8px 10px; font-weight: 600; color: var(--ink-strong); }
+.jgrid .th { background: var(--bg); border-radius: 12px; padding: 8px 10px; font-style: italic; color: var(--ink-strong); }
+.jgrid .br { background: #fff0ed; border-radius: 12px; padding: 8px 10px; color: #6a2318; }
+.jgrid .tb { background: var(--y-soft); border-radius: 12px; padding: 8px 10px; color: #3a3000; }
+.jgrid .emo { grid-column: 2 / span 8; height: 120px; position: relative; }
+.jgrid .emo svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.jgrid .mk { display: flex; gap: 5px; margin-top: 6px; } .jgrid .mk i { width: 12px; height: 12px; border-radius: 50%; }
+@media (max-width: 1100px) { .jr { grid-template-columns: 1fr; } .pc img { height: 380px; } }
 
 /* ПОНЯЛ */
 .steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 32px; }
@@ -286,6 +309,7 @@ footer .brand { font-size: 17px; }
 }
 @media (max-width: 640px) {
   .wrap { padding: 0 16px; }
+  .brand img.tlogo, .brand .sep { display: none; }
   .top .act .btn.g { display: none; }
   .tree, .types, .steps, .play, .plan, .crit { grid-template-columns: 1fr; }
   .seg { grid-template-columns: repeat(5, auto); overflow-x: auto; }
@@ -306,9 +330,9 @@ footer .brand { font-size: 17px; }
 
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="#"><img src="img/mark.svg" alt="" width="36" height="36"><span>ПОНЯЛ<small>для поддержки Т-Банка</small></span></a>
+    <a class="brand" href="#"><img src="img/tbank-logo.svg" alt="Т-Банк" class="tlogo"><i class="sep"></i><img src="img/mark.svg" alt="" width="32" height="32"><span>ПОНЯЛ</span></a>
     <nav class="links" aria-label="Разделы">
-      <a href="#problem">Проблема</a><a href="#types">Ситуации</a><a href="#ponyal">Подход</a><a href="#proto">Прототип</a><a href="#effect">Эффект</a><a href="#team">Команда</a>
+      <a href="#problem">Проблема</a><a href="#types">Ситуации</a><a href="#cjm">CJM</a><a href="#ponyal">Подход</a><a href="#proto">Прототип</a><a href="#effect">Эффект</a><a href="#team">Команда</a>
     </nav>
     <div class="act">
       <a class="btn g sm" href="https://miro.com/app/board/uXjVEUshVGo=/" target="_blank" rel="noopener">Доска Miro</a>
@@ -396,6 +420,15 @@ footer .brand { font-size: 17px; }
     <div class="ty t5"><span class="n">Тип 5</span><h3>Снова</h3><div class="need">Признание, владелец, решение до конца</div><div class="sig"><em>Сигналы</em>2+ обращения по теме за 30 дней, «третий раз»</div><div class="no"><em>Нельзя</em>начинать с нуля, просить те же данные</div></div>
   </div>
   <div class="rule"><img src="img/3d-bubble.webp" alt="" width="790" height="768"><span><b>Типы пересекаются.</b> Мошенничество у пожилого клиента это Страшно и Тяжело. Более уязвимый тип задаёт тон, более срочный задаёт порядок действий.</span></div>
+</section>
+
+<section id="cjm">
+  <h2>Путь Ирины: 3 дня без карты и 2 обращения</h2>
+  <p class="sub">CJM на 24 шага, здесь по 8 фазам. Стресс, равнодушие и потеря доверия появляются там, где банк знает больше, чем говорит клиенту. Полная карта со Service Blueprint на <a href="https://miro.com/app/board/uXjVEUshVGo=/" target="_blank" rel="noopener">доске Miro</a>.</p>
+  <div class="jr">
+    <div class="pc"><img src="img/irina.webp" alt="Ирина, персона" width="900" height="1200" loading="lazy"><b>Ирина, 32</b><span>Маркетолог, Москва. Зарплатный клиент Т-Банка 4 года, всё решает в чате.</span><em>Вечер пятницы, оплата на кассе не проходит: антифрод ограничил карту. Решено на третий день.</em></div>
+    <div class="jmap"><div class="jgrid" id="jgrid"></div></div>
+  </div>
 </section>
 
 <section id="ponyal">
@@ -502,7 +535,7 @@ footer .brand { font-size: 17px; }
 
 <footer>
   <div class="wrap">
-    <a class="brand" href="#"><img src="img/mark.svg" alt="" width="30" height="30"><span>ПОНЯЛ</span></a>
+    <a class="brand" href="#"><img src="img/tbank-logo.svg" alt="Т-Банк" class="tlogo"><i class="sep"></i><span>ПОНЯЛ</span></a>
     <span>Решение кейса Т-Банка, Changellenge Cup Moscow 2026. Синтетические данные в прототипе подписаны и построены на реальных отзывах.</span>
     <span style="display:flex;gap:8px"><a class="btn g sm" href="deck/CupMoscow2026-Т-Банк-Команда.pdf">PDF</a><a class="btn y sm" href="deck/">Презентация</a></span>
   </div>
@@ -618,6 +651,33 @@ footer .brand { font-size: 17px; }
   });
   ['amt', 'fault', 'segm'].forEach(function (id) { $(id).addEventListener('input', verdict); });
   show(0);
+
+
+  // CJM по 8 фазам (cjm/cjm.json)
+  (function () {
+    var ST = [[1, 2, 'До обращения', '#fff7cc'], [3, 4, 'Первое обращение', '#eaf9ef'], [5, 5, 'Между', '#fff7cc'], [6, 6, 'Повторное', '#eaf9ef'], [7, 8, 'Решение и после', '#fff7cc']];
+    var PH = [['Сбой на кассе', 'На меня все смотрят. Что я сделала не так?', 'Пуш не называет причину', 'S', 'Кнопка «Это я» в пуше'], ['Поиск причины', 'Почему? Меня подозревают?', 'Нет типа ограничения и следующего шага', 'DR', 'Тип ограничения и кнопка на экране карты'],
+      ['Вход в поддержку', 'Мне не нужна статья, я стою на кассе', 'Бот не распознал срочность', 'R', 'Copilot ставит тип «Срочно»'], ['Диалог', 'Я это всё уже проверила', 'Специалист не видит тип ограничения', 'SR', '«Вижу, покупку остановила защита. Уже снял»'],
+      ['Ожидание без срока', 'А если не успеют до аренды?', 'Нет срока и обратной связи', 'SDR', 'Шага нет: решено сразу'], ['Второй круг', 'Вы же видите переписку', 'Нет карточки случая и владельца', 'SRD', 'Шага нет'],
+      ['Снятие ограничения', 'Наконец-то. Но больше рисковать не хочу', 'Никто не вернулся с итогом', 'S', 'Специалист сам пишет итог'], ['Вывод о банке', 'Держать все деньги в одном банке опасно', 'Нет восстановления отношений', 'RD', 'Остаётся основным клиентом']];
+    var CL = { S: '#ff8a7a', R: '#b9bcc2', D: '#9b7bf0' };
+    var h = '<div></div>';
+    ST.forEach(function (s) { h += '<div class="stg" style="grid-column:' + (s[0] + 1) + ' / ' + (s[1] + 2) + ';background:' + s[3] + '">' + s[2] + '</div>'; });
+    h += '<div class="rl">Фаза</div>' + PH.map(function (p, i) { return '<div class="ph8">' + (i + 1) + '. ' + p[0] + '</div>'; }).join('');
+    h += '<div class="rl">Мысли</div>' + PH.map(function (p) { return '<div class="th">«' + p[1] + '»</div>'; }).join('');
+    h += '<div class="rl">Эмоция</div><div class="emo"><svg id="jemo" viewBox="0 0 1000 120" preserveAspectRatio="none"></svg></div>';
+    h += '<div class="rl">Барьер</div>' + PH.map(function (p) { return '<div class="br">' + p[2] + '<div class="mk">' + p[3].split('').map(function (m) { return '<i style="background:' + CL[m] + '"></i>'; }).join('') + '</div></div>'; }).join('');
+    h += '<div class="rl" style="color:#6b5300">С ПОНЯЛ</div>' + PH.map(function (p) { return '<div class="tb">' + p[4] + '</div>'; }).join('');
+    $('jgrid').innerHTML = h;
+    var EMO = [-1, -2, -1, -1, -1, -1, 0, -1, -1, -2, -2, -1, -2, -2, -1, -2, -2, -1, -2, 1, 0, -1, -1, -1];
+    var TOBE = [0, 0, null, 0, 1, null, 1, null, 0, 0, 1, 2, null, null, null, null, null, null, null, 2, 1, 0, 1, 1];
+    var x = function (i) { return (i + 0.5) / 24 * 1000; }, y = function (e) { return 60 - e * 25; };
+    var o = '<line x1="0" x2="1000" y1="60" y2="60" stroke="#e1e3e6" stroke-width="2" stroke-dasharray="6 6" vector-effect="non-scaling-stroke"/>';
+    o += '<polyline points="' + EMO.map(function (e, i) { return x(i) + ',' + y(e); }).join(' ') + '" fill="none" stroke="#f2a092" stroke-width="3" vector-effect="non-scaling-stroke"/>';
+    var q = []; TOBE.forEach(function (e, i) { if (e !== null) q.push(x(i) + ',' + y(e)); });
+    o += '<polyline points="' + q.join(' ') + '" fill="none" stroke="#ffcf00" stroke-width="4" vector-effect="non-scaling-stroke"/>';
+    $('jemo').innerHTML = o;
+  })();
 
   // Каскад эффекта, млн ₽ в год (model/out, лист «Варианты», рекомендация)
   var WF = [['Повторы', 732], ['Причины', 98], ['Удержание', 358], ['Время', -244], ['Уступки', -214], ['Затраты', -45], ['Итого', 685, 1]];

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ПОНЯЛ: решение кейса Т-Банка</title>
-<link rel="icon" href="../img/mark.svg" type="image/svg+xml">
+<link rel="icon" href="../img/tbank-icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/tokens.css">
 <style>
 * { box-sizing: border-box; }
@@ -119,6 +119,27 @@ table.t tr.hi td { background: var(--y-soft); }
 table.t tr:last-child td { border-bottom: 0; }
 #chain td { padding: 8px 10px; }
 
+
+/* CJM на слайде 4 */
+.cjm { display: grid; grid-template-columns: 300px 1fr; gap: 14px; height: 780px; }
+.cjm .persona { padding: 14px 16px 18px; }
+.cjm .persona .ph { height: 330px; border-radius: 24px; overflow: hidden; }
+.cjm .persona .ph img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 15%; }
+.cjm .lg { display: flex; gap: 12px; flex-wrap: wrap; font-size: 14px; color: var(--ink-2); }
+.cjm .lg i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+.cjm .map { padding: 18px 20px; display: grid; grid-template-columns: 112px repeat(8, 1fr); grid-template-rows: 30px 50px 128px 176px 60px 118px 126px; gap: 6px; font-size: 14.5px; line-height: 1.3; }
+.cjm .rl { font-size: 13px; font-weight: 600; color: var(--muted); display: flex; align-items: center; }
+.cjm .stg { border-radius: 10px; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; color: var(--ink-strong); }
+.cjm .ph8 { background: var(--y); border-radius: 12px; padding: 6px 10px; font-weight: 600; font-size: 14px; color: var(--ink-strong); display: flex; align-items: center; }
+.cjm .th { background: var(--bg); border-radius: 12px; padding: 8px 10px; font-style: italic; color: var(--ink-strong); }
+.cjm .tp { color: var(--ink-2); padding: 4px 6px; font-size: 13.5px; }
+.cjm .br { background: #fff0ed; border-radius: 12px; padding: 8px 10px; color: #6a2318; font-size: 13.5px; }
+.cjm .tb { background: var(--y-soft); border-radius: 12px; padding: 8px 10px; color: #3a3000; font-size: 13.5px; }
+.cjm .mk { display: flex; gap: 6px; align-items: center; padding-left: 6px; }
+.cjm .mk i { width: 16px; height: 16px; border-radius: 50%; display: inline-block; }
+.cjm .emo { grid-column: 2 / span 8; position: relative; }
+.cjm .emo svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
 /* Навигация в режиме показа */
 .pager { position: fixed; right: 18px; bottom: 16px; z-index: 20; display: flex; gap: 6px; align-items: center; background: rgba(28, 28, 30, .78); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-radius: 16px; padding: 6px; }
 .pager button { border: 0; background: rgba(255, 255, 255, .1); color: #fff; height: 36px; min-width: 36px; border-radius: 11px; font: 500 14px var(--font); cursor: pointer; padding: 0 12px; }
@@ -137,7 +158,7 @@ table.t tr:last-child td { border-bottom: 0; }
 
 <!-- 1. Обложка -->
 <section class="slide yellow s-cover" data-title="Обложка">
-  <div class="org"><img src="../img/mark.svg" alt="">ПОНЯЛ <span>Changellenge Cup Moscow 2026, кейс Т-Банка</span></div>
+  <div class="org"><img src="../img/tbank-logo-onyellow.svg" alt="Т-Банк" style="width:auto;height:52px"><i style="width:2px;height:40px;background:rgba(0,0,0,.18);display:block"></i><img src="../img/mark.svg" alt="" style="width:44px;height:44px">ПОНЯЛ <span>Changellenge Cup Moscow 2026</span></div>
   <h1>Поддержка, после которой клиент говорит «меня поняли»</h1>
   <p class="ld">Ситуационный подход для специалистов Т-Банка: 5 типов сложных ситуаций, 5 шагов, подсказки copilot, карточка случая и полномочия по формуле.</p>
   <div class="art"><img class="k3d b" src="../img/3d-bubble.webp" alt=""><img class="k3d c" src="../img/3d-coin.webp" alt=""><img class="k3d p" src="../img/3d-pin.webp" alt=""></div>
@@ -150,7 +171,7 @@ table.t tr:last-child td { border-bottom: 0; }
 
 <!-- 2. Опыт и практики -->
 <section class="slide" data-sec="1" data-title="Опыт поддержки">
-  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Подзадача 1. Опыт поддержки и лучшие практики</div><nav class="nav"></nav></header>
+  <header class="hdr"><div class="eyebrow"><img src="../img/tbank-shield.svg" alt="">Подзадача 1. Опыт поддержки и лучшие практики</div><nav class="nav"></nav></header>
   <h2 class="hl">Т-Банк хвалят за «решили сразу в чате», ругают за сложные случаи. У всех банков злит <mark>блокировка денег и тишина в ответ</mark></h2>
   <div class="grid mt" style="grid-template-columns: 560px 1fr; gap: 16px">
     <div class="card" style="padding:26px 30px"><span class="lbl">Отзывы о поддержке Т-Банка, число из 53</span><div class="bars mt2" id="rev"></div>
@@ -165,7 +186,7 @@ table.t tr:last-child td { border-bottom: 0; }
 
 <!-- 4. Типы ситуаций и ключевые действия -->
 <section class="slide" data-sec="2" data-title="Типы ситуаций">
-  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Подзадачи 2 и 3. Типы ситуаций и действия</div><nav class="nav"></nav></header>
+  <header class="hdr"><div class="eyebrow"><img src="../img/tbank-shield.svg" alt="">Подзадачи 2 и 3. Типы ситуаций и действия</div><nav class="nav"></nav></header>
   <h2 class="hl">Пять типов по тому, <mark>что нужно человеку</mark> в эту минуту. Тип виден за 1-2 сообщения по сигналам в данных</h2>
   <div class="grid mt" style="grid-template-columns: repeat(5, 1fr); gap: 14px" id="types"></div>
   <div class="grid" style="grid-template-columns: 1fr 520px; gap: 14px; margin-top: 14px">
@@ -179,20 +200,24 @@ table.t tr:last-child td { border-bottom: 0; }
 
 <!-- 4. CJM -->
 <section class="slide" data-sec="3" data-title="Путь клиента">
-  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Подзадача 4. Путь клиента (CJM)</div><nav class="nav"></nav></header>
-  <h2 class="hl">Ирина 3 дня без карты и 2 обращения. Стресс, равнодушие и потеря доверия появляются там, где банк <mark>знает больше, чем говорит</mark></h2>
-  <div class="card mt" style="padding:24px 30px"><span class="lbl">Эмоция клиента по шагам, от минус 2 до плюс 2.&ensp;<i style="display:inline-block;width:26px;height:8px;border-radius:4px;background:#f2b8b0;vertical-align:middle"></i> сейчас&ensp;<i style="display:inline-block;width:26px;height:8px;border-radius:4px;background:#ffcf00;vertical-align:middle"></i> с подходом ПОНЯЛ</span><svg id="cjm" viewBox="0 0 1700 430" style="width:100%;height:auto;margin-top:8px"></svg></div>
-  <div class="grid" style="grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 14px">
-    <div class="card" style="padding:22px 26px;background:#ffe2dc"><span class="lbl" style="color:#8a2a1a">Стресс, шаги 2, 10, 13, 16, 19</span><p class="sm mt3">Деньги нужны сейчас, а причина и срок неизвестны</p></div>
-    <div class="card g" style="padding:22px 26px"><span class="lbl">Равнодушие, шаги 6, 8, 11, 12, 15, 17, 22</span><p class="sm mt3">Статья и инструкция вместо действия, те же вопросы второй раз</p></div>
-    <div class="card" style="padding:22px 26px;background:#ebe3ff"><span class="lbl" style="color:#4b2e9e">Потеря доверия, шаги 5, 14, 17, 18, 23, 24</span><p class="sm mt3">Второй раз как в первый, клиент страхуется картой другого банка</p></div>
+  <header class="hdr"><div class="eyebrow"><img src="../img/tbank-shield.svg" alt="">Подзадача 4. Путь клиента (CJM)</div><nav class="nav"></nav></header>
+  <h2 class="hl" style="font-size:44px">Ирина 3 дня без карты и 2 обращения. Стресс, равнодушие и потеря доверия там, где банк <mark>знает больше, чем говорит</mark></h2>
+  <div class="cjm mt2">
+    <div class="persona card">
+      <div class="ph"><img src="../img/irina.webp" alt=""></div>
+      <b style="font-size:24px;display:block;margin-top:14px">Ирина, 32</b>
+      <p class="xs mut mt3">Маркетолог, Москва. Зарплатный клиент 4 года, всё решает в чате.</p>
+      <p class="xs mt2" style="background:var(--y-soft);border-radius:14px;padding:10px 12px;color:#4a3d00"><b>Эпизод:</b> вечер пятницы, оплата на кассе не проходит, антифрод ограничил карту. Решено на третий день.</p>
+      <div class="lg mt2"><span><i style="background:#ff8a7a"></i>стресс</span><span><i style="background:#b9bcc2"></i>равнодушие</span><span><i style="background:#9b7bf0"></i>доверие</span></div>
+    </div>
+    <div class="map card" id="cjmgrid"></div>
   </div>
-  <div class="foot"><span class="src"><b>Полная карта</b> со 12 дорожками, Service Blueprint и материалами к каждому шагу: доска Miro miro.com/app/board/uXjVEUshVGo=. Персона собрана по отзывам и интервью (синт.).</span><span class="num"></span></div>
+  <div class="foot"><span class="src"><b>Полная карта</b> на 24 шага со Service Blueprint и материалами к каждому шагу: доска Miro miro.com/app/board/uXjVEUshVGo=. Персона собрана по отзывам и интервью (синт.), фото сгенерировано.</span><span class="num"></span></div>
 </section>
 
 <!-- 5. ПОНЯЛ -->
 <section class="slide" data-sec="4" data-title="Подход ПОНЯЛ">
-  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Подзадача 5. Рекомендации специалисту</div><nav class="nav"></nav></header>
+  <header class="hdr"><div class="eyebrow"><img src="../img/tbank-shield.svg" alt="">Подзадача 5. Рекомендации специалисту</div><nav class="nav"></nav></header>
   <h2 class="hl">ПОНЯЛ: пять шагов, которые специалист проходит в каждом сложном обращении, и <mark>copilot ведёт по ним</mark></h2>
   <div class="grid mt" style="grid-template-columns: repeat(5, 1fr); gap: 14px" id="steps"></div>
   <div class="grid" style="grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 14px" id="recs"></div>
@@ -201,7 +226,7 @@ table.t tr:last-child td { border-bottom: 0; }
 
 <!-- 7. Изменения в продуктах и процессах -->
 <section class="slide" data-sec="5" data-title="Изменения">
-  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Подзадача 6. Изменения в продуктах и процессах</div><nav class="nav"></nav></header>
+  <header class="hdr"><div class="eyebrow"><img src="../img/tbank-shield.svg" alt="">Подзадача 6. Изменения в продуктах и процессах</div><nav class="nav"></nav></header>
   <h2 class="hl">Пять изменений убирают корневые причины. Каждое специалист <mark>обосновывает смежной команде</mark> по шаблону</h2>
   <div class="grid mt" style="grid-template-columns: 1fr 600px; gap: 16px; height: 680px">
     <div class="card" style="padding:24px 28px"><table class="t" id="chg"></table></div>
@@ -226,7 +251,7 @@ table.t tr:last-child td { border-bottom: 0; }
 
 <!-- 8. Влияние на бизнес -->
 <section class="slide" data-sec="6" data-title="Влияние на бизнес">
-  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Подзадача 7. Влияние на бизнес</div><nav class="nav"></nav></header>
+  <header class="hdr"><div class="eyebrow"><img src="../img/tbank-shield.svg" alt="">Подзадача 7. Влияние на бизнес</div><nav class="nav"></nav></header>
   <h2 class="hl">Действие специалиста превращается в деньги через повторы, удержание и продукт: <mark>685 млн ₽ в год</mark></h2>
   <div class="grid mt" style="grid-template-columns: 820px 1fr; gap: 16px">
     <div class="card" style="padding:20px 28px;height:395px"><span class="lbl">Эффект в год со второго года, млн ₽</span><svg id="wf" viewBox="0 0 760 375" style="width:100%;height:320px;margin-top:2px"></svg></div>
@@ -241,7 +266,7 @@ table.t tr:last-child td { border-bottom: 0; }
 
 <!-- 8. Команда -->
 <section class="slide" data-sec="7" data-title="Команда">
-  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Резюме команды</div><nav class="nav"></nav></header>
+  <header class="hdr"><div class="eyebrow"><img src="../img/tbank-shield.svg" alt="">Резюме команды</div><nav class="nav"></nav></header>
   <h2 class="hl">Команда: продукт, исследование и финансы. <mark>Каждый вывод проверяем данными</mark></h2>
   <div class="grid mt" style="grid-template-columns: 1fr 1fr 1fr 540px; gap: 16px; height: 700px">
     <div class="card" style="padding:14px 14px 26px;display:flex;flex-direction:column"><div style="height:330px;border-radius:26px;overflow:hidden;background:var(--bg)"><img src="../img/team-egor.webp" alt="" style="width:100%;height:100%;object-fit:cover;object-position:50% 20%"></div>
@@ -271,7 +296,7 @@ table.t tr:last-child td { border-bottom: 0; }
 
 <!-- Приложения: оглавление -->
 <section class="slide dark" data-sec="8" data-title="Приложения">
-  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Приложения</div><nav class="nav"></nav></header>
+  <header class="hdr"><div class="eyebrow"><img src="../img/tbank-shield.svg" alt="">Приложения</div><nav class="nav"></nav></header>
   <h2 class="hl" style="font-size:64px;margin-top:60px">Приложения</h2>
   <div class="grid mt" style="grid-template-columns: 1fr 1fr; gap: 14px 40px; max-width: 1500px" id="apx"></div>
   <img class="k3d" src="../img/3d-card.webp" alt="" style="width:520px;right:90px;bottom:120px">
@@ -280,7 +305,7 @@ table.t tr:last-child td { border-bottom: 0; }
 
 <!-- П1. Метод и данные -->
 <section class="slide" data-sec="8" data-title="П1. Метод и данные">
-  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Приложение 1. Метод и данные</div><nav class="nav"></nav></header>
+  <header class="hdr"><div class="eyebrow"><img src="../img/tbank-shield.svg" alt="">Приложение 1. Метод и данные</div><nav class="nav"></nav></header>
   <h2 class="hl">Опирались на реальные отзывы и открытые данные. Синтетика подписана и <mark>заменяется полем до защиты</mark></h2>
   <div class="grid mt" style="grid-template-columns: repeat(3, 1fr); gap: 14px">
     <div class="card"><span class="pill" style="background:#dff3e4;color:#0b5a20">реальные данные</span><div class="mid mt2">53</div><p class="sm mut mt3">отзыва о поддержке Т-Банка, разметка на 10 кодов жалоб и 7 кодов похвал</p></div>
@@ -296,7 +321,7 @@ table.t tr:last-child td { border-bottom: 0; }
 
 <!-- П2. Дерево причин -->
 <section class="slide" data-sec="8" data-title="П2. Дерево причин">
-  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Приложение 2. Ключевая проблема и дерево причин</div><nav class="nav"></nav></header>
+  <header class="hdr"><div class="eyebrow"><img src="../img/tbank-shield.svg" alt="">Приложение 2. Ключевая проблема и дерево причин</div><nav class="nav"></nav></header>
   <h2 class="hl">Клиент уходит без помощи не из-за грубости, а потому что ответ <mark>верный по процедуре</mark>, но не про его ситуацию</h2>
   <div class="grid mt" style="grid-template-columns: 640px 1fr; height: 700px">
     <div class="card"><span class="lbl">Отзывы о поддержке Т-Банка, число из 53</span>
@@ -313,7 +338,7 @@ table.t tr:last-child td { border-bottom: 0; }
 
 <!-- П3. Варианты -->
 <section class="slide" data-sec="8" data-title="П3. Варианты решения">
-  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Приложение 3. Варианты решения и выбор</div><nav class="nav"></nav></header>
+  <header class="hdr"><div class="eyebrow"><img src="../img/tbank-shield.svg" alt="">Приложение 3. Варианты решения и выбор</div><nav class="nav"></nav></header>
   <h2 class="hl">Сравнили 5 вариантов по 7 факторам. Выбрали ПОНЯЛ и взяли из других вариантов <mark>только то, что окупается</mark></h2>
   <div class="grid mt" style="grid-template-columns: 1fr 560px; gap: 16px; height: 680px">
     <div class="card" style="padding:26px 30px">
@@ -339,7 +364,7 @@ table.t tr:last-child td { border-bottom: 0; }
 
 <!-- П4. Service Blueprint -->
 <section class="slide" data-sec="8" data-title="П4. Service Blueprint">
-  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Приложение 4. Service Blueprint</div><nav class="nav"></nav></header>
+  <header class="hdr"><div class="eyebrow"><img src="../img/tbank-shield.svg" alt="">Приложение 4. Service Blueprint</div><nav class="nav"></nav></header>
   <h2 class="hl">За линией видимости: тип ограничения виден только безопасности, а <mark>второе обращение не связано с первым</mark></h2>
   <div class="card mt" style="padding:20px 26px"><table class="t" id="bp" style="font-size:20px"></table></div>
   <div class="foot"><span class="src"><b>Источник:</b> CJM Ирины (cjm/cjm.json), доска Miro. Статус каждой строки на доске: гипотеза, наблюдение, слова участника или опубликованное описание.</span><span class="num"></span></div>
@@ -347,7 +372,7 @@ table.t tr:last-child td { border-bottom: 0; }
 
 <!-- П5. Опрос -->
 <section class="slide" data-sec="8" data-title="П5. Опрос (синт.)">
-  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Приложение 5. Опрос N=40 (синт.)</div><nav class="nav"></nav></header>
+  <header class="hdr"><div class="eyebrow"><img src="../img/tbank-shield.svg" alt="">Приложение 5. Опрос N=40 (синт.)</div><nav class="nav"></nav></header>
   <h2 class="hl">Главный рычаг не скорость ответа, а <mark>решение с первого обращения</mark> в сложных ситуациях</h2>
   <div class="grid mt" style="grid-template-columns: 1fr 1fr 1fr; gap: 14px">
     <div class="card" style="padding:34px"><span class="lbl">Решено с первого обращения, 25 из 40</span><div class="mid mt2">5 из 25</div><p class="sm mut mt3">потеряли доверие, средний CES 6,1 из 7</p></div>
@@ -363,7 +388,7 @@ table.t tr:last-child td { border-bottom: 0; }
 
 <!-- П6. Интервью -->
 <section class="slide" data-sec="8" data-title="П6. Интервью (синт.)">
-  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Приложение 6. Интервью R01-R08 (синт.)</div><nav class="nav"></nav></header>
+  <header class="hdr"><div class="eyebrow"><img src="../img/tbank-shield.svg" alt="">Приложение 6. Интервью R01-R08 (синт.)</div><nav class="nav"></nav></header>
   <h2 class="hl">«Меня поняли» это когда <mark>назвали ситуацию своими словами</mark> и сделали, а не объяснили</h2>
   <div class="grid mt" style="grid-template-columns: repeat(4, 1fr); gap: 14px" id="int"></div>
   <div class="card ys" style="padding:20px 28px;margin-top:14px"><p class="sm"><b>Сводка, N из 8:</b> верно по процедуре, но ждали действия 4; «поняли» значит назвал ситуацию своими словами 5; неизвестность тяжелее отказа 4; рассказывали историю заново 3; признаки особой ситуации были видны заранее 5; потеря доверия или уход 5.</p></div>
@@ -372,7 +397,7 @@ table.t tr:last-child td { border-bottom: 0; }
 
 <!-- П7. Плейбук -->
 <section class="slide" data-sec="8" data-title="П7. Плейбук">
-  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Приложение 7. Плейбук по типам</div><nav class="nav"></nav></header>
+  <header class="hdr"><div class="eyebrow"><img src="../img/tbank-shield.svg" alt="">Приложение 7. Плейбук по типам</div><nav class="nav"></nav></header>
   <h2 class="hl">Что сказать первым, что спросить, что сделать и <mark>чего не делать</mark> в каждом типе</h2>
   <div class="card mt" style="padding:20px 26px"><table class="t" id="pb" style="font-size:19.5px"></table></div>
   <div class="foot"><span class="src"><b>Основа:</b> analysis/03_approach_ponyal.md; «Защита близких» и «Защитим или вернём деньги» (tbank.ru); 369-ФЗ; TEXAS и IDEA для уязвимых клиентов.</span><span class="num"></span></div>
@@ -380,7 +405,7 @@ table.t tr:last-child td { border-bottom: 0; }
 
 <!-- П8. Оценки вариантов -->
 <section class="slide" data-sec="8" data-title="П8. Оценки вариантов">
-  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Приложение 8. Оценки вариантов по факторам</div><nav class="nav"></nav></header>
+  <header class="hdr"><div class="eyebrow"><img src="../img/tbank-shield.svg" alt="">Приложение 8. Оценки вариантов по факторам</div><nav class="nav"></nav></header>
   <h2 class="hl">Оценки от 1 до 5 по каждому фактору. Рекомендация <mark>сильнее O4</mark> за счёт удержания и причин в продуктах</h2>
   <div class="card mt" style="padding:22px 28px"><table class="t" id="fac" style="font-size:19px"></table></div>
   <div class="foot"><span class="src"><b>Источник:</b> финмодель, лист «Сравнение». Оценки командные, обоснование каждой в analysis/02_options.md.</span><span class="num"></span></div>
@@ -388,7 +413,7 @@ table.t tr:last-child td { border-bottom: 0; }
 
 <!-- П9. Финмодель -->
 <section class="slide" data-sec="8" data-title="П9. Финмодель">
-  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Приложение 9. Финмодель и чувствительность</div><nav class="nav"></nav></header>
+  <header class="hdr"><div class="eyebrow"><img src="../img/tbank-shield.svg" alt="">Приложение 9. Финмодель и чувствительность</div><nav class="nav"></nav></header>
   <h2 class="hl">Решение окупается уже при <mark>+4 п.п.</mark> к решению с первого обращения, и это проверяет пилот</h2>
   <div class="grid mt" style="grid-template-columns: 1fr 1fr; gap: 16px">
     <div class="card"><span class="lbl">Ключевые допущения</span><table class="t mt3" id="inp" style="font-size:21px"></table></div>
@@ -402,7 +427,7 @@ table.t tr:last-child td { border-bottom: 0; }
 
 <!-- П10. Метрики и риски -->
 <section class="slide" data-sec="8" data-title="П10. Метрики и риски">
-  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Приложение 10. Метрики и риски</div><nav class="nav"></nav></header>
+  <header class="hdr"><div class="eyebrow"><img src="../img/tbank-shield.svg" alt="">Приложение 10. Метрики и риски</div><nav class="nav"></nav></header>
   <h2 class="hl">Каждая целевая метрика идёт <mark>в паре с контрольной</mark>, чтобы рост одной не ломал другую</h2>
   <div class="grid mt" style="grid-template-columns: 1fr 1fr; gap: 16px">
     <div class="card"><span class="lbl">Метрики</span><table class="t mt3" id="met" style="font-size:20px"></table></div>
@@ -413,7 +438,7 @@ table.t tr:last-child td { border-bottom: 0; }
 
 <!-- П11. Источники -->
 <section class="slide" data-sec="8" data-title="П11. Источники">
-  <header class="hdr"><div class="eyebrow"><img src="../img/mark.svg" alt="">Приложение 11. Источники</div><nav class="nav"></nav></header>
+  <header class="hdr"><div class="eyebrow"><img src="../img/tbank-shield.svg" alt="">Приложение 11. Источники</div><nav class="nav"></nav></header>
   <h2 class="hl">Источники</h2>
   <div class="grid mt" style="grid-template-columns: 1fr 1fr; gap: 14px" id="srcs"></div>
   <div class="foot"><span class="src">Полные ссылки и цитаты: research/01-06. Синтетические данные подписаны «синт.».</span><span class="num"></span></div>
@@ -421,7 +446,7 @@ table.t tr:last-child td { border-bottom: 0; }
 
 <!-- Спасибо -->
 <section class="slide yellow" data-title="Спасибо">
-  <div class="org" style="display:flex;align-items:center;gap:16px;font-size:22px;font-weight:600;color:var(--ink-strong)"><img src="../img/mark.svg" alt="" style="width:52px">ПОНЯЛ</div>
+  <div class="org" style="display:flex;align-items:center;gap:16px;font-size:22px;font-weight:600;color:var(--ink-strong)"><img src="../img/tbank-logo-onyellow.svg" alt="Т-Банк" style="height:52px;width:auto"><i style="width:2px;height:40px;background:rgba(0,0,0,.18);display:block"></i><img src="../img/mark.svg" alt="" style="width:44px">ПОНЯЛ</div>
   <h2 style="margin-top:150px;font-size:120px;letter-spacing:-.05em;line-height:.95;color:var(--ink-strong)">Спасибо!</h2>
   <p style="margin-top:28px;font-size:30px;color:#3a3420;max-width:900px">Готовы ответить на вопросы. Прототип рабочего места, доска Miro и финмодель доступны по ссылкам ниже.</p>
   <div class="row" style="margin-top:44px;gap:14px">
@@ -519,7 +544,8 @@ table.t tr:last-child td { border-bottom: 0; }
   ];
   fill('opt', '<tr>' + OPT[0].map(function (h) { return '<th>' + h + '</th>'; }).join('') + '</tr>' + OPT.slice(1).map(function (r, i) {
     return '<tr class="' + (i === 5 ? 'hi' : '') + '"><td><b>' + r[0] + '</b></td><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td><td>' + r[4] + '</td><td>' + r[5] + '</td><td><b>' + r[6] + '</b></td></tr>';
-  }).join('') + '<tr><td colspan="7" style="padding-top:16px"><span class="lbl">Главные риски:</span> <span class="xs mut">O1 ещё больше шаблонов; O2 навык выветривается без инструмента; O3 обещает то, что не решает, удовлетворённость ИИ-сотрудником 78,7% при цели 84,3%; O5 злоупотребления, удержание не доказано; рекомендация: время на сложное обращение растёт на 5%, окупается сокращением повторов.</span></td></tr>');
+  }).join('') + '<tr><td colspan="7" style="padding-top:16px"><span class="lbl">Главные риски:</span> <span class="xs mut">O1 ещё больше шаблонов; O2 навык выветривается без инструмента; O3 обещает то, что не решает, удовлетворённость ИИ-сотрудником 78,7% при цели 84,3%; O5 злоупотребления, удержание не доказано; рекомендация: время на сложное обращение растёт на 5%, окупается сокращением повторов.</span></td></tr>' +
+    '<tr><td colspan="7" style="padding-top:10px"><span class="lbl">План, если бы выбрали:</span> <span class="xs mut">O1 обновить 200 самых частых шаблонов за месяц; O2 модуль 8 часов, повтор раз в год; O3 только второй пилот с проверкой человеком; O4 пилот на 1 000 специалистов 8 недель, затем волны; O5 не внедрять в широкой форме; рекомендация: подготовка 4 недели, пилот 8 недель, волны 3 месяца, весь департамент за 6 месяцев.</span></td></tr>');
 
   // Слайд 7: изменения
   var CHG = [
@@ -559,24 +585,43 @@ table.t tr:last-child td { border-bottom: 0; }
   var APX = ['Метод и данные: что реальное, что синтетическое', 'Ключевая проблема и дерево причин на 5 уровнях', 'Варианты решения: финансы, риски, выбор', 'Service Blueprint: за линией видимости', 'Опрос N=40 (синт.): ключевой срез', 'Интервью R01-R08 (синт.)', 'Плейбук по 5 типам ситуаций', 'Оценки вариантов по 7 факторам', 'Финмодель: допущения и чувствительность', 'Метрики с контрольными и риски', 'Источники'];
   fill('apx', APX.map(function (t, i) { return '<div style="display:flex;gap:18px;align-items:center;font-size:26px;color:#fff;cursor:pointer" data-go="' + (i + 9) + '"><span class="pill y" style="height:44px;min-width:60px;justify-content:center;font-size:20px">П' + (i + 1) + '</span>' + t + '</div>'; }).join(''));
 
-  // П2: кривая эмоций CJM
-  var EMO = [-1, -2, -1, -1, -1, -1, 0, -1, -1, -2, -2, -1, -2, -2, -1, -2, -2, -1, -2, 1, 0, -1, -1, -1];
-  var TOBE = [0, 0, null, 0, 1, null, 1, null, 0, 0, 1, 2, null, null, null, null, null, null, null, 2, 1, 0, 1, 1];
-  var NAMES = ['Оплата отклонена', 'Повторная попытка', 'Платит чужой картой', 'Открывает приложение', '«Карта ограничена»', 'Ищет в справке', 'Пишет в чат', 'Бот: статья', 'Просит специалиста', 'Очередь', 'Ответ-инструкция', 'Узнаёт про ограничение', 'Вечер без карты', 'Читает чужие истории', 'Проверяет статус', 'Пишет снова', 'Те же вопросы', 'Передано на проверку', 'Горячая линия', 'Ограничение снято', 'Проверяет карту', 'Оценивает диалог', 'Рассказывает знакомым', 'Запасная карта'];
+
+  // Слайд 4: CJM по 8 фазам (данные cjm/cjm.json)
   (function () {
-    var W = 1700, x0 = 60, dx = (W - 90) / 23, y = function (e) { return 40 + (2 - e) * 62; }, o = '';
-    [2, 1, 0, -1, -2].forEach(function (e) { o += '<line x1="40" x2="' + (W - 10) + '" y1="' + y(e) + '" y2="' + y(e) + '" stroke="' + (e === 0 ? '#cfd2d6' : '#eceef0') + '" stroke-width="2"/><text x="0" y="' + (y(e) + 6) + '" font-size="16" fill="#9299a2">' + (e > 0 ? '+' + e : e < 0 ? '−' + (-e) : '0') + '</text>'; });
-    var STG = [[1, 6, 'До обращения'], [7, 12, 'Первое обращение'], [13, 15, 'Между'], [16, 18, 'Повторное'], [19, 24, 'Решение и после']];
-    STG.forEach(function (s, i) { var a = x0 + (s[0] - 1) * dx - dx / 2 + 4, b = x0 + (s[1] - 1) * dx + dx / 2 - 4; o += '<rect x="' + a + '" y="0" width="' + (b - a) + '" height="26" rx="13" fill="' + (i % 2 ? '#eaf9ef' : '#fff7cc') + '"/><text x="' + ((a + b) / 2) + '" y="18" text-anchor="middle" font-size="15" font-weight="600" fill="#333">' + s[2] + '</text>'; });
-    var p = EMO.map(function (e, i) { return (x0 + i * dx) + ',' + y(e); }).join(' ');
-    o += '<polyline points="' + p + '" fill="none" stroke="#f2b8b0" stroke-width="5" stroke-linejoin="round"/>';
-    var q = []; TOBE.forEach(function (e, i) { if (e !== null) q.push((x0 + i * dx) + ',' + y(e)); });
-    o += '<polyline points="' + q.join(' ') + '" fill="none" stroke="#ffcf00" stroke-width="6" stroke-linejoin="round"/>';
-    EMO.forEach(function (e, i) { o += '<circle cx="' + (x0 + i * dx) + '" cy="' + y(e) + '" r="8" fill="#fff" stroke="#e58a7b" stroke-width="3"/>'; });
-    TOBE.forEach(function (e, i) { if (e !== null) o += '<circle cx="' + (x0 + i * dx) + '" cy="' + y(e) + '" r="9" fill="#ffdd2d" stroke="#1c1c1e" stroke-width="2"/>'; });
-    NAMES.forEach(function (n, i) { o += '<text transform="translate(' + (x0 + i * dx + 5) + ',' + (y(-2) + 26) + ') rotate(35)" font-size="14.5" fill="#5c6066">' + (i + 1) + '. ' + n + '</text>'; });
-    $('cjm').innerHTML = o;
+    var el = $('cjmgrid'); if (!el) return;
+    var ST = [[1, 2, 'До обращения', '#fff7cc'], [3, 4, 'Первое обращение', '#eaf9ef'], [5, 5, 'Между', '#fff7cc'], [6, 6, 'Повторное', '#eaf9ef'], [7, 8, 'Решение и после', '#fff7cc']];
+    var PH = [
+      ['Сбой на кассе', 'На меня все смотрят. Что я сделала не так?', 'терминал, пуш об отказе', 'Пуш не называет причину', 'S', 'Кнопка «Это я» в пуше, подтверждение за 10 секунд'],
+      ['Поиск причины', 'Почему? Меня подозревают?', 'приложение, экран карты, справка', 'Нет типа ограничения и следующего шага', 'DR', 'Тип ограничения и кнопка «Это была я» на экране карты'],
+      ['Вход в поддержку', 'Мне не нужна статья, я стою на кассе', 'чат, бот, очередь', 'Бот не распознал срочность', 'R', 'Copilot ставит тип «Срочно», сразу к специалисту'],
+      ['Диалог', 'Я это всё уже проверила', 'специалист, шаблон', 'Специалист не видит тип ограничения и срок', 'SR', '«Вижу, покупку остановила защита. Уже снял»'],
+      ['Ожидание без срока', 'А если не успеют до аренды?', 'banki.ru, форумы', 'Нет срока и обратной связи', 'SDR', 'Шага нет: решено в первом обращении'],
+      ['Второй круг', 'Вы же видите переписку', 'второй специалист, безопасность', 'Нет карточки случая и владельца', 'SRD', 'Шага нет'],
+      ['Снятие ограничения', 'Наконец-то. Но больше рисковать не хочу', 'горячая линия, пуш', 'Никто не вернулся с итогом', 'S', 'Специалист сам пишет итог и как избежать'],
+      ['Вывод о банке', 'Держать все деньги в одном банке опасно', 'опрос, другой банк', 'Нет восстановления отношений', 'RD', 'Остаётся основным клиентом']
+    ];
+    var CL = { S: '#ff8a7a', R: '#b9bcc2', D: '#9b7bf0' };
+    var h = '<div></div>';
+    ST.forEach(function (s) { h += '<div class="stg" style="grid-column:' + (s[0] + 1) + ' / ' + (s[1] + 2) + ';background:' + s[3] + '">' + s[2] + '</div>'; });
+    h += '<div class="rl">Фаза</div>' + PH.map(function (p, i) { return '<div class="ph8">' + (i + 1) + '. ' + p[0] + '</div>'; }).join('');
+    h += '<div class="rl">Мысли</div>' + PH.map(function (p) { return '<div class="th">«' + p[1] + '»</div>'; }).join('');
+    h += '<div class="rl">Эмоция</div><div class="emo"><svg id="emo" viewBox="0 0 1000 150" preserveAspectRatio="none"></svg></div>';
+    h += '<div class="rl">Точки контакта</div>' + PH.map(function (p) { return '<div class="tp">' + p[2] + '</div>'; }).join('');
+    h += '<div class="rl">Барьер</div>' + PH.map(function (p) { return '<div class="br">' + p[3] + '<div class="mk" style="padding:6px 0 0">' + p[4].split('').map(function (m) { return '<i style="background:' + CL[m] + '"></i>'; }).join('') + '</div></div>'; }).join('');
+    h += '<div class="rl" style="color:#6b5300">С ПОНЯЛ</div>' + PH.map(function (p) { return '<div class="tb">' + p[5] + '</div>'; }).join('');
+    el.innerHTML = h;
+    var EMO = [-1, -2, -1, -1, -1, -1, 0, -1, -1, -2, -2, -1, -2, -2, -1, -2, -2, -1, -2, 1, 0, -1, -1, -1];
+    var TOBE = [0, 0, null, 0, 1, null, 1, null, 0, 0, 1, 2, null, null, null, null, null, null, null, 2, 1, 0, 1, 1];
+    var x = function (i) { return (i + 0.5) / 24 * 1000; }, y = function (e) { return 75 - e * 32; }, o = '';
+    o += '<line x1="0" x2="1000" y1="75" y2="75" stroke="#e1e3e6" stroke-width="2" stroke-dasharray="6 6"/>';
+    o += '<polyline points="' + EMO.map(function (e, i) { return x(i) + ',' + y(e); }).join(' ') + '" fill="none" stroke="#f2a092" stroke-width="4" vector-effect="non-scaling-stroke"/>';
+    var q = []; TOBE.forEach(function (e, i) { if (e !== null) q.push(x(i) + ',' + y(e)); });
+    o += '<polyline points="' + q.join(' ') + '" fill="none" stroke="#ffcf00" stroke-width="5" vector-effect="non-scaling-stroke"/>';
+    $('emo').innerHTML = o;
+    $('emo').parentNode.insertAdjacentHTML('beforeend', '<div style="position:absolute;right:6px;top:2px;font-size:12.5px;color:var(--ink-2)"><i style="display:inline-block;width:18px;height:5px;background:#f2a092;border-radius:3px;vertical-align:middle"></i> сейчас&ensp;<i style="display:inline-block;width:18px;height:5px;background:#ffcf00;border-radius:3px;vertical-align:middle"></i> с ПОНЯЛ</div>');
   })();
+
+
 
   // П3: blueprint
   var BP = [
