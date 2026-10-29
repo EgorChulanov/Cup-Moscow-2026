@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Экраны для мокапов</title>
+<link rel="stylesheet" href="../../assets/tokens.css">
+<style>
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: var(--font); color: var(--ink-strong); -webkit-font-smoothing: antialiased; }
+img { display: block; }
+.scr { display: none; overflow: hidden; position: relative; }
+body[data-s="mac"] #mac, body[data-s="chat"] #chat, body[data-s="card"] #card { display: block; }
+
+/* Рабочее место специалиста, 1440 x 900 */
+#mac { width: 1440px; height: 900px; background: #eef0f2; font-size: 14px; }
+.mt { height: 60px; background: #fff; display: flex; align-items: center; gap: 16px; padding: 0 22px; border-bottom: 1px solid #e7e8ea; }
+.mt img { height: 28px; }
+.mt .ttl { font-weight: 600; font-size: 16px; }
+.mt .srch { margin-left: 30px; flex: 1; max-width: 420px; height: 38px; border-radius: 12px; background: #f2f3f5; display: flex; align-items: center; padding: 0 14px; color: #9299a2; }
+.mt .me { margin-left: auto; display: flex; align-items: center; gap: 10px; font-weight: 500; }
+.mt .me i { width: 36px; height: 36px; border-radius: 50%; background: #ffdd2d; display: grid; place-items: center; font-style: normal; font-weight: 700; }
+.mt .st { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: 999px; background: #e6f6ea; color: #137a33; font-size: 13px; font-weight: 500; }
+.mt .st::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #1fb24a; }
+.mb { display: grid; grid-template-columns: 300px 1fr 400px; gap: 12px; padding: 12px; height: 840px; }
+.pn { background: #fff; border-radius: 20px; overflow: hidden; }
+.qh { padding: 16px 18px 8px; display: flex; justify-content: space-between; align-items: baseline; }
+.qh b { font-size: 17px; }
+.qh span { color: #9299a2; font-size: 13px; }
+.qi { margin: 4px 8px; padding: 12px 12px; border-radius: 16px; display: grid; gap: 4px; }
+.qi.on { background: #fff7cc; }
+.qi .r1 { display: flex; justify-content: space-between; font-weight: 600; }
+.qi .r1 span { font-weight: 400; color: #9299a2; font-size: 12.5px; }
+.qi .pv { color: #5c6066; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tg { justify-self: start; display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.tg.u { background: #ffdd2d; } .tg.f { background: #ffd2c6; } .tg.n { background: #d8e6ff; } .tg.h { background: #dff3e4; } .tg.s { background: #e9e0ff; }
+.ch { display: flex; flex-direction: column; background: #fff; }
+.chh { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid #eef0f2; }
+.chh .av { width: 42px; height: 42px; border-radius: 50%; overflow: hidden; }
+.chh .av img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 12%; }
+.chh b { display: block; font-size: 16px; }
+.chh span { color: #9299a2; font-size: 13px; }
+.chh .info { margin-left: auto; display: flex; gap: 8px; }
+.chh .info span { background: #f2f3f5; border-radius: 10px; padding: 6px 10px; color: #5c6066; }
+.lg { flex: 1; padding: 18px 22px; display: flex; flex-direction: column; gap: 10px; background: #f6f7f8; }
+.day { align-self: center; font-size: 12.5px; color: #9299a2; }
+.bb { max-width: 74%; padding: 11px 15px; border-radius: 18px; font-size: 15px; line-height: 1.4; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+.bb.c { align-self: flex-start; border-bottom-left-radius: 6px; }
+.bb.o { align-self: flex-end; background: #ffdd2d; border-bottom-right-radius: 6px; }
+.bb small { display: block; margin-top: 4px; font-size: 11.5px; color: rgba(0,0,0,.45); text-align: right; }
+.sysn { align-self: stretch; background: #fff; border: 1px dashed #d9dce0; border-radius: 14px; padding: 9px 14px; font-size: 13px; color: #5c6066; }
+.case { margin-top: 6px; background: #fff; border-radius: 14px; padding: 10px 12px; font-size: 13.5px; display: grid; gap: 4px; }
+.case div { display: flex; justify-content: space-between; gap: 16px; }
+.case div span:first-child { color: #8a8f96; }
+.cmp { display: flex; gap: 10px; padding: 14px 18px; border-top: 1px solid #eef0f2; }
+.cmp div { flex: 1; height: 46px; border-radius: 14px; background: #f2f3f5; display: flex; align-items: center; padding: 0 14px; color: #9299a2; }
+.cmp b { height: 46px; padding: 0 20px; border-radius: 14px; background: #ffdd2d; display: grid; place-items: center; font-weight: 600; }
+.sd { padding: 14px; display: grid; gap: 10px; align-content: start; overflow: hidden; }
+.bl { background: #f6f7f8; border-radius: 16px; padding: 14px 16px; }
+.bl h4 { margin: 0 0 8px; font-size: 12.5px; font-weight: 600; color: #8a8f96; }
+.bl.ty { background: #ffdd2d; display: grid; grid-template-columns: 1fr 86px; align-items: center; }
+.bl.ty h4 { color: #6b5300; }
+.bl.ty .n { font-size: 28px; font-weight: 700; letter-spacing: -.02em; }
+.bl.ty .w { font-size: 14px; color: #4a3d00; margin-top: 2px; }
+.bl.ty img { width: 86px; }
+.sg { display: grid; gap: 7px; font-size: 13.5px; }
+.sg div { display: grid; grid-template-columns: 120px 1fr; gap: 10px; }
+.sg span { color: #8a8f96; }
+.stp { display: grid; gap: 6px; }
+.stp div { display: flex; gap: 10px; align-items: center; background: #fff; border-radius: 12px; padding: 9px 12px; font-size: 14px; }
+.stp i { width: 22px; height: 22px; border-radius: 7px; border: 2px solid #c9ccd1; flex: none; display: grid; place-items: center; font-style: normal; font-size: 13px; font-weight: 700; }
+.stp div.d { background: #eaf8ee; }
+.stp div.d i { background: #1c1c1e; border-color: #1c1c1e; color: #fff; }
+.thr { display: flex; justify-content: space-between; align-items: center; background: #fff; border-radius: 12px; padding: 10px 12px; font-size: 13.5px; }
+.thr b { font-size: 15px; }
+
+/* Телефон, 390 x 844 */
+.ph { width: 390px; height: 844px; background: #f6f7f8; font-size: 15px; }
+.sb { height: 54px; display: flex; justify-content: space-between; align-items: center; padding: 14px 32px 0 40px; font-weight: 600; font-size: 16px; }
+.sb .ic { display: flex; gap: 6px; align-items: center; }
+.sb .ic i { display: block; background: #1c1c1e; border-radius: 2px; }
+.ah { display: flex; align-items: center; gap: 12px; padding: 8px 16px 12px; background: #f6f7f8; }
+.ah .bk { width: 36px; height: 36px; border-radius: 50%; background: #fff; display: grid; place-items: center; font-size: 22px; line-height: 1; }
+.ah .av { width: 40px; height: 40px; border-radius: 50%; background: #ffdd2d; display: grid; place-items: center; }
+.ah .av img { width: 26px; }
+.ah b { display: block; font-size: 16px; }
+.ah span { font-size: 12.5px; color: #8a8f96; }
+.pl { padding: 6px 14px; display: flex; flex-direction: column; gap: 8px; }
+.pl .bb { max-width: 82%; font-size: 15px; }
+.pin { position: absolute; left: 12px; right: 12px; bottom: 30px; display: flex; gap: 8px; align-items: center; }
+.pin div { flex: 1; height: 44px; border-radius: 22px; background: #fff; display: flex; align-items: center; padding: 0 16px; color: #9299a2; }
+.pin b { width: 44px; height: 44px; border-radius: 50%; background: #ffdd2d; display: grid; place-items: center; font-size: 20px; }
+.hbar { position: absolute; left: 50%; bottom: 8px; width: 134px; height: 5px; margin-left: -67px; border-radius: 3px; background: #1c1c1e; }
+.cardv { margin: 6px 16px 0; height: 206px; border-radius: 20px; background: linear-gradient(135deg, #2b2b2e, #111); padding: 20px; color: #fff; position: relative; }
+.cardv img { height: 26px; }
+.cardv .nm { position: absolute; left: 20px; bottom: 18px; font-size: 15px; letter-spacing: .08em; opacity: .85; }
+.cardv .lk { position: absolute; right: 16px; top: 16px; background: rgba(255,255,255,.16); border-radius: 999px; padding: 5px 12px; font-size: 12.5px; }
+.alert { margin: 14px 16px 0; background: #fff; border-radius: 22px; padding: 18px; }
+.alert .h { display: flex; gap: 12px; align-items: center; }
+.alert .h img { width: 56px; }
+.alert .h b { font-size: 19px; line-height: 1.2; }
+.alert p { margin: 10px 0 0; color: #5c6066; font-size: 14.5px; line-height: 1.4; }
+.op { margin-top: 12px; background: #f6f7f8; border-radius: 14px; padding: 12px 14px; display: flex; justify-content: space-between; font-size: 14px; }
+.op span { color: #8a8f96; }
+.bt { margin: 14px 16px 0; display: grid; gap: 8px; }
+.bt b { height: 52px; border-radius: 16px; display: grid; place-items: center; font-weight: 600; font-size: 16px; }
+.bt b.y { background: #ffdd2d; } .bt b.g { background: #fff; }
+.note { margin: 12px 20px 0; font-size: 13px; color: #8a8f96; line-height: 1.4; }
+</style>
+</head>
+<body>
+
+<section class="scr" id="mac">
+  <div class="mt"><img src="../../img/tbank-logo.svg" alt=""><span class="ttl">Рабочее место</span><span class="srch">Поиск по клиентам и обращениям</span><span class="me"><span class="st">На линии</span><i>АК</i>Анна Ковалёва</span></div>
+  <div class="mb">
+    <div class="pn">
+      <div class="qh"><b>Сложные обращения</b><span>5 в работе</span></div>
+      <div class="qi on"><div class="r1">Ирина, 32<span>сейчас</span></div><div class="pv">Карта не проходит, стою на кассе</div><span class="tg u">Срочно</span></div>
+      <div class="qi"><div class="r1">Олег, 41<span>4 мин</span></div><div class="pv">Позвонили из «службы безопасности», я перевёл 46 000</div><span class="tg f">Страшно</span></div>
+      <div class="qi"><div class="r1">Алексей, 29<span>9 мин</span></div><div class="pv">Счёт ограничен девятый день</div><span class="tg n">Несправедливо</span></div>
+      <div class="qi"><div class="r1">Валентина Петровна, 68<span>12 мин</span></div><div class="pv">мне звонили из полиции сказали оформить кредит</div><span class="tg h">Тяжело</span></div>
+      <div class="qi"><div class="r1">Дарья, 23<span>15 мин</span></div><div class="pv">Пишу третий раз про кешбэк 1 240 рублей</div><span class="tg s">Снова</span></div>
+    </div>
+    <div class="pn ch">
+      <div class="chh"><div class="av"><img src="../../img/irina.webp" alt=""></div><div><b>Ирина Соколова</b><span>чат в приложении, клиент 4 года</span></div><div class="info"><span>Дебетовая карта</span><span>Москва</span></div></div>
+      <div class="lg">
+        <span class="day">Сегодня, 19:42</span>
+        <div class="bb c">Карта не проходит, стою на кассе с пакетами<small>19:42</small></div>
+        <div class="bb c">Бот прислал статью, мне сейчас не до неё<small>19:42</small></div>
+        <div class="sysn">Операция на 3 840 ₽ в «Перекрёстке» остановлена защитой 2 минуты назад. Похожая покупка вчера в новом интернет-магазине</div>
+        <div class="bb o">Ирина, вижу: оплату остановила проверка после вчерашней покупки в новом магазине. Ограничение уже сняла, попробуйте ещё раз. Я на связи, если не пройдёт<small>19:43</small></div>
+        <div class="bb c">Прошло! Спасибо, я уже думала, всё бросать<small>19:44</small></div>
+        <div class="bb o"><b>Что сделали</b><div class="case"><div><span>Сделано</span><span>ограничение снято</span></div><div><span>От вас</span><span>ничего</span></div><div><span>Чтобы не повторилось</span><span>кнопка «Это я» в пуше</span></div></div><small>19:44</small></div>
+      </div>
+      <div class="cmp"><div>Сообщение клиенту</div><b>Отправить</b></div>
+    </div>
+    <div class="pn sd">
+      <div class="bl ty"><div><h4>Тип ситуации</h4><div class="n">Срочно</div><div class="w">Сначала действие, объяснение потом</div></div><img src="../../img/st-clock.webp" alt=""></div>
+      <div class="bl"><h4>Что видно в данных</h4><div class="sg"><div><span>Отказ</span>3 840 ₽, 2 минуты назад</div><div><span>Причина</span>защита от мошенников, новое место покупки</div><div><span>Слова клиента</span>«стою на кассе»</div><div><span>Обращения</span>первое за 30 дней</div></div></div>
+      <div class="bl"><h4>Шаги</h4><div class="stp"><div class="d"><i>✓</i>Прочитать историю до ответа</div><div class="d"><i>✓</i>Назвать ситуацию своими словами</div><div class="d"><i>✓</i>Понять, что нужно сейчас</div><div class="d"><i>✓</i>Сделать самому и дать срок</div><div><i></i>Довести и передать причину в продукт</div></div></div>
+      <div class="bl"><h4>Можно вернуть без согласования</h4><div class="thr"><span>Спор о деньгах</span><b>нет</b></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="scr ph" id="chat">
+  <div class="sb"><span>19:44</span><span class="ic"><svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1" fill="#1c1c1e"/><rect x="5" y="5.5" width="3" height="6.5" rx="1" fill="#1c1c1e"/><rect x="10" y="3" width="3" height="9" rx="1" fill="#1c1c1e"/><rect x="15" y="0" width="3" height="12" rx="1" fill="#1c1c1e"/></svg><svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 11.5l2.4-2.6a3.4 3.4 0 0 0-4.8 0z M3.6 6.9a6.2 6.2 0 0 1 8.8 0l1.4-1.5a8.3 8.3 0 0 0-11.6 0z M.8 3.9a10.3 10.3 0 0 1 14.4 0L16.4 2.6a12 12 0 0 0-16.8 0z" fill="#1c1c1e"/></svg><svg width="26" height="12" viewBox="0 0 26 12"><rect x=".5" y=".5" width="22" height="11" rx="3.2" fill="none" stroke="#1c1c1e" opacity=".4"/><rect x="2" y="2" width="16" height="8" rx="2" fill="#1c1c1e"/><rect x="23.5" y="4" width="1.8" height="4" rx=".8" fill="#1c1c1e" opacity=".4"/></svg></span></div>
+  <div class="ah"><span class="bk"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1c1c1e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></span><span class="av"><img src="../../img/tbank-icon.svg" alt=""></span><div><b>Анна, Т-Банк</b><span>специалист поддержки</span></div></div>
+  <div class="pl">
+    <div class="bb o">Карта не проходит, стою на кассе с пакетами<small>19:42</small></div>
+    <div class="bb c">Ирина, вижу: оплату остановила проверка после вчерашней покупки в новом магазине. Ограничение уже сняла, попробуйте ещё раз. Я на связи, если не пройдёт<small>19:43</small></div>
+    <div class="bb o">Прошло! Спасибо, я уже думала, всё бросать<small>19:44</small></div>
+    <div class="bb c"><b>Что мы сделали</b><div class="case" style="background:#f6f7f8"><div><span>Сделано</span><span>ограничение снято</span></div><div><span>От вас</span><span>ничего</span></div><div><span>Дальше</span><span>в пуше кнопка «Это я»</span></div></div><small>19:44</small></div>
+  </div>
+  <div class="pin"><div>Сообщение</div><b><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1c1c1e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></b></div>
+  <span class="hbar"></span>
+</section>
+
+<section class="scr ph" id="card">
+  <div class="sb"><span>19:41</span><span class="ic"><svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1" fill="#1c1c1e"/><rect x="5" y="5.5" width="3" height="6.5" rx="1" fill="#1c1c1e"/><rect x="10" y="3" width="3" height="9" rx="1" fill="#1c1c1e"/><rect x="15" y="0" width="3" height="12" rx="1" fill="#1c1c1e"/></svg><svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 11.5l2.4-2.6a3.4 3.4 0 0 0-4.8 0z M3.6 6.9a6.2 6.2 0 0 1 8.8 0l1.4-1.5a8.3 8.3 0 0 0-11.6 0z M.8 3.9a10.3 10.3 0 0 1 14.4 0L16.4 2.6a12 12 0 0 0-16.8 0z" fill="#1c1c1e"/></svg><svg width="26" height="12" viewBox="0 0 26 12"><rect x=".5" y=".5" width="22" height="11" rx="3.2" fill="none" stroke="#1c1c1e" opacity=".4"/><rect x="2" y="2" width="16" height="8" rx="2" fill="#1c1c1e"/><rect x="23.5" y="4" width="1.8" height="4" rx=".8" fill="#1c1c1e" opacity=".4"/></svg></span></div>
+  <div class="ah"><span class="bk"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1c1c1e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></span><div><b>Дебетовая карта</b><span>Black •• 4417</span></div></div>
+  <div class="cardv"><img src="../../img/tbank-logo-white.svg" alt=""><span class="lk">ограничена</span><span class="nm">•• 4417</span></div>
+  <div class="alert">
+    <div class="h"><img src="../../img/st-shield.webp" alt=""><b>Покупку остановила защита. Это были вы?</b></div>
+    <p>Вчера была покупка в новом интернет-магазине, поэтому сегодня проверяем похожие операции</p>
+    <div class="op"><span>Перекрёсток, Москва</span><b>3 840 ₽</b></div>
+  </div>
+  <div class="bt"><b class="y">Да, это я</b><b class="g">Нет, заблокировать карту</b></div>
+  <p class="note">Ограничение снимется сразу. Если что-то не так, напишите в чат: специалист увидит эту операцию и не будет задавать лишних вопросов</p>
+  <span class="hbar"></span>
+</section>
+
+<script>document.body.dataset.s = new URLSearchParams(location.search).get('s') || 'mac';</script>
+</body>
+</html>

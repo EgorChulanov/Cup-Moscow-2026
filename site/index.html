@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ПОНЯЛ: поддержка, после которой клиент чувствует, что его поняли</title>
-<meta name="description" content="Решение кейса Т-Банка на Changellenge Cup Moscow 2026: ситуационный подход для специалистов поддержки, подсказки copilot, карточка случая и полномочия по формуле.">
+<title>Понял: решение кейса Т-Банка</title>
+<meta name="description" content="Решение кейса Т-Банка на Changellenge Cup Moscow 2026: подход для специалистов поддержки в сложных ситуациях, прототип рабочего места, CJM и финмодель">
 <link rel="icon" href="img/tbank-icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/tokens.css">
 <style>
@@ -45,8 +45,8 @@ button { font: inherit; }
 .btn svg { width: 18px; height: 18px; }
 
 /* Жёлтый баннер, как «Новый подход к бренду» */
-.hero { position: relative; margin-top: 12px; border-radius: var(--r-xl); overflow: hidden; padding: 56px 56px 60px;
-  background: radial-gradient(120% 140% at 85% 30%, #ffe45c 0%, var(--y) 38%, #ffd21f 70%, #fcc521 100%); display: grid; grid-template-columns: 1.1fr .9fr; gap: 24px; min-height: 460px; }
+.hero { position: relative; margin-top: 12px; border-radius: var(--r-xl); overflow: hidden; padding: 56px 28px 60px 56px;
+  background: radial-gradient(120% 140% at 85% 30%, #ffe45c 0%, var(--y) 38%, #ffd21f 70%, #fcc521 100%); display: grid; grid-template-columns: .95fr 1.05fr; gap: 24px; min-height: 520px; }
 .hero::after { content: ""; position: absolute; right: -10%; bottom: -30%; width: 70%; height: 90%; pointer-events: none;
   background: repeating-linear-gradient(100deg, rgba(255, 255, 255, .0) 0 14px, rgba(255, 255, 255, .22) 14px 16px); filter: blur(2px); transform: skewY(-8deg); opacity: .7;
   -webkit-mask: radial-gradient(60% 60% at 60% 60%, #000 30%, transparent 75%); mask: radial-gradient(60% 60% at 60% 60%, #000 30%, transparent 75%); }
@@ -56,40 +56,22 @@ h1 { margin: 18px 0 0; font-size: clamp(36px, 4.6vw, 60px); line-height: 1.03; l
 .hero p.lead { margin: 18px 0 0; font-size: 19px; max-width: 540px; color: #3a3a3a; }
 .hero .cta { margin-top: 28px; display: flex; gap: 10px; flex-wrap: wrap; }
 .hero .art { position: relative; z-index: 2; }
-.hero .art img { position: absolute; filter: drop-shadow(0 26px 30px rgba(120, 80, 0, .28)); animation: float 7s ease-in-out infinite; }
-.hero .art .b { width: 70%; right: 6%; top: 4%; }
-.hero .art .c { width: 34%; left: 0; bottom: 2%; animation-delay: -3s; }
-.hero .art .p { width: 26%; right: 0; bottom: -4%; animation-delay: -5s; }
+.hero .art .dev { position: absolute; left: -2%; top: 50%; width: 104%; max-width: none; transform: translateY(-50%); filter: drop-shadow(0 30px 40px rgba(110, 80, 0, .28)); }
+.hero .art .coin { position: absolute; width: 22%; left: -10%; bottom: -6%; filter: drop-shadow(0 20px 24px rgba(120, 80, 0, .28)); animation: float 7s ease-in-out infinite; }
 @keyframes float { 50% { translate: 0 -12px; } }
-@media (prefers-reduced-motion: reduce) { .hero .art img, .glassphone { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { .hero .art img { animation: none !important; } }
 
-/* Большая карточка со стеклянным телефоном, как вторая карточка бренд-портала */
-.stage { position: relative; margin-top: 24px; border-radius: var(--r-xl); overflow: hidden; height: 640px;
-  background: radial-gradient(90% 120% at 30% 10%, #6d5a3c 0%, #3a3631 40%, #24252a 75%); perspective: 1600px; }
-.stage .cap { position: absolute; left: 48px; top: 44px; z-index: 3; color: #fff; max-width: 420px; }
-.stage .cap b { display: block; font-size: 30px; letter-spacing: -.02em; line-height: 1.1; }
-.stage .cap span { display: block; margin-top: 10px; color: rgba(255, 255, 255, .72); font-size: 16px; }
-.glassphone { position: absolute; left: 50%; top: 52%; width: 430px; height: 760px; margin: -380px 0 0 -120px; border-radius: 64px;
-  transform: rotateX(48deg) rotateZ(-30deg) rotateY(0deg); transform-style: preserve-3d;
-  background: linear-gradient(160deg, rgba(255, 255, 255, .78), rgba(255, 255, 255, .42)); border: 1px solid rgba(255, 255, 255, .8);
-  box-shadow: 0 60px 80px -30px rgba(0, 0, 0, .55), inset 0 2px 0 rgba(255, 255, 255, .9); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); padding: 30px 22px; }
-.glassphone .scr { position: absolute; inset: 14px; border-radius: 52px; background: linear-gradient(180deg, #fffdf4, #f4f1e6); overflow: hidden; padding: 70px 22px 22px; }
-.chatline { display: flex; margin-top: 12px; }
-.chatline.me { justify-content: flex-end; }
-.chatline .msg { max-width: 80%; padding: 12px 16px; border-radius: 20px; font-size: 16px; line-height: 1.35; background: #fff; color: var(--ink-strong); box-shadow: 0 2px 6px rgba(0, 0, 0, .06); }
-.chatline.me .msg { background: var(--y); border-bottom-right-radius: 6px; }
-.chatline .msg.op { border-bottom-left-radius: 6px; }
-.casecard { margin-top: 14px; background: #fff; border-radius: 22px; padding: 16px; box-shadow: 0 8px 20px rgba(0, 0, 0, .08); font-size: 14.5px; }
-.casecard b { display: block; font-size: 15px; margin-bottom: 6px; color: var(--ink-strong); }
-.casecard .row { display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; border-top: 1px solid var(--line); }
-.casecard .row span:first-child { color: var(--muted); }
-.floater { position: absolute; z-index: 4; border-radius: 26px; background: rgba(255, 255, 255, .72); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, .85); box-shadow: 0 30px 50px -20px rgba(0, 0, 0, .5), inset 0 1px 0 #fff; padding: 16px 20px; color: var(--ink-strong); }
-.floater.f1 { right: 4%; top: 9%; width: 330px; transform: rotate(-4deg); }
-.floater.f2 { right: 12%; bottom: 12%; width: 300px; transform: rotate(3deg); }
-.floater .t { font-size: 13px; color: var(--ink-2); font-weight: 500; }
-.floater .h { font-size: 20px; font-weight: 700; letter-spacing: -.01em; margin-top: 2px; }
-.floater .s { font-size: 14px; color: var(--ink-2); margin-top: 6px; }
+/* Тёмная карточка с двумя телефонами */
+.stage { position: relative; margin-top: 24px; border-radius: var(--r-xl); overflow: hidden; display: grid; grid-template-columns: .9fr 1.1fr; align-items: center; gap: 24px;
+  background: radial-gradient(90% 120% at 20% 10%, #4d4434 0%, #2e2c2a 45%, #1f2024 80%); padding: 56px 40px 0 56px; color: #fff; }
+.stage .cap { align-self: start; padding-bottom: 48px; }
+.stage .cap b { display: block; font-size: 34px; letter-spacing: -.025em; line-height: 1.1; }
+.stage .cap p { margin: 14px 0 0; color: rgba(255, 255, 255, .72); font-size: 17px; max-width: 460px; }
+.stage .facts { margin-top: 28px; display: grid; gap: 10px; max-width: 460px; }
+.stage .facts div { display: grid; grid-template-columns: 120px 1fr; gap: 14px; align-items: baseline; background: rgba(255, 255, 255, .07); border-radius: 18px; padding: 14px 18px; }
+.stage .facts b { font-size: 24px; color: var(--y); letter-spacing: -.02em; }
+.stage .facts span { font-size: 15px; color: rgba(255, 255, 255, .8); }
+.stage .dev { align-self: end; width: 100%; max-width: 620px; justify-self: center; filter: drop-shadow(0 40px 50px rgba(0, 0, 0, .45)); margin-bottom: -6%; }
 .tag { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border-radius: 999px; font-size: 13.5px; font-weight: 500; background: var(--y-soft); color: #6b5300; }
 .tag.dark { background: var(--dark); color: #fff; }
 
@@ -122,7 +104,7 @@ h2 { margin: 0; font-size: clamp(30px, 3.6vw, 46px); letter-spacing: -.03em; lin
 
 .tree { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 16px; }
 .br { background: var(--card); border-radius: var(--r-m); padding: 22px; display: flex; flex-direction: column; gap: 10px; }
-.br .k { width: 44px; height: 44px; border-radius: 14px; background: var(--y); display: grid; place-items: center; font-weight: 700; font-size: 20px; color: var(--ink-strong); }
+.br .k { font-size: 13px; font-weight: 600; color: var(--muted); }
 .br b { font-size: 17px; line-height: 1.25; color: var(--ink-strong); }
 .br p { margin: 0; font-size: 14.5px; color: var(--ink-2); }
 .br .root { margin-top: auto; font-size: 13.5px; background: var(--bg); border-radius: 12px; padding: 10px 12px; color: var(--ink); }
@@ -131,7 +113,7 @@ h2 { margin: 0; font-size: clamp(30px, 3.6vw, 46px); letter-spacing: -.03em; lin
 /* Типы ситуаций */
 .types { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 32px; }
 .ty { border-radius: var(--r-l); padding: 24px 22px; min-height: 360px; display: flex; flex-direction: column; color: var(--ink-strong); position: relative; overflow: hidden; }
-.ty .n { font-size: 14px; font-weight: 500; opacity: .75; }
+.ty .ic { width: 92px; height: 92px; margin: -6px 0 6px -6px; }
 .ty h3 { margin: 4px 0 0; font-size: 25px; letter-spacing: -.03em; overflow-wrap: anywhere; }
 .ty .need { margin-top: 10px; font-size: 16px; font-weight: 500; }
 .ty .sig { margin-top: auto; font-size: 13.5px; background: rgba(255, 255, 255, .6); border-radius: 14px; padding: 10px 12px; }
@@ -140,7 +122,7 @@ h2 { margin: 0; font-size: clamp(30px, 3.6vw, 46px); letter-spacing: -.03em; lin
 .ty .no em { display: block; font-style: normal; font-weight: 600; font-size: 12px; opacity: .7; margin-bottom: 2px; }
 .t1 { background: #ffe45c; } .t2 { background: #ffd2c6; } .t3 { background: #d8e6ff; } .t4 { background: #dff3e4; } .t5 { background: #e9e0ff; }
 .rule { margin-top: 12px; background: var(--card); border-radius: var(--r-m); padding: 18px 22px; font-size: 16px; display: flex; gap: 14px; align-items: center; }
-.rule img { width: 56px; flex: none; }
+.rule img { width: 64px; flex: none; }
 
 
 /* CJM */
@@ -150,23 +132,33 @@ h2 { margin: 0; font-size: clamp(30px, 3.6vw, 46px); letter-spacing: -.03em; lin
 .pc b { display: block; margin: 16px 8px 0; font-size: 22px; color: var(--ink-strong); }
 .pc span { display: block; margin: 6px 8px 0; font-size: 14.5px; color: var(--ink-2); }
 .pc em { display: block; margin: 12px 8px 0; font-style: normal; font-size: 14px; background: var(--y-soft); border-radius: 14px; padding: 10px 12px; color: #4a3d00; }
-.jmap { background: var(--card); border-radius: var(--r-l); padding: 18px; overflow-x: auto; }
-.jgrid { display: grid; grid-template-columns: 84px repeat(8, minmax(96px, 1fr)); gap: 6px; font-size: 13px; line-height: 1.3; min-width: 880px; }
-.jgrid .rl { font-size: 12.5px; font-weight: 600; color: var(--muted); display: flex; align-items: center; }
-.jgrid .stg { border-radius: 10px; font-size: 12.5px; font-weight: 600; display: flex; align-items: center; justify-content: center; height: 28px; color: var(--ink-strong); }
-.jgrid .ph8 { background: var(--y); border-radius: 12px; padding: 8px 10px; font-weight: 600; color: var(--ink-strong); }
-.jgrid .th { background: var(--bg); border-radius: 12px; padding: 8px 10px; font-style: italic; color: var(--ink-strong); }
-.jgrid .br { background: #fff0ed; border-radius: 12px; padding: 8px 10px; color: #6a2318; }
-.jgrid .tb { background: var(--y-soft); border-radius: 12px; padding: 8px 10px; color: #3a3000; }
-.jgrid .emo { grid-column: 2 / span 8; height: 120px; position: relative; }
-.jgrid .emo svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-.jgrid .mk { display: flex; gap: 5px; margin-top: 6px; } .jgrid .mk i { width: 12px; height: 12px; border-radius: 50%; }
+.pc q { display: block; margin: 12px 8px 0; font-size: 15px; font-style: italic; color: var(--ink-strong); quotes: "«" "»"; }
+.pc q::before { content: open-quote; } .pc q::after { content: close-quote; }
+.jmap { background: var(--card); border-radius: var(--r-l); padding: 22px 22px 18px; overflow-x: auto; }
+.jm { min-width: 820px; }
+.jm .grp { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; }
+.jm .grp span { font-size: 12.5px; font-weight: 600; color: var(--muted); border-top: 2px solid var(--line); padding-top: 6px; }
+.jm .phs { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; margin-top: 8px; }
+.jm .phs div { font-size: 14px; font-weight: 600; line-height: 1.25; color: var(--ink-strong); }
+.jm .phs div i { display: block; font-style: normal; font-weight: 500; font-size: 12px; color: var(--muted); margin-bottom: 2px; }
+.jm .phs div small { display: block; font-weight: 400; font-size: 12px; color: var(--muted); margin-top: 3px; }
+.jm .qts { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; margin-top: 12px; }
+.jm .qts div { background: var(--bg); border-radius: 14px 14px 14px 4px; padding: 8px 10px; font-size: 13px; line-height: 1.3; font-style: italic; color: var(--ink-strong); }
+.jm .curve { position: relative; height: 210px; margin-top: 6px; }
+.jm .curve svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.jm .row2 { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; margin-top: 10px; }
+.jm .row2 > div { border-radius: 14px; padding: 9px 10px; font-size: 13px; line-height: 1.3; }
+.jm .pain { background: #fff1ee; color: #6a2318; }
+.jm .fix { background: var(--y-soft); color: #3a3000; }
+.jm .rh { margin-top: 14px; font-size: 12.5px; font-weight: 600; color: var(--muted); }
+.jm .lgd { display: flex; gap: 18px; font-size: 13px; color: var(--ink-2); margin-top: 12px; flex-wrap: wrap; }
+.jm .lgd i { display: inline-block; width: 22px; height: 4px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
 @media (max-width: 1100px) { .jr { grid-template-columns: 1fr; } .pc img { height: 380px; } }
 
-/* ПОНЯЛ */
+/* Шаги */
 .steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 32px; }
 .st { background: var(--card); border-radius: var(--r-l); padding: 24px 22px 22px; display: flex; flex-direction: column; }
-.st .L { width: 64px; height: 64px; border-radius: 20px; background: var(--y); display: grid; place-items: center; font-size: 34px; font-weight: 700; color: var(--ink-strong); }
+.st .L { font-size: 46px; line-height: 1; font-weight: 700; letter-spacing: -.04em; color: var(--y-deep); }
 .st b { margin-top: 16px; font-size: 19px; line-height: 1.2; color: var(--ink-strong); }
 .st p { margin: 8px 0 0; font-size: 14.5px; color: var(--ink-2); }
 .st q { display: block; margin-top: auto; padding-top: 14px; font-size: 14px; color: var(--ink); quotes: "«" "»"; }
@@ -183,8 +175,13 @@ h2 { margin: 0; font-size: clamp(30px, 3.6vw, 46px); letter-spacing: -.03em; lin
 .play .bad p { color: #fff; }
 
 /* Прототип рабочего места */
-.ws { margin-top: 32px; background: #e9ebee; border-radius: var(--r-xl); padding: 14px; }
-.ws .win { background: #fff; border-radius: 28px; overflow: hidden; display: grid; grid-template-columns: 260px 1fr 380px; grid-template-rows: auto 1fr; }
+.mac { margin-top: 36px; }
+.mac .lid { position: relative; background: #0d0d0e; border-radius: 30px 30px 14px 14px; padding: 18px 18px 26px; box-shadow: inset 0 0 0 2px #3a3a3c, 0 40px 60px -30px rgba(0, 0, 0, .35); }
+.mac .lid::before { content: ""; position: absolute; left: 50%; top: 0; width: 150px; height: 18px; margin-left: -75px; background: #0d0d0e; border-radius: 0 0 12px 12px; z-index: 2; }
+.mac .base { position: relative; height: 22px; margin: 0 -4%; background: linear-gradient(180deg, #d9dbde, #a9acb1 70%, #8e9196); border-radius: 0 0 26px 26px; }
+.mac .base::before { content: ""; position: absolute; left: 50%; top: 0; width: 160px; height: 9px; margin-left: -80px; background: #c3c5c9; border-radius: 0 0 10px 10px; }
+.ws { background: #eef0f2; border-radius: 14px; overflow: hidden; }
+.ws .win { background: #fff; overflow: hidden; display: grid; grid-template-columns: 260px 1fr 380px; grid-template-rows: auto 1fr; }
 .ws .bar0 { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; padding: 12px 18px; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--ink-2); }
 .ws .bar0 .dot { width: 10px; height: 10px; border-radius: 50%; background: #e3e5e8; }
 .ws .bar0 b { color: var(--ink-strong); margin-left: 8px; }
@@ -215,7 +212,8 @@ h2 { margin: 0; font-size: clamp(30px, 3.6vw, 46px); letter-spacing: -.03em; lin
 .cop { border-left: 1px solid var(--line); padding: 16px; display: flex; flex-direction: column; gap: 10px; }
 .cop h4 { margin: 0; font-size: 13px; font-weight: 600; color: var(--muted); }
 .blk { background: #f7f8f9; border-radius: 18px; padding: 14px; }
-.blk.type { background: var(--y); }
+.blk.type { background: var(--y); position: relative; }
+.blk.type img { position: absolute; right: 10px; top: 8px; width: 72px; height: 72px; }
 .blk.type .ty-n { font-size: 24px; font-weight: 700; letter-spacing: -.02em; color: var(--ink-strong); }
 .blk.type .ty-w { font-size: 14px; color: #4a3d00; margin-top: 2px; }
 .sigs { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 13.5px; }
@@ -269,12 +267,23 @@ h2 { margin: 0; font-size: clamp(30px, 3.6vw, 46px); letter-spacing: -.03em; lin
 /* Подзадачи кейса */
 .crit { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 32px; }
 .cr { background: var(--card); border-radius: var(--r-m); padding: 22px; display: flex; flex-direction: column; gap: 8px; }
-.cr .n { width: 36px; height: 36px; border-radius: 12px; background: var(--y); display: grid; place-items: center; font-weight: 700; color: var(--ink-strong); }
+.cr .n { font-size: 13px; font-weight: 600; color: var(--muted); }
 .cr b { font-size: 16.5px; line-height: 1.25; color: var(--ink-strong); }
 .cr p { margin: 0; font-size: 14px; color: var(--ink-2); }
 .cr a { margin-top: auto; font-size: 14px; font-weight: 500; text-decoration: none; color: var(--ink-strong); border-bottom: 1.5px solid var(--y); align-self: flex-start; }
 .cr.miro { background: var(--dark); color: #fff; }
-.cr.miro b { color: #fff; } .cr.miro p { color: rgba(255, 255, 255, .72); } .cr.miro a { color: #fff; }
+.cr.miro b { color: #fff; } .cr.miro p { color: rgba(255, 255, 255, .72); } .cr.miro a { color: #fff; } .cr.miro .n { color: rgba(255, 255, 255, .6); }
+
+/* Ссылки с QR-кодами */
+.links3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px; }
+.lk { background: var(--card); border-radius: var(--r-l); padding: 26px; display: grid; grid-template-columns: 1fr 132px; gap: 18px; align-items: center; text-decoration: none; color: inherit; transition: transform .3s var(--ease); }
+.lk:hover { transform: translateY(-3px); }
+.lk.y { background: var(--y); }
+.lk b { display: block; font-size: 22px; letter-spacing: -.02em; color: var(--ink-strong); }
+.lk span { display: block; margin-top: 6px; font-size: 14.5px; color: var(--ink-2); }
+.lk.y span { color: #4a3d00; }
+.lk .qr { background: #fff; border-radius: 18px; padding: 12px; }
+.lk .qr img { width: 100%; height: auto; }
 
 /* Команда */
 .team { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px; }
@@ -293,19 +302,25 @@ footer .brand { font-size: 17px; }
 @media (max-width: 1100px) {
   .links { display: none; }
   .hero { grid-template-columns: 1fr; padding: 40px 28px; }
-  .hero .art { height: 300px; }
+  .hero { padding: 40px 0 40px 28px; }
+  .hero .tx { padding-right: 28px; }
   .kpis { grid-template-columns: repeat(2, 1fr); }
   .prob, .fx { grid-template-columns: 1fr; }
   .tree, .types, .steps { grid-template-columns: 1fr 1fr; }
   .play, .plan, .crit { grid-template-columns: 1fr 1fr; }
   .mets { grid-template-columns: 1fr; }
   .ws .win { grid-template-columns: 1fr; }
+  .stage { grid-template-columns: 1fr; padding: 36px 24px 0; }
+  .stage .dev { max-width: 520px; }
+  .links3 { grid-template-columns: 1fr; }
+  .mac .lid { padding: 10px 10px 16px; border-radius: 22px 22px 10px 10px; }
+  .mac .lid::before { display: none; }
+  .hero .art .dev { position: relative; width: 112%; left: 0; top: 0; transform: none; }
+  .hero .art .coin { display: none; }
   .q { flex-direction: row; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--line); }
   .q button { min-width: 220px; }
   .cop { border-left: 0; border-top: 1px solid var(--line); max-height: none; }
   .team { grid-template-columns: 1fr; }
-  .stage { height: 560px; }
-  .floater { display: none; }
 }
 @media (max-width: 640px) {
   .wrap { padding: 0 16px; }
@@ -316,10 +331,9 @@ footer .brand { font-size: 17px; }
   .seg .thumb { display: none; }
   .seg button[aria-selected="true"] { background: #fff; }
   .ty { min-height: 0; }
-  .stage { height: 620px; }
-  .stage .cap { left: 20px; right: 20px; top: 24px; }
-  .stage .cap b { font-size: 24px; }
-  .glassphone { margin-left: -200px; top: 74%; }
+  .stage .cap b { font-size: 26px; }
+  .stage .facts div { grid-template-columns: 96px 1fr; }
+  .lk { grid-template-columns: 1fr 104px; }
   .prob .main { padding-bottom: 170px; }
   .prob .main img { width: 170px; right: -20px; bottom: -40px; }
   .kpi b { font-size: 26px; }
@@ -330,9 +344,9 @@ footer .brand { font-size: 17px; }
 
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="#"><img src="img/tbank-logo.svg" alt="Т-Банк" class="tlogo"><i class="sep"></i><img src="img/mark.svg" alt="" width="32" height="32"><span>ПОНЯЛ</span></a>
+    <a class="brand" href="#"><img src="img/tbank-logo.svg" alt="Т-Банк" class="tlogo"><i class="sep"></i><img src="img/mark.svg" alt="" width="32" height="32"><span>Понял</span></a>
     <nav class="links" aria-label="Разделы">
-      <a href="#problem">Проблема</a><a href="#types">Ситуации</a><a href="#cjm">CJM</a><a href="#ponyal">Подход</a><a href="#proto">Прототип</a><a href="#effect">Эффект</a><a href="#team">Команда</a>
+      <a href="#problem">Проблема</a><a href="#types">Ситуации</a><a href="#cjm">CJM</a><a href="#steps">Шаги</a><a href="#proto">Прототип</a><a href="#effect">Эффект</a><a href="#team">Команда</a>
     </nav>
     <div class="act">
       <a class="btn g sm" href="https://miro.com/app/board/uXjVEUshVGo=/" target="_blank" rel="noopener">Доска Miro</a>
@@ -347,35 +361,30 @@ footer .brand { font-size: 17px; }
   <div class="tx">
     <span class="kick">Changellenge Cup Moscow 2026, кейс Т-Банка</span>
     <h1>Поддержка, после которой клиент говорит «меня поняли»</h1>
-    <p class="lead">Подход для специалистов в сложных ситуациях: 5 типов, 5 шагов, подсказки copilot, карточка случая и полномочия по формуле.</p>
+    <p class="lead">Как специалисту Т-Банка вести сложное обращение: что заметить в данных, что спросить, что сделать самому и как показать клиенту, что его услышали</p>
     <div class="cta">
       <a class="btn d" href="deck/">Открыть презентацию</a>
+      <a class="btn w" href="https://miro.com/app/board/uXjVEUshVGo=/" target="_blank" rel="noopener">Открыть доску Miro</a>
       <a class="btn w" href="#proto">Попробовать прототип</a>
     </div>
   </div>
   <div class="art" aria-hidden="true">
-    <img class="b" src="img/3d-bubble.webp" alt="" width="790" height="768">
-    <img class="c" src="img/3d-coin.webp" alt="" width="711" height="800">
-    <img class="p" src="img/3d-pin.webp" alt="" width="672" height="800">
+    <img class="dev" src="img/mock-duo.webp" alt="" width="2000" height="1283">
+    <img class="coin" src="img/st-coins.webp" alt="" width="512" height="512">
   </div>
 </div>
 
-<div class="stage" aria-label="Пример: ответ специалиста по подходу ПОНЯЛ в чате приложения">
-  <div class="cap"><b>Тот же чат, другой результат</b><span>Ирина стоит на кассе, оплата не проходит. Специалист видит отказ операции до первого вопроса и отвечает действием, а не статьёй.</span></div>
-  <div class="glassphone" aria-hidden="true">
-    <div class="scr">
-      <div class="chatline me"><div class="msg">Карта не проходит, стою на кассе</div></div>
-      <div class="chatline"><div class="msg op">Вижу, оплату остановила проверка новой покупки. Уже снял ограничение, попробуйте ещё раз. Я на связи</div></div>
-      <div class="chatline me"><div class="msg">Прошло, спасибо!</div></div>
-      <div class="casecard"><b>Карточка случая</b>
-        <div class="row"><span>Сделано</span><span>ограничение снято</span></div>
-        <div class="row"><span>От вас</span><span>ничего</span></div>
-        <div class="row"><span>Ответственный</span><span>Анна, до 21:00</span></div>
-      </div>
+<div class="stage">
+  <div class="cap">
+    <b>Тот же вечер, другой результат</b>
+    <p>Ирина стоит на кассе, оплата не проходит. Сейчас она три дня ждёт, пишет дважды и решает держать деньги в другом банке. С нашим подходом специалист видит остановленную покупку до первого вопроса и снимает ограничение сам</p>
+    <div class="facts">
+      <div><b>4 минуты</b><span>вместо трёх дней без карты</span></div>
+      <div><b>1</b><span>обращение вместо двух, историю не пересказывать</span></div>
+      <div><b>«Это я»</b><span>кнопка в пуше и на экране карты, чтобы в следующий раз обойтись без чата</span></div>
     </div>
   </div>
-  <div class="floater f1"><div class="t">Copilot, тип ситуации</div><div class="h">Срочно</div><div class="s">Отказ операции 2 минуты назад, слово «касса». Сначала действие, потом объяснение.</div></div>
-  <div class="floater f2"><div class="t">Итог диалога</div><div class="h">Решено с первого раза</div><div class="s">1 обращение вместо 2-3, 4 минуты вместо трёх дней.</div></div>
+  <img class="dev" src="img/mock-pair.webp" alt="Экран карты с кнопкой «Да, это я» и чат с ответом специалиста" width="1915" height="2000" loading="lazy">
 </div>
 
 <div class="kpis">
@@ -383,17 +392,17 @@ footer .brand { font-size: 17px; }
   <div class="kpi"><b>3,2 мес.</b><span>окупаемость, разово 181 млн ₽</span></div>
   <div class="kpi"><b>+10 п.п.</b><span>к решению с первого обращения в сложных ситуациях</span></div>
   <div class="kpi"><b>68,5 тыс.</b><span>клиентов в год остаются в банке</span></div>
-  <div class="kpi"><b>+4 п.п.</b><span>точка окупаемости, проверяем в пилоте</span></div>
+  <div class="kpi"><b>+4 п.п.</b><span>хватит, чтобы окупиться, это проверит пилот</span></div>
 </div>
 
 <section id="problem">
-  <h2>Рутина уже у ИИ. Качество поддержки теперь решают сложные случаи</h2>
-  <p class="sub">До 45% обращений закрывает ИИ, к специалисту приходят нестандартные ситуации. Именно в них клиент уходит без ощущения помощи: пишет снова, жалуется или уходит из банка.</p>
+  <h2>Рутину уже закрывает ИИ. Остались сложные случаи</h2>
+  <p class="sub">До 45% обращений Т-Банка решают ИИ и цифровые ассистенты. К специалисту приходят нестандартные ситуации, и как раз после них клиент пишет снова, жалуется или уходит</p>
   <div class="prob">
     <div class="main">
       <b>Хвалят за скорость в простых вопросах, ругают в сложных</b>
-      <p>53 отзыва о поддержке Т-Банка с banki.ru, otzovik, Сравни и других площадок, разметка по кодам жалоб и похвал. Тот же сдвиг видит регулятор: жалобы на банки в ЦБ за 2025 год выросли на 14,7%, на антифрод в 2,3 раза.</p>
-      <img src="img/3d-pin.webp" alt="" width="672" height="800">
+      <p>Мы разметили 53 отзыва о поддержке Т-Банка с banki.ru, otzovik, Сравни и других площадок. Регулятор видит то же самое: за 2025 год жалобы на банки в ЦБ выросли на 14,7%, на антифрод в 2,3 раза</p>
+      <img src="img/st-search.webp" alt="" width="512" height="512">
     </div>
     <div class="card">
       <div class="bars" id="bars"></div>
@@ -401,45 +410,45 @@ footer .brand { font-size: 17px; }
     </div>
   </div>
   <div class="tree">
-    <div class="br"><div class="k">А</div><b>Не понята настоящая проблема</b><p>Одинаковые слова значат разное, контекст не прочитан.</p><div class="root"><em>Корень</em>Copilot подсказывает статью, а не тип ситуации</div></div>
-    <div class="br"><div class="k">Б</div><b>Ответ верный, но это ещё одна задача</b><p>Инструкция вместо действия испуганному человеку.</p><div class="root"><em>Корень</em>Качество меряют соответствием процедуре</div></div>
-    <div class="br"><div class="k">В</div><b>«Нельзя», и это не объяснено</b><p>Нет срока, списка документов, альтернативы.</p><div class="root"><em>Корень</em>Тип ограничения не виден специалисту</div></div>
-    <div class="br"><div class="k">Г</div><b>Вопрос не доведён до конца</b><p>«Передано в отдел», сдвиг сроков, история заново.</p><div class="root"><em>Корень</em>Закрывается ответ, а не проблема</div></div>
-    <div class="br"><div class="k">Д</div><b>Причина в продукте остаётся</b><p>Тот же сбой у тысяч клиентов, сигнал не уходит дальше.</p><div class="root"><em>Корень</em>Нет канала от наблюдения к продукту</div></div>
+    <div class="br"><span class="k">Причина 1</span><b>Не поняли, в чём проблема</b><p>Одинаковые слова значат разное, историю клиента никто не открыл</p><div class="root"><em>Откуда берётся</em>Подсказки ищут статью по словам и не определяют тип ситуации</div></div>
+    <div class="br"><span class="k">Причина 2</span><b>Ответ верный, но для клиента это ещё одна задача</b><p>Испуганному человеку присылают инструкцию из пяти шагов</p><div class="root"><em>Откуда берётся</em>Качество оценивают по соответствию процедуре</div></div>
+    <div class="br"><span class="k">Причина 3</span><b>«Нельзя» без объяснений</b><p>Нет срока, списка документов и запасного варианта</p><div class="root"><em>Откуда берётся</em>Специалист не видит тип ограничения</div></div>
+    <div class="br"><span class="k">Причина 4</span><b>Вопрос бросили на полпути</b><p>«Передано в отдел», сроки сдвигаются, историю приходится рассказывать заново</p><div class="root"><em>Откуда берётся</em>Обращение закрывают после ответа, даже если проблема осталась</div></div>
+    <div class="br"><span class="k">Причина 5</span><b>Сбой в продукте повторяется</b><p>Тот же сбой у тысяч клиентов, и никто не передаёт его дальше</p><div class="root"><em>Откуда берётся</em>У поддержки нет канала в продуктовые команды</div></div>
   </div>
 </section>
 
 <section id="types">
   <h2>Пять типов ситуаций, которым нужен особый подход</h2>
-  <p class="sub">Группируем по тому, что нужно человеку в эту минуту, а не по продукту. Тип виден за 1-2 сообщения, copilot подсвечивает его по сигналам в данных.</p>
+  <p class="sub">Делим по тому, что нужно человеку прямо сейчас. Блокировка карты бывает и срочной, и страшной, поэтому продукт тут вторичен. Тип обычно понятен по первым 1-2 сообщениям и данным клиента</p>
   <div class="types">
-    <div class="ty t1"><span class="n">Тип 1</span><h3>Срочно</h3><div class="need">Действие за минуты, минимум усилий</div><div class="sig"><em>Сигналы</em>отказ операции за 15 минут, «стою на кассе», геолокация за рубежом</div><div class="no"><em>Нельзя</em>статья и инструкция из 5 шагов</div></div>
-    <div class="ty t2"><span class="n">Тип 2</span><h3>Страшно</h3><div class="need">Остановить потерю, снять вину, честные шансы</div><div class="sig"><em>Сигналы</em>перевод новому получателю, смена номера, «звонили из службы»</div><div class="no"><em>Нельзя</em>«вы перевели сами», обещать возврат</div></div>
-    <div class="ty t3"><span class="n">Тип 3</span><h3>Несправедливо</h3><div class="need">Причина, маршрут, срок, один ответственный</div><div class="sig"><em>Сигналы</em>ограничение на счёте, 2+ обращения, «на каком основании»</div><div class="no"><em>Нельзя</em>«по требованиям законодательства» без шагов</div></div>
-    <div class="ty t4"><span class="n">Тип 4</span><h3>Тяжело</h3><div class="need">Бережный темп, человек, помощь близких</div><div class="sig"><em>Сигналы</em>возраст, путаница в тексте, «не могу платить», «умер»</div><div class="no"><em>Нельзя</em>тон взыскания, полотно текста</div></div>
-    <div class="ty t5"><span class="n">Тип 5</span><h3>Снова</h3><div class="need">Признание, владелец, решение до конца</div><div class="sig"><em>Сигналы</em>2+ обращения по теме за 30 дней, «третий раз»</div><div class="no"><em>Нельзя</em>начинать с нуля, просить те же данные</div></div>
+    <div class="ty t1"><img class="ic" src="img/st-clock.webp" alt="" width="512" height="512"><h3>Срочно</h3><div class="need">Действие за минуты и минимум усилий от клиента</div><div class="sig"><em>Как узнать</em>отказ операции за 15 минут, «стою на кассе», геолокация за рубежом</div><div class="no"><em>Нельзя</em>статья и инструкция из пяти шагов</div></div>
+    <div class="ty t2"><img class="ic" src="img/st-shield.webp" alt="" width="512" height="512"><h3>Страшно</h3><div class="need">Остановить потерю, снять вину, честно сказать про шансы</div><div class="sig"><em>Как узнать</em>перевод новому получателю, смена номера, «звонили из службы»</div><div class="no"><em>Нельзя</em>«вы перевели сами», обещать возврат</div></div>
+    <div class="ty t3"><img class="ic" src="img/st-scales.webp" alt="" width="512" height="512"><h3>Несправедливо</h3><div class="need">Причина, понятный маршрут, срок и один ответственный</div><div class="sig"><em>Как узнать</em>ограничение на счёте, 2+ обращения, «на каком основании»</div><div class="no"><em>Нельзя</em>«по требованиям законодательства» без следующих шагов</div></div>
+    <div class="ty t4"><img class="ic" src="img/st-heart.webp" alt="" width="512" height="512"><h3>Тяжело</h3><div class="need">Спокойный темп, живой человек, помощь близких</div><div class="sig"><em>Как узнать</em>возраст, путаница в тексте, «не могу платить», «умер»</div><div class="no"><em>Нельзя</em>тон взыскания и полотно текста</div></div>
+    <div class="ty t5"><img class="ic" src="img/st-repeat.webp" alt="" width="512" height="512"><h3>Снова</h3><div class="need">Признать ошибку, взять вопрос на себя и довести</div><div class="sig"><em>Как узнать</em>2+ обращения по теме за 30 дней, «третий раз»</div><div class="no"><em>Нельзя</em>начинать с нуля и просить те же данные</div></div>
   </div>
-  <div class="rule"><img src="img/3d-bubble.webp" alt="" width="790" height="768"><span><b>Типы пересекаются.</b> Мошенничество у пожилого клиента это Страшно и Тяжело. Более уязвимый тип задаёт тон, более срочный задаёт порядок действий.</span></div>
+  <div class="rule"><img src="img/st-chat.webp" alt="" width="512" height="512"><span><b>Типы пересекаются.</b> У пожилого клиента, которого обманули мошенники, сразу два типа: Страшно и Тяжело. Тон выбираем по более уязвимому, порядок действий по более срочному</span></div>
 </section>
 
 <section id="cjm">
-  <h2>Путь Ирины: 3 дня без карты и 2 обращения</h2>
-  <p class="sub">CJM на 24 шага, здесь по 8 фазам. Стресс, равнодушие и потеря доверия появляются там, где банк знает больше, чем говорит клиенту. Полная карта со Service Blueprint на <a href="https://miro.com/app/board/uXjVEUshVGo=/" target="_blank" rel="noopener">доске Miro</a>.</p>
+  <h2>Путь Ирины: три дня без карты и два обращения</h2>
+  <p class="sub">Полная карта на 24 шага со Service Blueprint лежит на <a href="https://miro.com/app/board/uXjVEUshVGo=/" target="_blank" rel="noopener">доске Miro</a>. Здесь она собрана в 8 этапов. Хуже всего Ирине там, где банк знает причину, а ей не говорит</p>
   <div class="jr">
-    <div class="pc"><img src="img/irina.webp" alt="Ирина, персона" width="900" height="1200" loading="lazy"><b>Ирина, 32</b><span>Маркетолог, Москва. Зарплатный клиент Т-Банка 4 года, всё решает в чате.</span><em>Вечер пятницы, оплата на кассе не проходит: антифрод ограничил карту. Решено на третий день.</em></div>
-    <div class="jmap"><div class="jgrid" id="jgrid"></div></div>
+    <div class="pc"><img src="img/irina.webp" alt="Ирина, персона" width="900" height="1200" loading="lazy"><b>Ирина, 32</b><span>Маркетолог из Москвы, зарплатный клиент Т-Банка 4 года, всё решает в чате</span><q>Держать все деньги в одном банке опасно</q><em>Вечер пятницы, оплата на кассе не проходит: антифрод ограничил карту. Решилось только на третий день</em></div>
+    <div class="jmap"><div class="jm" id="jm"></div></div>
   </div>
 </section>
 
-<section id="ponyal">
-  <h2>ПОНЯЛ: пять шагов специалиста</h2>
-  <p class="sub">Шаги собраны из того, что решило исход в разборах ситуаций и интервью, и сверены с практиками Disney, Apple, британских банков для уязвимых клиентов. Последний шаг продолжает работу после ответа клиенту.</p>
+<section id="steps">
+  <h2>Пять шагов специалиста в сложном обращении</h2>
+  <p class="sub">Подход называется «Понял», потому что именно это клиент должен почувствовать в конце. Шаги мы взяли из разборов ситуаций и интервью, а потом сверили с тем, как работают Disney, Apple и британские банки с уязвимыми клиентами</p>
   <div class="steps">
-    <div class="st"><div class="L">П</div><b>Прочитать контекст</b><p>История, операции за 24 часа, статус ограничений, прошлые обращения. Определить тип.</p><q>Не спрашиваю то, что банк уже знает</q></div>
-    <div class="st"><div class="L">О</div><b>Обозначить, что понял</b><p>Своими словами назвать ситуацию и состояние, снять вину.</p><q>Правильно понимаю, что вы на кассе и оплата не проходит?</q></div>
-    <div class="st"><div class="L">Н</div><b>Найти настоящую задачу</b><p>1-2 уточняющих вопроса, по одному. Вопрос дешевле неверного ответа.</p><q>Сейчас кто-то просит перевести деньги или назвать код?</q></div>
-    <div class="st"><div class="L">Я</div><b>Ясный план и действие</b><p>Сделать самому всё, что можно. Что сделано, что нужно от клиента, когда итог.</p><q>Я уже сделал это. От вас только одно. Итог до 18:00</q></div>
-    <div class="st"><div class="L">Л</div><b>Лично довести и вернуть сигнал</b><p>Остаться владельцем случая, вернуться с итогом, системную причину передать в продукт.</p><q>Если что-то пойдёт не так, ответьте в этот чат, я увижу</q></div>
+    <div class="st"><div class="L">1</div><b>Прочитать историю до ответа</b><p>Операции за сутки, ограничения, прошлые обращения. По ним уже видно тип ситуации</p><q>Не спрашиваю то, что банк уже знает</q></div>
+    <div class="st"><div class="L">2</div><b>Назвать ситуацию своими словами</b><p>Показать, что понял, и снять с клиента вину</p><q>Правильно понимаю, вы на кассе и оплата не проходит?</q></div>
+    <div class="st"><div class="L">3</div><b>Понять, что нужно сейчас</b><p>Один-два вопроса, по одному. Лишний вопрос дешевле неверного ответа</p><q>Сейчас кто-то просит перевести деньги или назвать код?</q></div>
+    <div class="st"><div class="L">4</div><b>Сделать самому и дать срок</b><p>Всё, что можно, специалист делает сам. Клиенту говорит, что сделано, что нужно от него и когда будет итог</p><q>Уже сделала. От вас нужно одно. Итог до 18:00</q></div>
+    <div class="st"><div class="L">5</div><b>Довести до конца</b><p>Вопрос остаётся за специалистом, пока проблема не решена. Причину, которая повторяется, он передаёт в продукт</p><q>Если что-то пойдёт не так, напишите сюда, я увижу</q></div>
   </div>
 
   <div class="seg" role="tablist" id="seg">
@@ -455,70 +464,84 @@ footer .brand { font-size: 17px; }
 
 <section id="proto">
   <h2>Прототип рабочего места специалиста</h2>
-  <p class="sub">Выберите обращение. Copilot подсвечивает тип ситуации по сигналам, ведёт по шагам ПОНЯЛ, считает порог уступки и собирает карточку случая для клиента. Данные обращений смоделированы на основе реальных отзывов.</p>
-  <div class="ws">
-    <div class="win">
-      <div class="bar0"><span class="dot"></span><span class="dot"></span><span class="dot"></span><b>Рабочее место специалиста</b><span class="r"><span class="tag">Сложные обращения: 5</span></span></div>
-      <div class="q" id="queue" role="tablist" aria-label="Очередь обращений"></div>
-      <div class="chat">
-        <div class="hd"><div class="av" id="av">И</div><div><b id="cn">Клиент</b><span id="cm">чат в приложении</span></div></div>
-        <div class="lg" id="log" aria-live="polite"></div>
-        <div class="cmp"><textarea id="ta" rows="2" aria-label="Ответ клиенту"></textarea><button class="btn y" id="send">Отправить</button></div>
-      </div>
-      <aside class="cop" aria-label="Подсказки copilot">
-        <div class="blk type"><h4 style="color:#6b5300">Тип ситуации</h4><div class="ty-n" id="tyn"></div><div class="ty-w" id="tyw"></div></div>
-        <div class="blk"><h4>Сигналы в данных</h4><ul class="sigs" id="sigs"></ul></div>
-        <div class="blk"><h4>Шаги ПОНЯЛ</h4><div class="chk" id="chk"></div></div>
-        <div class="blk"><h4>Фраза под тип, текст свой</h4><div class="sugg" id="sugg"></div><button class="btn g sm" id="use">Вставить в ответ</button></div>
-        <div class="blk"><h4>Порог уступки</h4>
-          <div class="calc">
-            <div class="rw"><span>Сумма спора, ₽</span><input type="number" id="amt" min="0" step="10"></div>
-            <div class="rw"><span>Сторона банка</span><select id="fault"><option value="1">ошибка или спорно</option><option value="0">банк прав</option></select></div>
-            <div class="rw"><span>Допущения</span><select id="segm"><option value="809">консервативные, 809 ₽</option><option value="2114">расширенные, 2 114 ₽</option></select></div>
-            <div class="verdict" id="verd"></div>
+  <p class="sub">Выберите обращение слева. Справа подсказки: тип ситуации по данным, шаги, порог, до которого можно вернуть деньги без согласования, и карточка случая для клиента. Обращения придуманы по мотивам реальных отзывов</p>
+  <div class="mac">
+    <div class="lid">
+      <div class="ws">
+        <div class="win">
+          <div class="bar0"><img src="img/tbank-logo.svg" alt="" style="height:22px"><b>Рабочее место</b><span class="r"><span class="tag">Сложные обращения: 5</span></span></div>
+          <div class="q" id="queue" role="tablist" aria-label="Очередь обращений"></div>
+          <div class="chat">
+            <div class="hd"><div class="av" id="av">И</div><div><b id="cn">Клиент</b><span id="cm">чат в приложении</span></div></div>
+            <div class="lg" id="log" aria-live="polite"></div>
+            <div class="cmp"><textarea id="ta" rows="2" aria-label="Ответ клиенту"></textarea><button class="btn y" id="send">Отправить</button></div>
           </div>
+          <aside class="cop" aria-label="Подсказки">
+            <div class="blk type"><img id="tyi" src="img/st-clock.webp" alt=""><h4 style="color:#6b5300">Тип ситуации</h4><div class="ty-n" id="tyn"></div><div class="ty-w" id="tyw"></div></div>
+            <div class="blk"><h4>Что видно в данных</h4><ul class="sigs" id="sigs"></ul></div>
+            <div class="blk"><h4>Шаги</h4><div class="chk" id="chk"></div></div>
+            <div class="blk"><h4>Фраза под тип, текст свой</h4><div class="sugg" id="sugg"></div><button class="btn g sm" id="use">Вставить в ответ</button></div>
+            <div class="blk"><h4>Можно ли вернуть деньги сразу</h4>
+              <div class="calc">
+                <div class="rw"><span>Сумма спора, ₽</span><input type="number" id="amt" min="0" step="10"></div>
+                <div class="rw"><span>Сторона банка</span><select id="fault"><option value="1">ошибка или спорно</option><option value="0">банк прав</option></select></div>
+                <div class="rw"><span>Допущения</span><select id="segm"><option value="809">осторожные, до 809 ₽</option><option value="2114">расширенные, до 2 114 ₽</option></select></div>
+                <div class="verdict" id="verd"></div>
+              </div>
+            </div>
+            <div class="blk"><h4>Карточка случая</h4><div class="score" id="cardp"></div><button class="btn d sm" id="sendcard" style="margin-top:10px;width:100%">Отправить карточку клиенту</button></div>
+          </aside>
         </div>
-        <div class="blk"><h4>Карточка случая</h4><div class="score" id="cardp"></div><button class="btn d sm" id="sendcard" style="margin-top:10px;width:100%">Отправить карточку клиенту</button></div>
-      </aside>
+      </div>
     </div>
+    <div class="base"></div>
   </div>
 </section>
 
 <section id="effect">
   <h2>685 млн ₽ в год и окупаемость за 3,2 месяца</h2>
-  <p class="sub">Финмодель на открытых данных: 17,8 млн сложных обращений к специалисту в год, стоимость обращения 274 ₽, операционная прибыль активного клиента 5 220 ₽ в год. Время специалистов и уступки учтены как расходы.</p>
+  <p class="sub">Модель построена на открытых данных: 17,8 млн сложных обращений к специалисту в год, 274 ₽ за обращение, 5 220 ₽ операционной прибыли с активного клиента в год. Дополнительное время специалистов и возвраты денег вычтены как расходы</p>
   <div class="fx">
-    <div class="card"><b style="font-size:18px;color:var(--ink-strong)">Из чего складывается эффект, млн ₽ в год</b><svg id="wf" viewBox="0 -40 720 400" role="img" aria-label="Каскад эффекта: экономия на повторах 732, устранение причин 98, сохранённая прибыль 358, время специалистов минус 244, уступки минус 214, ежегодные затраты минус 45, итого 685 млн рублей"></svg></div>
+    <div class="card"><b style="font-size:18px;color:var(--ink-strong)">Из чего складывается эффект, млн ₽ в год</b><svg id="wf" viewBox="0 -40 720 400" role="img" aria-label="Каскад эффекта: экономия на повторах 732, устранение причин 98, сохранённая прибыль 358, время специалистов минус 244, возвраты денег минус 214, ежегодные затраты минус 45, итого 685 млн рублей"></svg></div>
     <div class="card"><b style="font-size:18px;color:var(--ink-strong)">Сравнили 5 вариантов по 7 факторам</b>
       <div class="opts" id="opts"></div>
-      <p style="margin:14px 0 0;font-size:14px;color:var(--ink-2)">Балл из 5, веса факторов: решение с первого обращения 25%, «меня поняли» 20%, удержание 15%, экономика 15%, риски 10%, реализуемость 10%, причины в продуктах 5%.</p>
+      <p style="margin:14px 0 0;font-size:14px;color:var(--ink-2)">Балл из 5. Веса: решение с первого обращения 25%, «меня поняли» 20%, удержание 15%, экономика 15%, риски 10%, реализуемость 10%, причины в продуктах 5%</p>
     </div>
   </div>
   <div class="plan">
-    <div class="ph now"><span class="w">4 недели</span><b>Подготовка</b><p>Правила по 5 типам, формулировки для ограничений с комплаенсом, порог с финансами, MVP подсказок.</p><div class="gate">Правила согласованы с рисками</div></div>
-    <div class="ph"><span class="w">8 недель</span><b>Пилот на 1 000 специалистов</b><p>A/B с контрольной группой, 137 тыс. сложных обращений, бюджет 35 млн ₽.</p><div class="gate">+4 п.п. к решению с первого обращения, время не больше +5%</div></div>
-    <div class="ph"><span class="w">3 месяца</span><b>Волны</b><p>Чаты, затем звонки и вторая линия. Обучение 4 часа.</p><div class="gate">Метрики держатся на 3 волнах</div></div>
-    <div class="ph"><span class="w">6 месяцев от старта</span><b>Весь департамент</b><p>20 тыс. специалистов, ежемесячный топ причин для продуктовых команд.</p><div class="gate">Эффект модели подтверждён фактом</div></div>
+    <div class="ph now"><span class="w">4 недели</span><b>Подготовка</b><p>Правила по пяти типам, формулировки для ограничений вместе с комплаенсом, порог возврата с финансами, первая версия подсказок</p><div class="gate">Правила согласованы с рисками</div></div>
+    <div class="ph"><span class="w">8 недель</span><b>Пилот на 1 000 специалистов</b><p>A/B с контрольной группой, 137 тыс. сложных обращений, бюджет 35 млн ₽</p><div class="gate">+4 п.п. к решению с первого обращения, время выросло не больше чем на 5%</div></div>
+    <div class="ph"><span class="w">3 месяца</span><b>Волны</b><p>Сначала чаты, потом звонки и вторая линия. Обучение 4 часа</p><div class="gate">Метрики держатся три волны подряд</div></div>
+    <div class="ph"><span class="w">6 месяцев от старта</span><b>Весь департамент</b><p>20 тыс. специалистов, каждый месяц топ причин для продуктовых команд</p><div class="gate">Факт сходится с моделью</div></div>
   </div>
   <div class="mets">
-    <div class="met"><b>Решение с первого обращения</b><span>нет повтора по теме 7 дней</span><div class="ctl"><em>Контроль:</em> время обработки растёт не больше чем на 5%</div></div>
-    <div class="met"><b>«Меня поняли» и CES</b><span>вопрос после диалога и «насколько легко», 1-7</span><div class="ctl"><em>Контроль:</em> число сообщений клиента, оценки после отказа</div></div>
-    <div class="met"><b>Удержание и жалобы</b><span>активен через 90 дней, жалобы в ЦБ на 100 тыс. клиентов</span><div class="ctl"><em>Контроль:</em> расходы на уступки на клиента</div></div>
+    <div class="met"><b>Решение с первого обращения</b><span>нет повтора по теме 7 дней</span><div class="ctl"><em>Следим, чтобы</em> время обработки росло не больше чем на 5%</div></div>
+    <div class="met"><b>«Меня поняли» и CES</b><span>вопрос после диалога и «насколько легко», от 1 до 7</span><div class="ctl"><em>Следим за</em> числом сообщений клиента и оценками после отказа</div></div>
+    <div class="met"><b>Удержание и жалобы</b><span>клиент активен через 90 дней, жалобы в ЦБ на 100 тыс. клиентов</span><div class="ctl"><em>Следим за</em> расходами на возвраты в пересчёте на клиента</div></div>
   </div>
 </section>
 
 <section id="criteria">
   <h2>Все 7 подзадач кейса</h2>
-  <p class="sub">Где лежит ответ на каждую подзадачу кейса. Дерево причин и сравнение вариантов в приложениях 2 и 3 презентации.</p>
+  <p class="sub">Где найти ответ на каждую подзадачу. Дерево причин и сравнение вариантов лежат в приложениях 2 и 3 презентации</p>
   <div class="crit">
-    <div class="cr"><div class="n">1</div><b>Опыт поддержки и лучшие практики</b><p>Т-Банк против Сбера, Альфы, ВТБ и Яндекса: что удобно и что разочаровало, 6 практик, которые берём.</p><a href="deck/#2">Слайд 2</a></div>
-    <div class="cr"><div class="n">2</div><b>Типы ситуаций с особым подходом</b><p>5 типов по потребности человека, сигналы для распознавания и что нельзя.</p><a href="deck/#3">Слайд 3</a></div>
-    <div class="cr"><div class="n">3</div><b>Ключевые действия из тренажёров</b><p>5 действий и в скольких ситуациях каждое решило исход.</p><a href="deck/#3">Слайд 3</a></div>
-    <div class="cr"><div class="n">4</div><b>Путь клиента (CJM)</b><p>24 шага: где стресс, где равнодушие, где теряется доверие. Service Blueprint под картой.</p><a href="deck/#4">Слайд 4</a></div>
-    <div class="cr"><div class="n">5</div><b>Рекомендации специалисту</b><p>ПОНЯЛ: вопросы, инструменты, данные и сигналы, принципы, плейбук по типам.</p><a href="deck/#5">Слайд 5</a></div>
-    <div class="cr"><div class="n">6</div><b>Изменения и шаблон-обоснование</b><p>5 изменений под корневые причины, шаблон для смежных команд, когда компенсация выгодна банку.</p><a href="deck/#6">Слайд 6</a></div>
-    <div class="cr"><div class="n">7</div><b>Влияние на бизнес</b><p>От действия специалиста до денег: удержание, повторы, продукт. Варианты, план, метрики.</p><a href="deck/#7">Слайд 7</a></div>
-    <div class="cr miro"><div class="n">M</div><b>Доска Miro</b><p>CJM на 24 шага, Service Blueprint, персона, JTBD, поле, дерево причин и варианты.</p><a href="https://miro.com/app/board/uXjVEUshVGo=/" target="_blank" rel="noopener">Открыть доску</a></div>
+    <div class="cr"><span class="n">Подзадача 1</span><b>Опыт поддержки и лучшие практики</b><p>Т-Банк, Сбер, Альфа, ВТБ и Яндекс: что удобно, что разочаровало и какие 6 практик мы забираем</p><a href="deck/#2">Слайд 2</a></div>
+    <div class="cr"><span class="n">Подзадача 2</span><b>Ситуации, которым нужен особый подход</b><p>5 типов по тому, что нужно человеку, как их узнать и чего нельзя делать</p><a href="deck/#3">Слайд 3</a></div>
+    <div class="cr"><span class="n">Подзадача 3</span><b>Ключевые действия из тренажёров</b><p>5 действий и в скольких ситуациях каждое решило исход</p><a href="deck/#3">Слайд 3</a></div>
+    <div class="cr"><span class="n">Подзадача 4</span><b>Путь клиента</b><p>CJM на 24 шага: где стресс, где равнодушие, где Ирина перестаёт доверять банку. Под картой Service Blueprint</p><a href="deck/#4">Слайд 4</a></div>
+    <div class="cr"><span class="n">Подзадача 5</span><b>Рекомендации специалисту</b><p>Пять шагов, вопросы, инструменты, данные и принципы, плейбук по типам</p><a href="deck/#5">Слайд 5</a></div>
+    <div class="cr"><span class="n">Подзадача 6</span><b>Изменения и шаблон-обоснование</b><p>5 изменений под корневые причины, шаблон для смежных команд и расчёт, когда возврат денег выгоден банку</p><a href="deck/#6">Слайд 6</a></div>
+    <div class="cr"><span class="n">Подзадача 7</span><b>Влияние на бизнес</b><p>Как действие специалиста превращается в деньги: повторы, удержание, продукт. Варианты, план и метрики</p><a href="deck/#7">Слайд 7</a></div>
+    <div class="cr miro"><span class="n">Доска</span><b>Доска Miro</b><p>CJM на 24 шага, Service Blueprint, персона, JTBD, исследование, дерево причин и варианты</p><a href="https://miro.com/app/board/uXjVEUshVGo=/" target="_blank" rel="noopener">Открыть доску</a></div>
+  </div>
+</section>
+
+<section id="links">
+  <h2>Открыть с телефона</h2>
+  <div class="links3">
+    <a class="lk y" href="deck/"><div><b>Презентация</b><span>8 слайдов и 11 приложений, листается стрелками и свайпом</span></div><div class="qr"><img src="img/qr-deck.svg" alt="QR-код презентации" width="33" height="33"></div></a>
+    <a class="lk" href="https://miro.com/app/board/uXjVEUshVGo=/" target="_blank" rel="noopener"><div><b>Доска Miro</b><span>CJM, Service Blueprint и всё исследование</span></div><div class="qr"><img src="img/qr-miro.svg" alt="QR-код доски Miro" width="29" height="29"></div></a>
+    <a class="lk" href="./"><div><b>Этот сайт</b><span>прототип рабочего места и расчёты</span></div><div class="qr"><img src="img/qr-site.svg" alt="QR-код сайта" width="33" height="33"></div></a>
   </div>
 </section>
 
@@ -535,9 +558,9 @@ footer .brand { font-size: 17px; }
 
 <footer>
   <div class="wrap">
-    <a class="brand" href="#"><img src="img/tbank-logo.svg" alt="Т-Банк" class="tlogo"><i class="sep"></i><span>ПОНЯЛ</span></a>
-    <span>Решение кейса Т-Банка, Changellenge Cup Moscow 2026. Синтетические данные в прототипе подписаны и построены на реальных отзывах.</span>
-    <span style="display:flex;gap:8px"><a class="btn g sm" href="deck/CupMoscow2026-Т-Банк-Команда.pdf">PDF</a><a class="btn y sm" href="deck/">Презентация</a></span>
+    <a class="brand" href="#"><img src="img/tbank-logo.svg" alt="Т-Банк" class="tlogo"><i class="sep"></i><span>Понял</span></a>
+    <span>Решение кейса Т-Банка, Changellenge Cup Moscow 2026</span>
+    <span style="display:flex;gap:8px"><a class="btn g sm" href="deck/CupMoscow2026-Т-Банк-Команда.pdf">PDF</a><a class="btn g sm" href="https://miro.com/app/board/uXjVEUshVGo=/" target="_blank" rel="noopener">Доска Miro</a><a class="btn y sm" href="deck/">Презентация</a></span>
   </div>
 </footer>
 
@@ -573,32 +596,32 @@ footer .brand { font-size: 17px; }
   showPlay(0);
 
   // Прототип: обращения смоделированы на основе реальных отзывов (research/synthetic/interviews.md)
-  var STEPS = [['П', 'Прочитать контекст'], ['О', 'Обозначить, что понял'], ['Н', 'Найти настоящую задачу'], ['Я', 'Ясный план и действие'], ['Л', 'Лично довести']];
+  var STEPS = ['Прочитать историю до ответа', 'Назвать ситуацию своими словами', 'Понять, что нужно сейчас', 'Сделать самому и дать срок', 'Довести до конца'];
   var CASES = [
     { n: 'Марина', a: 34, ch: 'чат в приложении', type: 'Срочно', why: 'Сначала действие, потом объяснение', amt: 0, fault: 0,
       msgs: ['Карта не проходит, стою на кассе с пакетами!!', 'Бот прислал статью, мне сейчас не до неё'],
       sigs: [['Отказ операции', '2 минуты назад, 3 840 ₽, супермаркет'], ['Причина отказа', 'антифрод: новая покупка в интернет-магазине'], ['Слова клиента', '«стою на кассе», два восклицательных знака']],
-      say: 'Вижу, оплату остановила проверка после покупки в новом магазине. Уже снял ограничение, попробуйте ещё раз. Я на связи, если не пройдёт.',
+      say: 'Вижу, оплату остановила проверка после покупки в новом магазине. Уже сняла ограничение, попробуйте ещё раз. Я на связи, если не пройдёт',
       card: [['Сделано', 'ограничение снято'], ['От вас', 'ничего'], ['Итог', 'сейчас']] },
     { n: 'Олег', a: 41, ch: 'чат в приложении', type: 'Страшно', why: 'Остановить потерю, снять вину, честные шансы', amt: 46000, fault: 0,
       msgs: ['Мне позвонили из «службы безопасности», я перевёл 46 000 на «безопасный счёт»', 'Что теперь делать? Мне сказали, что это защита'],
       sigs: [['Перевод', '46 000 ₽ новому получателю 12 минут назад'], ['Устройство', 'вход с нового телефона вчера'], ['Признак ЦБ', 'смена устройства перед крупным переводом']],
-      say: 'Понимаю, как это тяжело. Вы правильно сделали, что сразу написали, мошенники умеют убеждать. Карту я уже заблокировал и отправляю запрос в банк получателя. Сейчас кто-то просит вас назвать код или перевести ещё?',
+      say: 'Понимаю, как это тяжело. Вы правильно сделали, что сразу написали, мошенники умеют убеждать. Карту я уже заблокировала и отправляю запрос в банк получателя. Сейчас кто-то просит вас назвать код или перевести ещё?',
       card: [['Сделано', 'карта заблокирована, запрос в банк получателя'], ['От вас', 'заявление, заполню за вас'], ['Итог', 'ответ банка получателя до 3 дней']] },
     { n: 'Алексей', a: 29, ch: 'чат ИП', type: 'Несправедливо', why: 'Причина, маршрут, срок, один ответственный', amt: 0, fault: 0,
       msgs: ['Счёт ограничен уже 9 дней, мне ответили «по требованиям законодательства»', 'На каком основании? Срок уже три раза сдвигали'],
       sigs: [['Ограничение', '115-ФЗ, запрос документов от 19.10'], ['Обращения', '3 по теме за 10 дней'], ['Слова клиента', '«на каком основании», «сдвигали»']],
-      say: 'Вижу ограничение и понимаю, что оно мешает работать. Это проверка операций по 115-ФЗ. Нужны три документа, отправляю список файлом. После загрузки решение до 4 ноября, я веду ваш вопрос сам.',
+      say: 'Вижу ограничение и понимаю, что оно мешает работать. Это проверка операций по 115-ФЗ. Нужны три документа, отправляю список файлом. После загрузки решение до 4 ноября, ваш вопрос веду я сама',
       card: [['Сделано', 'список документов отправлен'], ['От вас', '3 документа в чат'], ['Итог', 'до 4 ноября, ответственный Анна']] },
     { n: 'Валентина Петровна', a: 68, ch: 'чат в приложении', type: 'Тяжело', why: 'Бережный темп, человек, помощь близких', amt: 0, fault: 0,
       msgs: ['здравствуйте мне звонили из полиции сказали оформить кредит чтобы защитить деньги', 'я не понимаю что делать'],
       sigs: [['Возраст', '68 лет'], ['Кредит', 'заявка 20 минут назад на 300 000 ₽'], ['Текст', 'нет пунктуации, путаница']],
-      say: 'Я с вами, разберёмся вместе, без спешки. Полиция никогда не просит оформлять кредит. Заявку я остановил. Можно позвонить вам голосом? Кто из близких может побыть рядом?',
+      say: 'Я с вами, разберёмся вместе, без спешки. Полиция никогда не просит оформлять кредит. Заявку я остановила. Можно позвонить вам голосом? Кто из близких может побыть рядом?',
       card: [['Сделано', 'заявка на кредит остановлена'], ['От вас', 'ничего, перезвоню сам'], ['Итог', 'звонок в течение 10 минут']] },
     { n: 'Дарья', a: 23, ch: 'чат в приложении', type: 'Снова', why: 'Признание, владелец, решение до конца', amt: 1240, fault: 1,
       msgs: ['Пишу третий раз про кешбэк 1 240 рублей', 'Каждый раз объясняю всё заново'],
       sigs: [['Обращения', '3 по теме «кешбэк» за 21 день'], ['Обещание', '«начислим до 15.10», не выполнено'], ['Сумма', '1 240 ₽, ошибка категории у партнёра']],
-      say: 'Вижу, вы пишете третий раз, и это наша ошибка. Повторять ничего не нужно, я всё вижу. Начисляю 1 240 ₽ сейчас и передаю ошибку категории в продукт, чтобы она не повторилась.',
+      say: 'Вижу, вы пишете третий раз, и это наша ошибка. Повторять ничего не нужно, я всё вижу. Начисляю 1 240 ₽ сейчас и передаю ошибку категории в продукт, чтобы она не повторилась',
       card: [['Сделано', '1 240 ₽ начислено'], ['От вас', 'ничего'], ['Итог', 'сейчас, ошибка передана в продукт']] }
   ];
   var cur = 0, done = [];
@@ -611,16 +634,16 @@ footer .brand { font-size: 17px; }
   function renderChk() {
     $('chk').innerHTML = STEPS.map(function (s, k) {
       var on = done[k];
-      return '<label class="' + (on ? 'done' : '') + '"><input type="checkbox" data-k="' + k + '"' + (on ? ' checked' : '') + '><span><b>' + s[0] + '.</b> ' + s[1] + '</span></label>';
+      return '<label class="' + (on ? 'done' : '') + '"><input type="checkbox" data-k="' + k + '"' + (on ? ' checked' : '') + '><span><b>' + (k + 1) + '.</b> ' + s + '</span></label>';
     }).join('');
   }
   function verdict() {
     var a = +$('amt').value || 0, f = $('fault').value === '1', thr = +$('segm').value, v = $('verd');
-    if (!a) { v.className = 'verdict'; v.style.background = '#f1f2f4'; v.textContent = 'Спора о деньгах нет, уступка не нужна'; return; }
+    if (!a) { v.className = 'verdict'; v.style.background = '#f1f2f4'; v.textContent = 'Спора о деньгах нет, возвращать нечего'; return; }
     v.style.background = '';
-    if (f && a <= thr) { v.className = 'verdict ok'; v.textContent = 'Можно вернуть сразу: ' + fmt(a) + ' ₽ меньше порога ' + fmt(thr) + ' ₽. Уступка дешевле ухода и повторов.'; }
-    else if (!f) { v.className = 'verdict no'; v.textContent = 'Банк прав: уступка не положена. Объяснить причину и предложить альтернативу.'; }
-    else { v.className = 'verdict no'; v.textContent = 'Выше порога ' + fmt(thr) + ' ₽: решение по процедуре, срок и ответственный в карточке.'; }
+    if (f && a <= thr) { v.className = 'verdict ok'; v.textContent = 'Можно вернуть сразу: ' + fmt(a) + ' ₽ меньше порога ' + fmt(thr) + ' ₽. Возврат обойдётся банку дешевле, чем повторы и уход клиента'; }
+    else if (!f) { v.className = 'verdict no'; v.textContent = 'Банк прав, возврат не положен. Объясните причину и предложите, что можно сделать'; }
+    else { v.className = 'verdict no'; v.textContent = 'Больше порога ' + fmt(thr) + ' ₽, решаем по процедуре. Срок и ответственного укажите в карточке'; }
   }
   function show(i) {
     cur = i; done = [true, false, false, false, false];
@@ -628,7 +651,7 @@ footer .brand { font-size: 17px; }
     Array.prototype.forEach.call($('queue').children, function (b, k) { b.classList.toggle('on', k === i); b.setAttribute('aria-selected', String(k === i)); });
     $('av').textContent = c.n[0]; $('cn').textContent = c.n + ', ' + c.a; $('cm').textContent = c.ch;
     $('log').innerHTML = '<div class="bub sys">Сегодня</div>' + c.msgs.map(function (m) { return '<div class="bub cl">' + esc(m) + '</div>'; }).join('');
-    $('tyn').textContent = c.type; $('tyw').textContent = c.why;
+    $('tyn').textContent = c.type; $('tyw').textContent = c.why; $('tyi').src = 'img/st-' + { 'Срочно': 'clock', 'Страшно': 'shield', 'Несправедливо': 'scales', 'Тяжело': 'heart', 'Снова': 'repeat' }[c.type] + '.webp';
     $('sigs').innerHTML = c.sigs.map(function (s) { return '<li><i></i><div>' + esc(s[0]) + '<br><span>' + esc(s[1]) + '</span></div></li>'; }).join('');
     $('sugg').textContent = c.say; $('ta').value = '';
     $('amt').value = c.amt; $('fault').value = c.fault ? '1' : '0';
@@ -646,41 +669,65 @@ footer .brand { font-size: 17px; }
   });
   $('sendcard').addEventListener('click', function () {
     var c = CASES[cur];
-    $('log').insertAdjacentHTML('beforeend', '<div class="bub op"><b>Карточка случая</b><div class="cc">' + c.card.map(function (r) { return '<div><span>' + esc(r[0]) + '</span><span>' + esc(r[1]) + '</span></div>'; }).join('') + '<div><span>Ответственный</span><span>Анна, вернусь сама</span></div></div></div>');
+    $('log').insertAdjacentHTML('beforeend', '<div class="bub op"><b>Карточка случая</b><div class="cc">' + c.card.map(function (r) { return '<div><span>' + esc(r[0]) + '</span><span>' + esc(r[1]) + '</span></div>'; }).join('') + '<div><span>Ответственный</span><span>Анна, напишу сама</span></div></div></div>');
     tick(3); tick(4); $('log').scrollTop = 1e6;
   });
   ['amt', 'fault', 'segm'].forEach(function (id) { $(id).addEventListener('input', verdict); });
   show(0);
 
 
-  // CJM по 8 фазам (cjm/cjm.json)
-  (function () {
-    var ST = [[1, 2, 'До обращения', '#fff7cc'], [3, 4, 'Первое обращение', '#eaf9ef'], [5, 5, 'Между', '#fff7cc'], [6, 6, 'Повторное', '#eaf9ef'], [7, 8, 'Решение и после', '#fff7cc']];
-    var PH = [['Сбой на кассе', 'На меня все смотрят. Что я сделала не так?', 'Пуш не называет причину', 'S', 'Кнопка «Это я» в пуше'], ['Поиск причины', 'Почему? Меня подозревают?', 'Нет типа ограничения и следующего шага', 'DR', 'Тип ограничения и кнопка на экране карты'],
-      ['Вход в поддержку', 'Мне не нужна статья, я стою на кассе', 'Бот не распознал срочность', 'R', 'Copilot ставит тип «Срочно»'], ['Диалог', 'Я это всё уже проверила', 'Специалист не видит тип ограничения', 'SR', '«Вижу, покупку остановила защита. Уже снял»'],
-      ['Ожидание без срока', 'А если не успеют до аренды?', 'Нет срока и обратной связи', 'SDR', 'Шага нет: решено сразу'], ['Второй круг', 'Вы же видите переписку', 'Нет карточки случая и владельца', 'SRD', 'Шага нет'],
-      ['Снятие ограничения', 'Наконец-то. Но больше рисковать не хочу', 'Никто не вернулся с итогом', 'S', 'Специалист сам пишет итог'], ['Вывод о банке', 'Держать все деньги в одном банке опасно', 'Нет восстановления отношений', 'RD', 'Остаётся основным клиентом']];
-    var CL = { S: '#ff8a7a', R: '#b9bcc2', D: '#9b7bf0' };
-    var h = '<div></div>';
-    ST.forEach(function (s) { h += '<div class="stg" style="grid-column:' + (s[0] + 1) + ' / ' + (s[1] + 2) + ';background:' + s[3] + '">' + s[2] + '</div>'; });
-    h += '<div class="rl">Фаза</div>' + PH.map(function (p, i) { return '<div class="ph8">' + (i + 1) + '. ' + p[0] + '</div>'; }).join('');
-    h += '<div class="rl">Мысли</div>' + PH.map(function (p) { return '<div class="th">«' + p[1] + '»</div>'; }).join('');
-    h += '<div class="rl">Эмоция</div><div class="emo"><svg id="jemo" viewBox="0 0 1000 120" preserveAspectRatio="none"></svg></div>';
-    h += '<div class="rl">Барьер</div>' + PH.map(function (p) { return '<div class="br">' + p[2] + '<div class="mk">' + p[3].split('').map(function (m) { return '<i style="background:' + CL[m] + '"></i>'; }).join('') + '</div></div>'; }).join('');
-    h += '<div class="rl" style="color:#6b5300">С ПОНЯЛ</div>' + PH.map(function (p) { return '<div class="tb">' + p[4] + '</div>'; }).join('');
-    $('jgrid').innerHTML = h;
-    var EMO = [-1, -2, -1, -1, -1, -1, 0, -1, -1, -2, -2, -1, -2, -2, -1, -2, -2, -1, -2, 1, 0, -1, -1, -1];
-    var TOBE = [0, 0, null, 0, 1, null, 1, null, 0, 0, 1, 2, null, null, null, null, null, null, null, 2, 1, 0, 1, 1];
-    var x = function (i) { return (i + 0.5) / 24 * 1000; }, y = function (e) { return 60 - e * 25; };
-    var o = '<line x1="0" x2="1000" y1="60" y2="60" stroke="#e1e3e6" stroke-width="2" stroke-dasharray="6 6" vector-effect="non-scaling-stroke"/>';
-    o += '<polyline points="' + EMO.map(function (e, i) { return x(i) + ',' + y(e); }).join(' ') + '" fill="none" stroke="#f2a092" stroke-width="3" vector-effect="non-scaling-stroke"/>';
-    var q = []; TOBE.forEach(function (e, i) { if (e !== null) q.push(x(i) + ',' + y(e)); });
-    o += '<polyline points="' + q.join(' ') + '" fill="none" stroke="#ffcf00" stroke-width="4" vector-effect="non-scaling-stroke"/>';
-    $('jemo').innerHTML = o;
-  })();
+  // CJM Ирины по 8 этапам (cjm/cjm.json, полная карта на доске Miro)
+  var JG = [['До обращения', 2], ['Первое обращение', 2], ['Ожидание', 1], ['Повторное', 1], ['Решение и после', 2]];
+  var JP = [
+    ['Сбой на кассе', 'терминал, пуш', 'На меня все смотрят. Что я сделала не так?', 'Пуш не называет причину', 'Кнопка «Это я» в пуше', -2, 0, 'стресс'],
+    ['Поиск причины', 'приложение, справка', 'Почему? Меня подозревают?', 'На экране карты нет причины и следующего шага', 'Причина и кнопка на экране карты', -1.4, 0.6],
+    ['Вход в поддержку', 'чат, бот', 'Мне не нужна статья, я стою на кассе', 'Бот не понял, что это срочно', 'Срочное сразу уходит к специалисту', -1.4, 0.6, 'равнодушие'],
+    ['Диалог', 'специалист', 'Я это всё уже проверила', 'Специалист не видит тип ограничения и срок', '«Вижу, покупку остановила защита. Уже сняла»', -1, 1.6],
+    ['Ожидание без срока', 'форумы, banki.ru', 'А если не успеют до аренды?', 'Нет срока и никто не пишет', 'Этапа нет: всё решено в первом обращении', -2, null, 'стресс'],
+    ['Второй круг', 'новый специалист', 'Вы же видите переписку', 'Нет карточки случая и ответственного', 'Этапа нет', -2, null, 'потеря доверия'],
+    ['Ограничение снято', 'горячая линия, пуш', 'Наконец-то. Но рисковать больше не хочу', 'Никто не вернулся с итогом', 'Специалист сам пишет итог', 0.4, 1.4],
+    ['Вывод о банке', 'опрос, другой банк', 'Держать все деньги в одном банке опасно', 'Отношения никто не восстанавливает', 'Остаётся основным клиентом', -1.2, 1.6, 'потеря доверия']
+  ];
+  function smooth(pts) {
+    var d = 'M' + pts[0][0] + ',' + pts[0][1];
+    for (var i = 0; i < pts.length - 1; i++) {
+      var p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+      d += ' C' + (p1[0] + (p2[0] - p0[0]) / 6) + ',' + (p1[1] + (p2[1] - p0[1]) / 6) + ' ' + (p2[0] - (p3[0] - p1[0]) / 6) + ',' + (p2[1] - (p3[1] - p1[1]) / 6) + ' ' + p2[0] + ',' + p2[1];
+    }
+    return d;
+  }
+  function drawJourney() {
+    var el = $('jm'); if (!el) return;
+    var h = '<div class="grp">' + JG.map(function (g) { return '<span style="grid-column:span ' + g[1] + '">' + g[0] + '</span>'; }).join('') + '</div>';
+    h += '<div class="phs">' + JP.map(function (p, i) { return '<div><i>' + (i + 1) + '</i>' + p[0] + '<small>' + p[1] + '</small></div>'; }).join('') + '</div>';
+    h += '<div class="qts">' + JP.map(function (p) { return '<div>«' + p[2] + '»</div>'; }).join('') + '</div>';
+    h += '<div class="curve"><svg id="jsvg"></svg></div>';
+    h += '<div class="rh">Что мешает</div><div class="row2">' + JP.map(function (p) { return '<div class="pain">' + p[3] + '</div>'; }).join('') + '</div>';
+    h += '<div class="rh">Что меняем</div><div class="row2">' + JP.map(function (p) { return '<div class="fix">' + p[4] + '</div>'; }).join('') + '</div>';
+    h += '<div class="lgd"><span><i style="background:#f08a7a"></i>Ирина сейчас</span><span><i style="background:#ffcf00"></i>с подходом «Понял»</span><span>выше пунктира спокойно, ниже тревожно</span></div>';
+    el.innerHTML = h;
+    var svg = $('jsvg'), W = svg.clientWidth || 820, H = 210, cw = W / 8, mid = 96;
+    var X = function (i) { return cw * i + cw / 2; }, Y = function (e) { return mid - e * 40; };
+    var o = '<line x1="0" x2="' + W + '" y1="' + mid + '" y2="' + mid + '" stroke="#e1e3e6" stroke-width="1.5" stroke-dasharray="5 6"/>';
+    var now = JP.map(function (p, i) { return [X(i), Y(p[5])]; });
+    var fut = []; JP.forEach(function (p, i) { if (p[6] !== null) fut.push([X(i), Y(p[6])]); });
+    o += '<path d="' + smooth(fut) + '" fill="none" stroke="#ffcf00" stroke-width="5" stroke-linecap="round"/>';
+    o += '<path d="' + smooth(now) + '" fill="none" stroke="#f08a7a" stroke-width="4" stroke-linecap="round"/>';
+    fut.forEach(function (q) { o += '<circle cx="' + q[0] + '" cy="' + q[1] + '" r="6" fill="#ffdd2d" stroke="#fff" stroke-width="2.5"/>'; });
+    now.forEach(function (q, i) {
+      var tag = JP[i][7];
+      o += '<circle cx="' + q[0] + '" cy="' + q[1] + '" r="6.5" fill="#f08a7a" stroke="#fff" stroke-width="2.5"/>';
+      var tw = tag ? tag.length * 7.2 + 20 : 0, tx = Math.max(tw / 2 + 2, Math.min(W - tw / 2 - 2, q[0]));
+      if (tag) o += '<g transform="translate(' + tx + ',' + (q[1] + 24) + ')"><rect x="' + (-tw / 2) + '" y="-11" width="' + tw + '" height="22" rx="11" fill="' + (tag === 'потеря доверия' ? '#1c1c1e' : tag === 'стресс' ? '#e5604d' : '#9a9da3') + '"/><text text-anchor="middle" y="4.5" font-size="12" font-weight="600" fill="#fff" font-family="inherit">' + tag + '</text></g>';
+    });
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    svg.innerHTML = o;
+  }
+  drawJourney();
+  var jt; window.addEventListener('resize', function () { clearTimeout(jt); jt = setTimeout(drawJourney, 150); });
 
   // Каскад эффекта, млн ₽ в год (model/out, лист «Варианты», рекомендация)
-  var WF = [['Повторы', 732], ['Причины', 98], ['Удержание', 358], ['Время', -244], ['Уступки', -214], ['Затраты', -45], ['Итого', 685, 1]];
+  var WF = [['Повторы', 732], ['Причины', 98], ['Удержание', 358], ['Время', -244], ['Возвраты', -214], ['Затраты', -45], ['Итого', 685, 1]];
   var svg = $('wf'), H = 300, top = 20, max = 1188, sc = (H - top) / max, x = 30, w = 72, gap = 22, run = 0, out = '';
   out += '<line x1="20" x2="710" y1="' + (top + H - top) + '" y2="' + (top + H - top) + '" stroke="#e7e8ea"/>';
   WF.forEach(function (d) {
@@ -695,7 +742,7 @@ footer .brand { font-size: 17px; }
   });
   svg.innerHTML = out;
 
-  var OPTS = [['O1 Стандарты и скрипты', 2.35], ['O2 Тренинг эмпатии', 3.15], ['O3 ИИ решает сам', 1.90], ['O4 Подход ПОНЯЛ', 4.15], ['O5 Компенсации всем', 2.60], ['Рекомендация: ПОНЯЛ и полномочия', 4.65, 1]];
+  var OPTS = [['O1 Стандарты и скрипты', 2.35], ['O2 Тренинг эмпатии', 3.15], ['O3 ИИ решает сам', 1.90], ['O4 Пять шагов и подсказки', 4.15], ['O5 Компенсации всем', 2.60], ['Наш выбор: O4, порог и сигнал в продукт', 4.65, 1]];
   $('opts').innerHTML = OPTS.map(function (o) {
     return '<div class="opt' + (o[2] ? ' rec' : '') + '"><div class="l"><i style="width:' + (o[1] / 5 * 100) + '%"></i><span>' + o[0] + '</span></div><b>' + o[1].toFixed(2).replace('.', ',') + '</b></div>';
   }).join('');
